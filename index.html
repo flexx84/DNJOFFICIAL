@@ -2492,6 +2492,91 @@ function setCookie( name, value, expiredays )
       console.log('- ESC 키 5번 연속');
     }
     
+    // 가장 간단한 관리 모드 버튼 즉시 생성
+    function createUltraSimpleAdminButton() {
+      console.log('초간단 관리 모드 버튼 생성 시작');
+      
+      // 기존 버튼들 제거
+      const existingButtons = document.querySelectorAll('[id*="admin"], [id*="Admin"]');
+      existingButtons.forEach(btn => btn.remove());
+      
+      // 새로운 초간단 버튼 생성
+      const ultraButton = document.createElement('div');
+      ultraButton.id = 'ultraSimpleAdminButton';
+      ultraButton.innerHTML = '🔧';
+      ultraButton.style.cssText = `
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        width: 60px !important;
+        height: 60px !important;
+        background: #ff0000 !important;
+        color: white !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 24px !important;
+        cursor: pointer !important;
+        z-index: 999999 !important;
+        box-shadow: 0 4px 20px rgba(255,0,0,0.6) !important;
+        border: 3px solid white !important;
+      `;
+      
+      ultraButton.onclick = function() {
+        console.log('초간단 관리 모드 버튼 클릭됨!');
+        
+        // 관리 모드 토글
+        const adminPanel = document.getElementById('adminMode');
+        const adminIndicator = document.getElementById('adminIndicator');
+        
+        if (!adminPanel || !adminIndicator) {
+          console.log('관리 모드 요소들을 찾을 수 없습니다!');
+          alert('관리 모드 요소들을 찾을 수 없습니다!');
+          return;
+        }
+        
+        if (adminPanel.style.display === 'none' || adminPanel.style.display === '') {
+          // 관리 모드 활성화
+          adminPanel.style.display = 'block';
+          adminIndicator.style.display = 'block';
+          adminIndicator.textContent = '관리 모드 활성화';
+          console.log('관리 모드 활성화됨!');
+          alert('관리 모드 활성화됨!');
+        } else {
+          // 관리 모드 비활성화
+          adminPanel.style.display = 'none';
+          adminIndicator.style.display = 'none';
+          console.log('관리 모드 비활성화됨!');
+          alert('관리 모드 비활성화됨!');
+        }
+      };
+      
+      // 즉시 DOM에 추가
+      document.body.appendChild(ultraButton);
+      console.log('초간단 관리 모드 버튼 생성 완료!');
+      
+      // 3초 후에도 버튼이 있는지 확인
+      setTimeout(() => {
+        const checkButton = document.getElementById('ultraSimpleAdminButton');
+        if (checkButton) {
+          console.log('버튼이 정상적으로 존재합니다.');
+        } else {
+          console.log('버튼이 사라졌습니다! 다시 생성합니다.');
+          createUltraSimpleAdminButton();
+        }
+      }, 3000);
+    }
+    
+    // 즉시 초간단 버튼 생성
+    createUltraSimpleAdminButton();
+    
+    // 1초 후에도 다시 생성 (안전장치)
+    setTimeout(createUltraSimpleAdminButton, 1000);
+    
+    // 2초 후에도 다시 생성 (안전장치)
+    setTimeout(createUltraSimpleAdminButton, 2000);
+    
     // 즉시 간단한 옵션들 생성
     createSimpleAdminOptions();
     
@@ -2612,6 +2697,33 @@ function setCookie( name, value, expiredays )
     };
     
     console.log('전역 테스트 함수 등록됨: testAdminMode(), forceAdminMode(), forceHideAdminMode()');
+    
+    // 가장 간단한 글로벌 함수
+    window.simpleAdmin = function() {
+      console.log('simpleAdmin() 함수 호출됨');
+      const adminPanel = document.getElementById('adminMode');
+      if (adminPanel) {
+        if (adminPanel.style.display === 'none' || adminPanel.style.display === '') {
+          adminPanel.style.display = 'block';
+          console.log('관리 모드 활성화됨!');
+          alert('관리 모드 활성화됨!');
+        } else {
+          adminPanel.style.display = 'none';
+          console.log('관리 모드 비활성화됨!');
+          alert('관리 모드 비활성화됨!');
+        }
+      } else {
+        console.log('관리 모드 패널을 찾을 수 없습니다!');
+        alert('관리 모드 패널을 찾을 수 없습니다!');
+      }
+    };
+    
+    window.showButton = function() {
+      console.log('showButton() 함수 호출됨');
+      createUltraSimpleAdminButton();
+    };
+    
+    console.log('간단한 글로벌 함수 등록됨: simpleAdmin(), showButton()');
     
     // 강력한 디버깅 함수 추가
     window.debugAllElements = function() {
