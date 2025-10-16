@@ -2439,6 +2439,111 @@ function setCookie( name, value, expiredays )
     let menuClickTimer = null;
     let adminData = {};
     
+    // 즉시 관리 모드 버튼 생성 (페이지 로드와 상관없이)
+    function createImmediateAdminButton() {
+      if (document.getElementById('immediateAdminButton')) return;
+      
+      const immediateButton = document.createElement('div');
+      immediateButton.id = 'immediateAdminButton';
+      immediateButton.style.cssText = `
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: #ff0000;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        z-index: 99999;
+        font-size: 12px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      `;
+      immediateButton.innerHTML = '🔧 관리모드';
+      immediateButton.onclick = function() {
+        console.log('즉시 관리 모드 버튼 클릭됨');
+        if (!adminMode) {
+          adminMode = true;
+          showAdminMode();
+        } else {
+          adminMode = false;
+          hideAdminMode();
+        }
+      };
+      document.body.appendChild(immediateButton);
+      console.log('즉시 관리 모드 버튼 생성됨');
+    }
+    
+    // 즉시 버튼 생성
+    createImmediateAdminButton();
+    
+    // 간단한 관리 모드 표시/숨김 함수
+    function showAdminMode() {
+      console.log('관리 모드 표시');
+      const adminModeElement = document.getElementById('adminMode');
+      const adminIndicator = document.getElementById('adminIndicator');
+      
+      if (adminModeElement) {
+        adminModeElement.style.display = 'block';
+        console.log('관리 모드 패널 표시됨');
+      }
+      if (adminIndicator) {
+        adminIndicator.style.display = 'block';
+        adminIndicator.textContent = '관리 모드 활성화';
+        console.log('관리 모드 인디케이터 표시됨');
+      }
+      
+      // 섹션 하이라이트 활성화
+      enableSectionHighlight();
+    }
+    
+    function hideAdminMode() {
+      console.log('관리 모드 숨김');
+      const adminModeElement = document.getElementById('adminMode');
+      const adminIndicator = document.getElementById('adminIndicator');
+      
+      if (adminModeElement) {
+        adminModeElement.style.display = 'none';
+        console.log('관리 모드 패널 숨김됨');
+      }
+      if (adminIndicator) {
+        adminIndicator.style.display = 'none';
+        console.log('관리 모드 인디케이터 숨김됨');
+      }
+      
+      // 섹션 하이라이트 비활성화
+      disableSectionHighlight();
+    }
+    
+    // 전역 테스트 함수들
+    window.testAdminMode = function() {
+      console.log('테스트: 관리 모드 토글');
+      if (!adminMode) {
+        adminMode = true;
+        showAdminMode();
+        console.log('관리 모드 활성화됨');
+      } else {
+        adminMode = false;
+        hideAdminMode();
+        console.log('관리 모드 비활성화됨');
+      }
+    };
+    
+    window.forceAdminMode = function() {
+      console.log('강제: 관리 모드 활성화');
+      adminMode = true;
+      showAdminMode();
+    };
+    
+    window.forceHideAdminMode = function() {
+      console.log('강제: 관리 모드 비활성화');
+      adminMode = false;
+      hideAdminMode();
+    };
+    
+    console.log('전역 테스트 함수 등록됨: testAdminMode(), forceAdminMode(), forceHideAdminMode()');
+    
     // DOM 로드 완료 후 초기화
     document.addEventListener('DOMContentLoaded', function() {
       console.log('관리 모드 초기화 시작');
