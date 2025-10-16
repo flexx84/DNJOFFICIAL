@@ -2495,6 +2495,41 @@ function setCookie( name, value, expiredays )
     // 즉시 간단한 옵션들 생성
     createSimpleAdminOptions();
     
+    // 관리 모드 방해 요소들 해결
+    function fixAdminModeConflicts() {
+      console.log('관리 모드 충돌 요소들 해결 시작');
+      
+      // 1. body의 overflow: hidden 제거
+      document.body.style.overflow = 'auto';
+      console.log('body overflow: hidden 제거됨');
+      
+      // 2. 높은 z-index로 관리 모드 요소들 보호
+      const adminElements = document.querySelectorAll('.admin-mode, .admin-indicator, .section-gear, .section-popup-editor');
+      adminElements.forEach(element => {
+        if (element) {
+          element.style.zIndex = '99999';
+          console.log('관리 모드 요소 z-index 업데이트:', element.className);
+        }
+      });
+      
+      // 3. 원래 사이트의 이벤트 리스너와 충돌 방지
+      document.addEventListener('click', function(e) {
+        // 관리 모드 관련 요소 클릭 시 다른 이벤트 방지
+        if (e.target.closest('.admin-mode') || 
+            e.target.closest('.admin-indicator') || 
+            e.target.closest('.section-gear') ||
+            e.target.closest('.section-popup-editor')) {
+          e.stopImmediatePropagation();
+          console.log('관리 모드 요소 클릭 - 다른 이벤트 차단');
+        }
+      }, true); // capture phase에서 실행
+      
+      console.log('관리 모드 충돌 요소들 해결 완료');
+    }
+    
+    // 즉시 충돌 요소들 해결
+    fixAdminModeConflicts();
+    
     // 간단한 관리 모드 표시/숨김 함수
     function showAdminMode() {
       console.log('관리 모드 표시');
@@ -2578,6 +2613,55 @@ function setCookie( name, value, expiredays )
     
     console.log('전역 테스트 함수 등록됨: testAdminMode(), forceAdminMode(), forceHideAdminMode()');
     
+    // 강력한 디버깅 함수 추가
+    window.debugAllElements = function() {
+      console.log('=== 모든 요소 디버그 정보 ===');
+      
+      // 관리 모드 관련 요소들 확인
+      const adminMode = document.getElementById('adminMode');
+      const adminIndicator = document.getElementById('adminIndicator');
+      const manualButton = document.getElementById('manualAdminButton');
+      const alwaysButton = document.getElementById('alwaysVisibleAdminButton');
+      
+      console.log('관리 모드 패널:', adminMode);
+      console.log('관리 모드 인디케이터:', adminIndicator);
+      console.log('수동 관리 모드 버튼:', manualButton);
+      console.log('항상 보이는 관리 모드 버튼:', alwaysButton);
+      
+      // MENU 버튼들 확인
+      const menuButtons = document.querySelectorAll('[class*="menu"], [class*="toggle"]');
+      console.log('발견된 MENU/TOGGLE 버튼들:', menuButtons);
+      
+      // z-index 확인
+      if (adminMode) console.log('관리 모드 패널 z-index:', window.getComputedStyle(adminMode).zIndex);
+      if (alwaysButton) console.log('항상 보이는 버튼 z-index:', window.getComputedStyle(alwaysButton).zIndex);
+      
+      // body 스타일 확인
+      console.log('body overflow:', window.getComputedStyle(document.body).overflow);
+      
+      // 이벤트 리스너 테스트
+      console.log('관리 모드 상태:', adminMode);
+      console.log('현재 adminMode 변수:', window.adminMode);
+    };
+    
+    window.forceShowAllButtons = function() {
+      console.log('모든 관리 모드 버튼 강제 표시');
+      const buttons = [
+        document.getElementById('manualAdminButton'),
+        document.getElementById('alwaysVisibleAdminButton')
+      ];
+      
+      buttons.forEach(button => {
+        if (button) {
+          button.style.display = 'block';
+          button.style.visibility = 'visible';
+          button.style.opacity = '1';
+          button.style.zIndex = '99999';
+          console.log('버튼 강제 표시됨:', button.id);
+        }
+      });
+    };
+    
     // DOM 로드 완료 후 초기화
     document.addEventListener('DOMContentLoaded', function() {
       console.log('관리 모드 초기화 시작');
@@ -2600,6 +2684,7 @@ function setCookie( name, value, expiredays )
           console.log('관리 모드 추가 초기화');
           setupEventListeners(); // 재시도
           ensureAdminModeHidden(); // 최종 확인
+          fixAdminModeConflicts(); // 충돌 방지 재실행
         }, 1000);
       }, 500);
       
@@ -2813,7 +2898,7 @@ function setCookie( name, value, expiredays )
         border-radius: 50px;
         cursor: pointer;
         font-weight: bold;
-        z-index: 9998;
+        z-index: 99999;
         box-shadow: 0 4px 15px rgba(255, 0, 11, 0.4);
         transition: all 0.3s ease;
         font-size: 14px;
@@ -2851,7 +2936,7 @@ function setCookie( name, value, expiredays )
         border-radius: 20px;
         cursor: pointer;
         font-weight: bold;
-        z-index: 9997;
+        z-index: 99998;
         font-size: 11px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
