@@ -4165,6 +4165,7 @@ function setCookie( name, value, expiredays )
     let adminMode = false;
     let menuClickCount = 0;
     let menuClickTimer = null;
+    let adminButtonVisible = false;
     
     // 관리 모드 패널 존재 여부 확인
     function checkAdminPanelExists() {
@@ -4231,7 +4232,10 @@ function setCookie( name, value, expiredays )
             return;
           }
           
-          if (adminPanel.style.display === 'none' || adminPanel.style.display === '') {
+          const isCurrentlyVisible = adminPanel.style.display === 'block' || 
+                                    (adminPanel.style.display === '' && window.getComputedStyle(adminPanel).display !== 'none');
+          
+          if (!isCurrentlyVisible) {
             // 관리 모드 활성화
             adminPanel.style.display = 'block';
             adminPanel.style.zIndex = '9999999';
@@ -4258,11 +4262,17 @@ function setCookie( name, value, expiredays )
     
     // 관리 모드 버튼 표시 (활성화 조건 달성 시)
     function showAdminButton() {
+      if (adminButtonVisible) {
+        console.log('관리 모드 버튼이 이미 표시되어 있습니다.');
+        return;
+      }
+      
       const button = document.getElementById('conditionalAdminButton');
       if (button) {
         button.style.display = 'block';
         button.style.visibility = 'visible';
         button.style.opacity = '1';
+        adminButtonVisible = true;
         console.log('관리 모드 버튼 표시됨');
       }
     }
@@ -4274,6 +4284,7 @@ function setCookie( name, value, expiredays )
         button.style.display = 'none';
         button.style.visibility = 'hidden';
         button.style.opacity = '0';
+        adminButtonVisible = false;
         console.log('관리 모드 버튼 숨김됨');
       }
     }
@@ -4295,20 +4306,21 @@ function setCookie( name, value, expiredays )
           )) {
             button.addEventListener('click', function() {
               menuClickCount++;
-              console.log('MENU 버튼 클릭:', menuClickCount);
+              console.log('MENU 버튼 클릭:', menuClickCount, '/ 5');
               
               if (menuClickTimer) {
                 clearTimeout(menuClickTimer);
               }
               
               if (menuClickCount >= 5) {
-                console.log('MENU 버튼 5번 클릭 - 관리 모드 버튼 표시');
+                console.log('MENU 버튼 5번 클릭 달성 - 관리 모드 버튼 표시');
                 showAdminButton();
                 menuClickCount = 0;
               } else {
+                console.log('MENU 버튼 클릭 필요:', (5 - menuClickCount), '번 더');
                 menuClickTimer = setTimeout(() => {
+                  console.log('MENU 버튼 카운터 리셋 (2초 경과)');
                   menuClickCount = 0;
-                  console.log('MENU 버튼 카운터 리셋');
                 }, 2000);
               }
             });
@@ -4325,7 +4337,11 @@ function setCookie( name, value, expiredays )
         if (e.ctrlKey && e.shiftKey && e.key === 'G') {
           e.preventDefault();
           console.log('Ctrl+Shift+G 키보드 단축키 - 관리 모드 버튼 표시');
-          showAdminButton();
+          if (!adminButtonVisible) {
+            showAdminButton();
+          } else {
+            console.log('관리 모드 버튼이 이미 표시되어 있습니다.');
+          }
         }
       });
     }
