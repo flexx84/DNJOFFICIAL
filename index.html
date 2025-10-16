@@ -2724,11 +2724,11 @@ function setCookie( name, value, expiredays )
       }
       
       // 추가: 키보드 단축키로 관리 모드 활성화
-      console.log('키보드 단축키 설정: Ctrl+Shift+A');
+      console.log('키보드 단축키 설정: Ctrl+Shift+G');
       
-      // 키보드 단축키 (Ctrl + Shift + A)
+      // 키보드 단축키 (Ctrl + Shift + G)
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        if (e.ctrlKey && e.shiftKey && e.key === 'G') {
           e.preventDefault();
           console.log('키보드 단축키로 관리 모드 토글');
           toggleAdminMode();
@@ -2761,7 +2761,7 @@ function setCookie( name, value, expiredays )
         transition: all 0.3s ease;
         font-size: 14px;
       `;
-      manualButton.innerHTML = '⚙️ 관리모드<br><small>Ctrl+Shift+A</small>';
+      manualButton.innerHTML = '⚙️ 관리모드<br><small>Ctrl+Shift+G</small>';
       manualButton.onclick = function() {
         console.log('수동 관리 모드 버튼 클릭됨');
         toggleAdminMode();
