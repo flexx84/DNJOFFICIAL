@@ -1306,6 +1306,53 @@
              </select>
            </div>
          </div>
+         
+         <!-- 맵 설정 섹션 -->
+         <div class="section-editor" data-section="map">
+           <h3 class="section-title">🗺️ 지도 설정</h3>
+           
+           <div class="form-group">
+             <label class="form-label">지도 키 (Daum Map)</label>
+             <input type="text" class="form-input" id="map-key" value="2dfn8" placeholder="지도 키를 입력하세요">
+           </div>
+           
+           <div class="form-group">
+             <label class="form-label">지도 타임스탬프</label>
+             <input type="text" class="form-input" id="map-timestamp" value="1673836719953" placeholder="타임스탬프를 입력하세요">
+           </div>
+           
+           <div class="form-group">
+             <label class="form-label">지도 너비 (%)</label>
+             <input type="range" class="form-slider" id="map-width" min="50" max="100" value="100">
+             <span class="slider-value" id="map-width-value">100%</span>
+           </div>
+           
+           <div class="form-group">
+             <label class="form-label">지도 높이 (px)</label>
+             <input type="number" class="form-input" id="map-height" value="400" placeholder="지도 높이를 입력하세요">
+           </div>
+           
+           <div class="form-group">
+             <label class="form-label">지도 스타일</label>
+             <select class="form-select" id="map-style">
+               <option value="default">기본</option>
+               <option value="dark">다크</option>
+               <option value="light">라이트</option>
+               <option value="satellite">위성</option>
+             </select>
+           </div>
+           
+           <div class="preview-area" id="map-preview">
+             <h4>지도 미리보기:</h4>
+             <div id="map-preview-container" style="width: 100%; height: 200px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+               지도 미리보기가 여기에 표시됩니다
+             </div>
+           </div>
+           
+           <button class="btn" onclick="updateMapSettings()">지도 설정 적용</button>
+           <button class="btn btn-secondary" onclick="resetMapSettings()">지도 설정 초기화</button>
+         </div>
+         
          <div class="form-row">
            <button class="btn" onclick="exportSettings()">설정 내보내기</button>
            <button class="btn btn-secondary" onclick="importSettings()">설정 가져오기</button>
@@ -2519,21 +2566,43 @@ function setCookie( name, value, expiredays )
     function toggleAdminMode() {
       console.log('=== 관리 모드 토글 시작 ===');
       console.log('현재 상태:', AdminSystem.isActive);
+      console.log('관리 모드 패널:', AdminSystem.adminPanel);
+      console.log('관리 모드 인디케이터:', AdminSystem.adminIndicator);
       
       if (AdminSystem.isActive) {
         // 비활성화
-        AdminSystem.adminPanel.style.display = 'none';
-        AdminSystem.adminIndicator.style.display = 'none';
+        if (AdminSystem.adminPanel) {
+          AdminSystem.adminPanel.style.display = 'none';
+        }
+        if (AdminSystem.adminIndicator) {
+          AdminSystem.adminIndicator.style.display = 'none';
+        }
         AdminSystem.isActive = false;
         console.log('✅ 관리 모드 비활성화됨!');
       } else {
         // 활성화
-        AdminSystem.adminPanel.style.display = 'block';
-        AdminSystem.adminPanel.style.zIndex = '9999999';
-        AdminSystem.adminIndicator.style.display = 'block';
-        AdminSystem.adminIndicator.textContent = '관리 모드 활성화';
+        if (AdminSystem.adminPanel) {
+          AdminSystem.adminPanel.style.display = 'block';
+          AdminSystem.adminPanel.style.zIndex = '9999999';
+          AdminSystem.adminPanel.style.position = 'fixed';
+          AdminSystem.adminPanel.style.top = '0';
+          AdminSystem.adminPanel.style.left = '0';
+          AdminSystem.adminPanel.style.width = '100%';
+          AdminSystem.adminPanel.style.height = '100%';
+        }
+        if (AdminSystem.adminIndicator) {
+          AdminSystem.adminIndicator.style.display = 'block';
+          AdminSystem.adminIndicator.style.zIndex = '10000000';
+          AdminSystem.adminIndicator.style.position = 'fixed';
+          AdminSystem.adminIndicator.style.top = '20px';
+          AdminSystem.adminIndicator.style.left = '50%';
+          AdminSystem.adminIndicator.style.transform = 'translateX(-50%)';
+          AdminSystem.adminIndicator.textContent = '관리 모드 활성화';
+        }
         AdminSystem.isActive = true;
         console.log('✅ 관리 모드 활성화됨!');
+        console.log('패널 표시 상태:', AdminSystem.adminPanel ? AdminSystem.adminPanel.style.display : '패널 없음');
+        console.log('인디케이터 표시 상태:', AdminSystem.adminIndicator ? AdminSystem.adminIndicator.style.display : '인디케이터 없음');
       }
     }
     
@@ -2670,6 +2739,97 @@ function setCookie( name, value, expiredays )
       console.log('adminIndicator:', AdminSystem.adminIndicator);
       console.log('adminButton:', AdminSystem.adminButton);
     };
+    
+    // 맵 설정 관련 함수들
+    function updateMapSettings() {
+      console.log('=== 지도 설정 업데이트 시작 ===');
+      
+      const mapKey = document.getElementById('map-key').value;
+      const mapTimestamp = document.getElementById('map-timestamp').value;
+      const mapWidth = document.getElementById('map-width').value;
+      const mapHeight = document.getElementById('map-height').value;
+      const mapStyle = document.getElementById('map-style').value;
+      
+      console.log('지도 설정:', { mapKey, mapTimestamp, mapWidth, mapHeight, mapStyle });
+      
+      // 지도 컨테이너 찾기
+      const mapContainer = document.getElementById('daumRoughmapContainer1673836719953');
+      if (mapContainer) {
+        // 지도 크기 설정
+        mapContainer.style.width = mapWidth + '%';
+        mapContainer.style.height = mapHeight + 'px';
+        
+        console.log('지도 크기 업데이트됨:', mapWidth + '%, ' + mapHeight + 'px');
+      }
+      
+      // 새로운 타임스탬프로 지도 다시 렌더링
+      const newTimestamp = Date.now().toString();
+      document.getElementById('map-timestamp').value = newTimestamp;
+      
+      // 지도 스크립트 업데이트
+      const mapScript = document.querySelector('.daum_roughmap_loader_script');
+      if (mapScript) {
+        mapScript.remove();
+      }
+      
+      // 새로운 지도 스크립트 생성
+      const script = document.createElement('script');
+      script.charset = 'UTF-8';
+      script.className = 'daum_roughmap_loader_script';
+      script.src = 'https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js';
+      
+      // 렌더링 스크립트 생성
+      const renderScript = document.createElement('script');
+      renderScript.charset = 'UTF-8';
+      renderScript.textContent = `
+        new daum.roughmap.Lander({
+          "timestamp": "${newTimestamp}",
+          "key": "${mapKey}",
+        }).render();
+      `;
+      
+      // 스크립트 추가
+      mapContainer.parentNode.appendChild(script);
+      mapContainer.parentNode.appendChild(renderScript);
+      
+      console.log('✅ 지도 설정 업데이트 완료');
+      alert('지도 설정이 업데이트되었습니다!');
+    }
+    
+    function resetMapSettings() {
+      console.log('지도 설정 초기화');
+      
+      document.getElementById('map-key').value = '2dfn8';
+      document.getElementById('map-timestamp').value = '1673836719953';
+      document.getElementById('map-width').value = '100';
+      document.getElementById('map-height').value = '400';
+      document.getElementById('map-style').value = 'default';
+      
+      // 지도 컨테이너 크기 초기화
+      const mapContainer = document.getElementById('daumRoughmapContainer1673836719953');
+      if (mapContainer) {
+        mapContainer.style.width = '100%';
+        mapContainer.style.height = '400px';
+      }
+      
+      alert('지도 설정이 초기화되었습니다!');
+    }
+    
+    // 지도 너비 슬라이더 이벤트
+    document.addEventListener('DOMContentLoaded', function() {
+      const mapWidthSlider = document.getElementById('map-width');
+      const mapWidthValue = document.getElementById('map-width-value');
+      
+      if (mapWidthSlider && mapWidthValue) {
+        mapWidthSlider.addEventListener('input', function() {
+          mapWidthValue.textContent = this.value + '%';
+        });
+      }
+    });
+    
+    // 글로벌 함수 등록
+    window.updateMapSettings = updateMapSettings;
+    window.resetMapSettings = resetMapSettings;
     
     console.log('=== 완전히 새로운 관리 모드 시스템 완료 ===');
   </script>
