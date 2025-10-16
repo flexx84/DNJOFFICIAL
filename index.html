@@ -2441,6 +2441,60 @@ function setCookie( name, value, expiredays )
     
     // 관리 모드 버튼은 정상적인 방법으로만 생성 (MENU 버튼 클릭 또는 키보드 단축키)
     
+    // 더 간단한 관리 모드 활성화 방법들 추가
+    function createSimpleAdminOptions() {
+      // 1. 더블클릭으로 관리 모드 활성화 (헤더 영역)
+      document.addEventListener('dblclick', function(e) {
+        if (e.target.closest('.header') || e.target.closest('header')) {
+          console.log('헤더 더블클릭으로 관리 모드 활성화');
+          e.preventDefault();
+          toggleAdminMode();
+        }
+      });
+      
+      // 2. 우클릭 메뉴에 관리 모드 옵션 추가
+      document.addEventListener('contextmenu', function(e) {
+        if (e.ctrlKey) {
+          console.log('Ctrl+우클릭으로 관리 모드 활성화');
+          e.preventDefault();
+          toggleAdminMode();
+        }
+      });
+      
+      // 3. ESC 키 5번 연속으로 관리 모드 활성화
+      let escClickCount = 0;
+      let escTimer = null;
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+          escClickCount++;
+          console.log('ESC 키 클릭 횟수:', escClickCount);
+          
+          if (escTimer) {
+            clearTimeout(escTimer);
+          }
+          
+          if (escClickCount >= 5) {
+            console.log('ESC 키 5번 연속으로 관리 모드 활성화');
+            toggleAdminMode();
+            escClickCount = 0;
+          } else {
+            escTimer = setTimeout(() => {
+              escClickCount = 0;
+              console.log('ESC 키 카운터 리셋');
+            }, 2000);
+          }
+        }
+      });
+      
+      console.log('간단한 관리 모드 활성화 방법들 등록됨:');
+      console.log('- 헤더 더블클릭');
+      console.log('- Ctrl+우클릭');
+      console.log('- ESC 키 5번 연속');
+    }
+    
+    // 즉시 간단한 옵션들 생성
+    createSimpleAdminOptions();
+    
     // 간단한 관리 모드 표시/숨김 함수
     function showAdminMode() {
       console.log('관리 모드 표시');
@@ -2723,6 +2777,9 @@ function setCookie( name, value, expiredays )
         createManualAdminButton();
       }
       
+      // 항상 간단한 관리 모드 버튼 생성 (더 확실한 방법)
+      createAlwaysVisibleAdminButton();
+      
       // 추가: 키보드 단축키로 관리 모드 활성화
       console.log('키보드 단축키 설정: Ctrl+Shift+G');
       
@@ -2775,6 +2832,49 @@ function setCookie( name, value, expiredays )
         manualButton.style.background = 'linear-gradient(135deg, #ff000b, #cc0009)';
       };
       document.body.appendChild(manualButton);
+    }
+    
+    // 항상 보이는 간단한 관리 모드 버튼 생성
+    function createAlwaysVisibleAdminButton() {
+      if (document.getElementById('alwaysVisibleAdminButton')) return;
+      
+      const alwaysButton = document.createElement('div');
+      alwaysButton.id = 'alwaysVisibleAdminButton';
+      alwaysButton.style.cssText = `
+        position: fixed;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        z-index: 9997;
+        font-size: 11px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        opacity: 0.8;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+      `;
+      alwaysButton.innerHTML = 'ADMIN';
+      alwaysButton.onclick = function() {
+        console.log('항상 보이는 관리 모드 버튼 클릭됨');
+        toggleAdminMode();
+      };
+      alwaysButton.onmouseover = () => {
+        alwaysButton.style.opacity = '1';
+        alwaysButton.style.transform = 'translateY(-50%) scale(1.1)';
+      };
+      alwaysButton.onmouseout = () => {
+        alwaysButton.style.opacity = '0.8';
+        alwaysButton.style.transform = 'translateY(-50%) scale(1)';
+      };
+      
+      document.body.appendChild(alwaysButton);
+      console.log('항상 보이는 관리 모드 버튼 생성됨');
     }
     
     // MENU 버튼 클릭 처리
