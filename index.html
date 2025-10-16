@@ -2512,8 +2512,8 @@ function setCookie( name, value, expiredays )
       }
       
       // 관리 모드 패널과 인디케이터를 처음에 숨김
-      AdminSystem.adminPanel.style.display = 'none';
-      AdminSystem.adminIndicator.style.display = 'none';
+      AdminSystem.adminPanel.style.setProperty('display', 'none', 'important');
+      AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
       
       // 기존 관리 모드 버튼들 모두 제거
       const existingButtons = document.querySelectorAll('[id*="admin"], [id*="Admin"], [id*="button"]');
@@ -2572,37 +2572,51 @@ function setCookie( name, value, expiredays )
       if (AdminSystem.isActive) {
         // 비활성화
         if (AdminSystem.adminPanel) {
-          AdminSystem.adminPanel.style.display = 'none';
+          AdminSystem.adminPanel.style.setProperty('display', 'none', 'important');
         }
         if (AdminSystem.adminIndicator) {
-          AdminSystem.adminIndicator.style.display = 'none';
+          AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
         }
         AdminSystem.isActive = false;
         console.log('✅ 관리 모드 비활성화됨!');
       } else {
         // 활성화
         if (AdminSystem.adminPanel) {
-          AdminSystem.adminPanel.style.display = 'block';
-          AdminSystem.adminPanel.style.zIndex = '9999999';
-          AdminSystem.adminPanel.style.position = 'fixed';
-          AdminSystem.adminPanel.style.top = '0';
-          AdminSystem.adminPanel.style.left = '0';
-          AdminSystem.adminPanel.style.width = '100%';
-          AdminSystem.adminPanel.style.height = '100%';
+          AdminSystem.adminPanel.style.setProperty('display', 'block', 'important');
+          AdminSystem.adminPanel.style.setProperty('z-index', '9999999', 'important');
+          AdminSystem.adminPanel.style.setProperty('position', 'fixed', 'important');
+          AdminSystem.adminPanel.style.setProperty('top', '0', 'important');
+          AdminSystem.adminPanel.style.setProperty('left', '0', 'important');
+          AdminSystem.adminPanel.style.setProperty('width', '100%', 'important');
+          AdminSystem.adminPanel.style.setProperty('height', '100%', 'important');
+          AdminSystem.adminPanel.style.setProperty('background', 'rgba(0, 0, 0, 0.95)', 'important');
         }
         if (AdminSystem.adminIndicator) {
-          AdminSystem.adminIndicator.style.display = 'block';
-          AdminSystem.adminIndicator.style.zIndex = '10000000';
-          AdminSystem.adminIndicator.style.position = 'fixed';
-          AdminSystem.adminIndicator.style.top = '20px';
-          AdminSystem.adminIndicator.style.left = '50%';
-          AdminSystem.adminIndicator.style.transform = 'translateX(-50%)';
+          AdminSystem.adminIndicator.style.setProperty('display', 'block', 'important');
+          AdminSystem.adminIndicator.style.setProperty('z-index', '10000000', 'important');
+          AdminSystem.adminIndicator.style.setProperty('position', 'fixed', 'important');
+          AdminSystem.adminIndicator.style.setProperty('top', '20px', 'important');
+          AdminSystem.adminIndicator.style.setProperty('left', '50%', 'important');
+          AdminSystem.adminIndicator.style.setProperty('transform', 'translateX(-50%)', 'important');
+          AdminSystem.adminIndicator.style.setProperty('background', 'linear-gradient(135deg, #ff000b, #cc0009)', 'important');
+          AdminSystem.adminIndicator.style.setProperty('color', 'white', 'important');
+          AdminSystem.adminIndicator.style.setProperty('padding', '12px 20px', 'important');
+          AdminSystem.adminIndicator.style.setProperty('border-radius', '25px', 'important');
+          AdminSystem.adminIndicator.style.setProperty('font-weight', 'bold', 'important');
+          AdminSystem.adminIndicator.style.setProperty('box-shadow', '0 4px 15px rgba(255, 0, 11, 0.4)', 'important');
           AdminSystem.adminIndicator.textContent = '관리 모드 활성화';
         }
         AdminSystem.isActive = true;
         console.log('✅ 관리 모드 활성화됨!');
         console.log('패널 표시 상태:', AdminSystem.adminPanel ? AdminSystem.adminPanel.style.display : '패널 없음');
         console.log('인디케이터 표시 상태:', AdminSystem.adminIndicator ? AdminSystem.adminIndicator.style.display : '인디케이터 없음');
+        
+        // 추가 확인을 위한 DOM 상태 로그
+        setTimeout(() => {
+          console.log('=== DOM 상태 확인 (1초 후) ===');
+          console.log('패널 실제 표시 상태:', AdminSystem.adminPanel ? window.getComputedStyle(AdminSystem.adminPanel).display : '패널 없음');
+          console.log('인디케이터 실제 표시 상태:', AdminSystem.adminIndicator ? window.getComputedStyle(AdminSystem.adminIndicator).display : '인디케이터 없음');
+        }, 1000);
       }
     }
     
@@ -2738,6 +2752,48 @@ function setCookie( name, value, expiredays )
       console.log('adminPanel:', AdminSystem.adminPanel);
       console.log('adminIndicator:', AdminSystem.adminIndicator);
       console.log('adminButton:', AdminSystem.adminButton);
+      
+      // DOM 상태 확인
+      if (AdminSystem.adminPanel) {
+        console.log('패널 인라인 스타일:', AdminSystem.adminPanel.style.cssText);
+        console.log('패널 계산된 스타일:', window.getComputedStyle(AdminSystem.adminPanel).display);
+      }
+      if (AdminSystem.adminIndicator) {
+        console.log('인디케이터 인라인 스타일:', AdminSystem.adminIndicator.style.cssText);
+        console.log('인디케이터 계산된 스타일:', window.getComputedStyle(AdminSystem.adminIndicator).display);
+      }
+    };
+    
+    // 강제 관리 모드 활성화 함수 (디버깅용)
+    window.forceAdminMode = function() {
+      console.log('=== 강제 관리 모드 활성화 ===');
+      AdminSystem.isActive = false; // 토글을 위해 false로 설정
+      toggleAdminMode();
+    };
+    
+    // 관리 모드 요소 강제 표시 함수 (디버깅용)
+    window.forceShowElements = function() {
+      console.log('=== 관리 모드 요소 강제 표시 ===');
+      if (AdminSystem.adminPanel) {
+        AdminSystem.adminPanel.style.setProperty('display', 'block', 'important');
+        AdminSystem.adminPanel.style.setProperty('z-index', '9999999', 'important');
+        AdminSystem.adminPanel.style.setProperty('position', 'fixed', 'important');
+        AdminSystem.adminPanel.style.setProperty('top', '0', 'important');
+        AdminSystem.adminPanel.style.setProperty('left', '0', 'important');
+        AdminSystem.adminPanel.style.setProperty('width', '100%', 'important');
+        AdminSystem.adminPanel.style.setProperty('height', '100%', 'important');
+        AdminSystem.adminPanel.style.setProperty('background', 'rgba(0, 0, 0, 0.95)', 'important');
+        console.log('✅ 관리 모드 패널 강제 표시됨');
+      }
+      if (AdminSystem.adminIndicator) {
+        AdminSystem.adminIndicator.style.setProperty('display', 'block', 'important');
+        AdminSystem.adminIndicator.style.setProperty('z-index', '10000000', 'important');
+        AdminSystem.adminIndicator.style.setProperty('position', 'fixed', 'important');
+        AdminSystem.adminIndicator.style.setProperty('top', '20px', 'important');
+        AdminSystem.adminIndicator.style.setProperty('left', '50%', 'important');
+        AdminSystem.adminIndicator.style.setProperty('transform', 'translateX(-50%)', 'important');
+        console.log('✅ 관리 모드 인디케이터 강제 표시됨');
+      }
     };
     
     // 맵 설정 관련 함수들
