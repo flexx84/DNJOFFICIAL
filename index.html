@@ -4158,5 +4158,120 @@ function setCookie( name, value, expiredays )
     `;
     document.head.appendChild(style);
   </script>
- </body>
-</html>
+  <!-- 최종 관리 모드 버튼 (인라인 스크립트) -->
+  <script>
+    console.log('최종 관리 모드 스크립트 시작');
+    
+    // 즉시 관리 모드 버튼 생성
+    function createFinalAdminButton() {
+      console.log('최종 관리 모드 버튼 생성 시작');
+      
+      // 기존 관리 모드 버튼들 모두 제거
+      const existingButtons = document.querySelectorAll('[id*="admin"], [id*="Admin"], [id*="button"]');
+      existingButtons.forEach(btn => {
+        if (btn.id && (btn.id.includes('admin') || btn.id.includes('Admin') || btn.id.includes('button'))) {
+          btn.remove();
+        }
+      });
+      
+      // 새로운 최종 버튼 생성
+      const finalButton = document.createElement('div');
+      finalButton.id = 'finalAdminButton';
+      finalButton.innerHTML = '🔧 관리모드';
+      finalButton.style.cssText = `
+        position: fixed !important;
+        top: 10px !important;
+        right: 10px !important;
+        background: #ff0000 !important;
+        color: white !important;
+        padding: 15px 20px !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        z-index: 9999999 !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 20px rgba(255,0,0,0.8) !important;
+        border: 3px solid white !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      `;
+      
+      finalButton.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('최종 관리 모드 버튼 클릭됨!');
+        
+        try {
+          const adminPanel = document.getElementById('adminMode');
+          const adminIndicator = document.getElementById('adminIndicator');
+          
+          if (!adminPanel) {
+            console.log('관리 모드 패널을 찾을 수 없습니다!');
+            alert('관리 모드 패널을 찾을 수 없습니다!');
+            return;
+          }
+          
+          if (adminPanel.style.display === 'none' || adminPanel.style.display === '') {
+            // 관리 모드 활성화
+            adminPanel.style.display = 'block';
+            adminPanel.style.zIndex = '9999999';
+            if (adminIndicator) {
+              adminIndicator.style.display = 'block';
+              adminIndicator.textContent = '관리 모드 활성화';
+            }
+            console.log('관리 모드 활성화됨!');
+            alert('관리 모드 활성화됨!');
+          } else {
+            // 관리 모드 비활성화
+            adminPanel.style.display = 'none';
+            if (adminIndicator) {
+              adminIndicator.style.display = 'none';
+            }
+            console.log('관리 모드 비활성화됨!');
+            alert('관리 모드 비활성화됨!');
+          }
+        } catch (error) {
+          console.error('관리 모드 토글 중 오류:', error);
+          alert('관리 모드 토글 중 오류: ' + error.message);
+        }
+      };
+      
+      // DOM에 추가
+      document.body.appendChild(finalButton);
+      console.log('최종 관리 모드 버튼 생성 완료!');
+      
+      // 버튼이 제대로 추가되었는지 확인
+      setTimeout(() => {
+        const checkButton = document.getElementById('finalAdminButton');
+        if (checkButton) {
+          console.log('최종 버튼이 정상적으로 존재합니다.');
+        } else {
+          console.log('최종 버튼이 사라졌습니다!');
+        }
+      }, 1000);
+    }
+    
+    // DOM 로드 완료 후 실행
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', createFinalAdminButton);
+    } else {
+      createFinalAdminButton();
+    }
+    
+    // 즉시 실행 (안전장치)
+    setTimeout(createFinalAdminButton, 100);
+    setTimeout(createFinalAdminButton, 500);
+    setTimeout(createFinalAdminButton, 1000);
+    
+    // 글로벌 함수 등록
+    window.finalAdmin = function() {
+      console.log('finalAdmin() 함수 호출됨');
+      createFinalAdminButton();
+    };
+    
+    console.log('최종 관리 모드 스크립트 완료');
+  </script>
+
+  </body>
+ </html>
