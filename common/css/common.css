@@ -1,0 +1,312 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap'); */
+/* 프리텐다드 폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-dynamic-subset.css');
+/* playfair 폰트 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/*============================================================================================================
+    리셋
+============================================================================================================*/
+*{outline:0!important; box-sizing:border-box;}
+html,body,h1,h2,h3,h4,h5,h6,div,p,blockquote,pre,code,address,ul,ol,li,menu,nav,section,article,aside,dl,dt,dd,table,thead,tbody,tfoot,label,caption,th,td,form,fieldset,legend,hr,input,button,textarea,object,figure,figcaption {margin:0;padding:0;}
+html,body{width:100%;}
+html{font-family:sans-serif;}
+body{width:100%;background:#fff;min-width:320px;-ms-text-size-adjust:100%;text-size-adjust:100%;-webkit-text-size-adjust:100%;word-wrap:break-word;word-break:keep-all;}
+body,input,select,textarea,button{border:none;font-size:12px;font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;color:#000;}
+ul,ol,li{list-style:none;}
+table{width:100%;border-spacing:0;border-collapse:collapse;}
+img,fieldset{width:100%;border:0;}
+address,cite,code,em{font-style:normal;font-weight:normal;}
+label,img,input,select,textarea,button{vertical-align:middle;}
+.hide,caption,legend{line-height:0;font-size:1px;overflow:hidden;}
+hr{display:none;}
+main,header,section,nav,footer,aside,article,figure{display:block;}
+a{color:#000; text-decoration:none;}
+img,svg {width:auto; max-width:100%;}
+/* Selection */
+::-moz-selection {background:rgba(255,0,0,0.3);}
+::selection {background:rgba(255,0,0,0.3);}
+
+/* Kakao Map */
+.root_daum_roughmap {width:100%!important; border-radius:0!important; border:none!important; padding:0!important;}
+.root_daum_roughmap .wrap_controllers {display:none!important;}
+
+/* Fonts */
+.montserrat {font-family:'Montserrat', sans-serif;}
+.thefaceshop {font-family:'THEFACESHOP INKLIPQUID';}
+.playfair {font-family:'Playfair Display', serif;}
+
+
+
+/*============================================================================================================
+    레이아웃
+============================================================================================================*/
+.inner {position:relative; max-width:1440px; width:100%; margin:0 auto; padding:0 20px;}
+.inner:after {display:block; clear:both; content:'';}
+.inner1960 {position:relative; max-width:1960px; width:100%; margin:0 auto; padding:0 20px;}
+.inner1960:after {display:block; clear:both; content:'';}
+
+.only_pc {display:block;}
+.only_m {display:none;}
+
+@media all and (max-width:768px){
+    .only_pc {display:none;}
+    .only_m {display:block;}
+}
+
+
+
+
+
+/*============================================================================================================
+    헤더
+============================================================================================================*/
+:root {
+    --header-height-:100px;
+
+    --toggle-height-: 20px;
+}
+
+
+.header {position:fixed; top:0; left:0; right:0; z-index:1000; padding:40px 0 0; background:transparent; transition:all 0.3s ease;}
+.header > div {display:flex; justify-content: space-between; align-items: center; max-width:1840px; height:var(--header-height-); margin:0 auto; padding:0 50px;}
+.header.scroll {background:rgba(0,0,0,0.15);}
+
+.header h1 {position:relative; z-index:1100; display:inline-flex; justify-content: center; align-items: flex-end; transition:all 0.3s ease;}
+ .header h1 a {display:block; width:auto; height:49px;}
+.header h1 a img {height:100%; width:auto; max-width:none; vertical-align:top;}
+
+
+.header .etc {position:relative; display:flex; float:right; z-index:5500;}
+.header .etcPC {display:flex;}
+.header .etcMO {display:none;}
+
+.header .etc .toggle { position: relative; display:flex; justify-content: center; align-items: center; width:95px; height:35px; transition:all 0.3s ease; border-radius:36px; -webkit-border-radius:36px; -moz-border-radius:36px; -ms-border-radius:36px; -o-border-radius:36px; z-index:15; -webkit-transition:all 0.3s ease; -moz-transition:all 0.3s ease; -ms-transition:all 0.3s ease; -o-transition:all 0.3s ease; overflow:hidden;}
+
+.header .etc .toggle p {position: relative; font-size:16px; font-weight:600; color:#fff; z-index:2;}
+.header .etc .toggle::before { content:''; position: absolute; left:0; right:0; bottom:0; width:100%; height:0; background:#000; transition:all 0.3s ease;}
+.header .etc .toggle .icon {position:relative; width:12px; height:12px; margin-right:6px;}
+.header .etc .toggle .icon span {position: absolute; height:1px; background:#fff;}
+.header .etc .toggle .icon span:nth-child(1) {width:12px; top:0px; left:0;}
+.header .etc .toggle .icon span:nth-child(2) {width:8px; top:5px; left:0;}
+.header .etc .toggle .icon span:nth-child(3) {width:12px; top:10px; left:0;}
+
+.header .etc ul { position: absolute; top:0; left:50%; transform-origin:top left; transform:scale(0) translate(-50%,0); width:193px; padding:68px 34px 34px; text-align:center; background:#fff; -webkit-transform:scale(0) translate(-50%,0); -moz-transform:scale(0) translate(-50%,0); -ms-transform:scale(0) translate(-50%,0); -o-transform:scale(0) translate(-50%,0); z-index:10; border-radius:48px; -webkit-border-radius:48px; -moz-border-radius:48px; -ms-border-radius:48px; -o-border-radius:48px; opacity:0; transition:all 0.5s ease; -webkit-transition:all 0.5s ease; -moz-transition:all 0.5s ease; -ms-transition:all 0.5s ease; -o-transition:all 0.5s ease; }
+.header .etc ul li {margin:0 0 7.5px;}
+.header .etc ul li:last-child {margin:0;}
+.header .etc ul li a {font-size:16px; font-weight:700; color:#000;}
+
+.header .etc .toggle.active::before {height:100%;}
+.header .etc ul.active { transform:scale(1) translate(-50%,-15px); -webkit-transform:scale(1) translate(-50%,-15px); -moz-transform:scale(1) translate(-50%,-15px); -ms-transform:scale(1) translate(-50%,-15px); -o-transform:scale(1) translate(-50%,-15px); opacity:1;}
+
+@media all and (max-width:1024px){
+    .header {padding:0;}
+    .header > div {padding:0 50px 0 20px;}
+    .header h1 a {height:45px;}
+
+    .header .etc .toggle {width:92px; height:32px; border-radius:36px; -webkit-border-radius:36px; -moz-border-radius:36px; -ms-border-radius:36px; -o-border-radius:36px;}
+    
+    .header .etc .toggle p {font-size:15px;}
+    .header .etc .toggle .icon {position:relative; width:12px; height:12px; margin-right:5px;}
+    .header .etc .toggle .icon span {position: absolute; height:1px; background:#fff;}
+    .header .etc .toggle .icon span:nth-child(1) {width:12px; top:0px; left:0;}
+    .header .etc .toggle .icon span:nth-child(2) {width:8px; top:5px; left:0;}
+    .header .etc .toggle .icon span:nth-child(3) {width:12px; top:10px; left:0;}
+
+    .header .etc ul { width:170px; padding:62px 25px 25px; border-radius:40px; -webkit-border-radius:40px; -moz-border-radius:40px; -ms-border-radius:40px; -o-border-radius:40px; }
+    .header .etc ul li {margin:0 0 6px;}
+    .header .etc ul li a {font-size:15px;}
+
+    .header .etc ul.active { transform:scale(1) translate(-50%,-12px); -webkit-transform:scale(1) translate(-50%,-12px); -moz-transform:scale(1) translate(-50%,-12px); -ms-transform:scale(1) translate(-50%,-12px); -o-transform:scale(1) translate(-50%,-12px);}
+}
+
+@media all and (max-width:768px){
+    :root {
+        --header-height-:80px;
+    
+        --toggle-height-: 20px;
+    }
+    .header {padding:0;}
+    .header > div {padding:0 35px 0 20px;}
+    .header h1 a {height:38px;}
+
+    .header .etc .toggle { width:90px; height:30px; border-radius:36px; -webkit-border-radius:36px; -moz-border-radius:36px; -ms-border-radius:36px; -o-border-radius:36px; }
+    
+    .header .etc .toggle p {font-size:14px; line-height:0.8;}
+    .header .etc .toggle .icon {position:relative; width:12px; height:12px; margin-right:5px;}
+    .header .etc .toggle .icon span {position: absolute; height:1px; background:#fff;}
+    .header .etc .toggle .icon span:nth-child(1) {width:12px; top:0px; left:0;}
+    .header .etc .toggle .icon span:nth-child(2) {width:8px; top:5px; left:0;}
+    .header .etc .toggle .icon span:nth-child(3) {width:12px; top:10px; left:0;}
+
+    .header .etc ul { width:148px; padding:50px 15px 15px; border-radius:28px; -webkit-border-radius:28px; -moz-border-radius:28px; -ms-border-radius:28px; -o-border-radius:28px; }
+    .header .etc ul li {margin:0 0 5px;}
+    .header .etc ul li a {font-size:13px;}
+
+    .header .etc ul.active { transform:scale(1) translate(-50%,-12px); -webkit-transform:scale(1) translate(-50%,-12px); -moz-transform:scale(1) translate(-50%,-12px); -ms-transform:scale(1) translate(-50%,-12px); -o-transform:scale(1) translate(-50%,-12px);}
+}
+
+
+@media all and (max-width:1024px){
+    .header .etcPC {display:none;}
+    .header .etcMO {display:flex;}
+
+}
+/*============================================================================================================
+    푸터
+============================================================================================================*/
+.footer {position: relative; padding:230px 0 0; background:#000;}
+.footer .goTop {position:absolute; left:calc(50% + 630px); bottom:68px; display:flex; flex-direction: row; align-content: center; justify-content: center; align-items: center; width:70px; height:70px; background:#000; border:1px solid #fff; z-index:2;}
+
+@media all and (max-width:1440px){
+    .footer .goTop {left:auto; right:20px;}
+}
+
+.footer .footerArt {margin:0 0 150px;}
+.footer .footerArt .flexBox {display:flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center;}
+.footer .footerArt .flexBox > div {width:50%;}
+
+.footer .footerArt .flexBox > .leftArea a {position: relative; display:block;}
+.footer .footerArt .flexBox > .leftArea a div h3 {position: relative; padding:0 135px 0 0; font-size:60px; font-weight:bold; letter-spacing:-2.2px; color:#000; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; z-index:3;}
+
+.footer .footerArt .flexBox > .leftArea a span {position: absolute; right:0; top:calc(50% - 104px); width:208px; height:208px; z-index:1;}
+.footer .footerArt .flexBox > .leftArea a span .bg { animation: deg360 10s linear 0s infinite; -webkit-animation: deg360 10s linear 0s infinite; }
+.footer .footerArt .flexBox > .leftArea a span .centerImg { position: absolute; left:50%; top:50%; transform:translate(-50%,-50%); -webkit-transform:translate(-50%,-50%); -moz-transform:translate(-50%,-50%); -ms-transform:translate(-50%,-50%); -o-transform:translate(-50%,-50%); }
+
+@keyframes deg360 {
+    0% {transform:rotate(0); -webkit-transform:rotate(0); -moz-transform:rotate(0); -ms-transform:rotate(0); -o-transform:rotate(0);}
+    100% {transform:rotate(360deg); -webkit-transform:rotate(360deg); -moz-transform:rotate(360deg); -ms-transform:rotate(360deg); -o-transform:rotate(360deg);}
+}
+
+
+.footer .footerArt .flexBox > .leftArea p {margin:18px 0 0; font-size:18px; font-weight:400; color:#fff;}
+
+.footer .footerArt .flexBox > .rightArea {padding:0 0 0 7.1%;}
+.footer .footerArt .flexBox > .rightArea .bdLine {padding:1px; border:8px solid #b1b1b1;}
+.footer .footerArt .flexBox > .rightArea .root_daum_roughmap .wrap_map {height:320px;}
+
+.footer .fgnbArt {position: relative; padding:40px 0 66px;}
+.footer .fgnbArt .inner:before {content:''; position: absolute; left:0; right:0; top:-40px; display:block; width:100%; height:1px; background:#333;}
+.footer .fgnbArt .flexBox {display:flex; flex-direction: row; flex-wrap: wrap; justify-content:flex-end; align-items: center;}
+.footer .fgnbArt .flexBox ul {display:flex; align-items: center;}
+.footer .fgnbArt .flexBox ul li {margin-right:18px;}
+.footer .fgnbArt .flexBox ul li:last-child {margin-right:0;}
+.footer .fgnbArt .flexBox ul li a {font-size:18px; font-weight:500; color:#fff;}
+
+.footer .fgnbArt .fAddress {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; margin:32px 0 0;}
+.footer .fgnbArt .fAddress li:nth-child(1) {margin:0 0 10px; width:100%;}
+.footer .fgnbArt .fAddress li {display:flex; padding:0 15px 0 0;}
+.footer .fgnbArt .fAddress li span {margin-right:10px; font-size:16px; font-weight:600; color:#999;}
+.footer .fgnbArt .fAddress li p {font-size:16px; font-weight:600; color:#fff;}
+.footer .fgnbArt .copyright {margin:40px 0 0; font-size:14px; font-weight:700; color:#515151;}
+
+
+@media all and (max-width:1024px){
+    .footer {padding:100px 0 0;}
+    .footer .goTop {bottom:68px; width:54px; height:54px;}
+    .footer .goTop img {height:28px;}
+
+    .footer .footerArt {margin:0 0 100px;}
+    .footer .footerArt .flexBox {display:flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center;}
+    .footer .footerArt .flexBox > div {width:50%;}
+    
+    .footer .footerArt .flexBox > .leftArea a div h3 {padding:0 80px 0 0; font-size:36px; letter-spacing:-2.2px; color:#000; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;}
+
+    .footer .footerArt .flexBox > .leftArea a span {position: absolute; right:0; top:calc(50% - 75px); width:150px; height:150px; z-index:1;}
+    .footer .footerArt .flexBox > .leftArea a span .bg { animation: deg360 10s linear 0s infinite; -webkit-animation: deg360 10s linear 0s infinite; }
+    .footer .footerArt .flexBox > .leftArea a span .centerImg {width:42px;}
+
+    .footer .footerArt .flexBox > .leftArea p {margin:12px 0 0; font-size:16px;}
+    
+    .footer .footerArt .flexBox > .rightArea {padding:0 0 0 4.6%;}
+    .footer .footerArt .flexBox > .rightArea .bdLine {border:5px solid #b1b1b1;}
+    .footer .footerArt .flexBox > .rightArea .root_daum_roughmap .wrap_map {height:280px;}
+
+    .footer .fgnbArt {padding:35px 0 50px;}
+    .footer .fgnbArt .inner:before {top:-35px;}
+    .footer .fgnbArt .flexBox ul li {margin-right:12px;}
+    .footer .fgnbArt .flexBox ul li:last-child {margin-right:0;}
+    .footer .fgnbArt .flexBox ul li a {font-size:14px;}
+    
+    .footer .fgnbArt .fAddress {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; margin:28px 0 0;}
+    .footer .fgnbArt .fAddress li:nth-child(1) {margin:0 0 8px; width:100%;}
+    .footer .fgnbArt .fAddress li {display:flex; padding:0 12px 0 0;}
+    .footer .fgnbArt .fAddress li span {margin-right:8px; font-size:15px;}
+    .footer .fgnbArt .fAddress li p {font-size:15px;}
+    .footer .fgnbArt .copyright {margin:30px 0 0; font-size:13px;}
+}
+
+@media all and (max-width:768px){
+    .footer {padding:80px 0 0;}
+    .footer .goTop {bottom:68px; width:54px; height:54px;}
+    .footer .goTop img {height:28px;}
+
+    .footer .footerArt {margin:0 0 60px;}
+    .footer .footerArt .flexBox {display:block;}
+    .footer .footerArt .flexBox > div {width:100%;}
+    
+    .footer .footerArt .flexBox > .leftArea {margin:0 0 50px;}
+    .footer .footerArt .flexBox > .leftArea a div h3 {padding:0 10vw 0 0; font-size:7.2vw; letter-spacing:-0.4vw; text-shadow: -0.2vw -0.2vw 0 #fff, 0.2vw -0.2vw 0 #fff, -0.2vw 0.2vw 0 #fff, 0.2vw 0.2vw 0 #fff;}
+
+    .footer .footerArt .flexBox > .leftArea a span {top:calc(50% - 60px); width:120px; height:120px;}
+    .footer .footerArt .flexBox > .leftArea a span .centerImg {width:40px;}
+
+    .footer .footerArt .flexBox > .leftArea p {margin:2.4vw 0 0; font-size:3.2vw;}
+    
+    .footer .footerArt .flexBox > .rightArea {padding:0;}
+    .footer .footerArt .flexBox > .rightArea .bdLine {border:5px solid #b1b1b1;}
+    .footer .footerArt .flexBox > .rightArea .root_daum_roughmap .wrap_map {height:200px;}
+
+    .footer .fgnbArt {padding:30px 0 45px;}
+    .footer .fgnbArt .inner:before {top:-30px;}
+    .footer .fgnbArt .flexBox ul li {margin-right:12px;}
+    .footer .fgnbArt .flexBox ul li:last-child {margin-right:0;}
+    .footer .fgnbArt .flexBox ul li a {font-size:14px;}
+    
+    .footer .fgnbArt .fAddress {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; margin:28px 0 0;}
+    .footer .fgnbArt .fAddress li:nth-child(1) {margin:0 0 8px; width:100%;}
+    .footer .fgnbArt .fAddress li {display:flex; padding:0 12px 0 0;}
+    .footer .fgnbArt .fAddress li span {margin-right:8px; font-size:15px;}
+    .footer .fgnbArt .fAddress li p {font-size:15px;}
+    .footer .fgnbArt .copyright {margin:30px 0 0; font-size:13px;}
+}
+
+@media all and (max-width:500px){
+    .footer {padding:16vw 0 0;}
+    .footer .goTop {bottom:14vw; width:12vw; height:12vw;}
+    .footer .goTop img {height:5.4vw;}
+
+    .footer .footerArt {margin:0 0 12vw;}
+    .footer .footerArt .flexBox {display:block;}
+    .footer .footerArt .flexBox > div {width:100%;}
+    
+    .footer .footerArt .flexBox > .leftArea {margin:0 0 12vw;}
+    .footer .footerArt .flexBox > .leftArea a div h3 {padding:0 10vw 0 0; font-size:7.2vw; letter-spacing:-0.4vw; text-shadow: -0.2vw -0.2vw 0 #fff, 0.2vw -0.2vw 0 #fff, -0.2vw 0.2vw 0 #fff, 0.2vw 0.2vw 0 #fff;}
+
+    .footer .footerArt .flexBox > .leftArea a span {top:calc(50% - 15vw); width:26vw; max-width:150px; height:26vw; max-height:150px;}
+    .footer .footerArt .flexBox > .leftArea a span .centerImg {max-width:42px; width:8vw;}
+
+    .footer .footerArt .flexBox > .leftArea p {margin:2.4vw 0 0; font-size:3.2vw;}
+    
+    .footer .footerArt .flexBox > .rightArea {padding:0;}
+    .footer .footerArt .flexBox > .rightArea .bdLine {border:1vw solid #b1b1b1;}
+    .footer .footerArt .flexBox > .rightArea .root_daum_roughmap .wrap_map {height:46vw; max-height:280px;}
+
+    .footer .fgnbArt {padding:7vw 0 10vw;}
+    .footer .fgnbArt .inner:before {top:-7vw;}
+    .footer .fgnbArt .flexBox ul li {margin-right:2.4vw;}
+    .footer .fgnbArt .flexBox ul li:last-child {margin-right:0;}
+    .footer .fgnbArt .flexBox ul li a {font-size:2.8vw;}
+    .footer .fgnbArt .flexBox ul li a img {width:5vw; max-width:26px;}
+    
+    .footer .fgnbArt .fAddress {display:block; margin:5.2vw 0 0;}
+    .footer .fgnbArt .fAddress li:nth-child(1) {margin:0 0 1.6vw; width:100%;}
+    .footer .fgnbArt .fAddress li {display:flex; margin:0 0 1.6vw; padding:0;}
+    .footer .fgnbArt .fAddress li span {margin-right:1.6vw; font-size:3vw;}
+    .footer .fgnbArt .fAddress li p {font-size:3vw;}
+    .footer .fgnbArt .copyright {margin:30px 0 0; font-size:13px;}
+}
+
+
+

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>크리에이티브그룹 아더</title>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="크리에이티브그룹 아더" />
+    <meta name="description" content="크리에이티브그룹 아더" />
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="크리에이티브그룹 아더">
+    <meta property="og:description" content="크리에이티브그룹 아더">
+    <meta property="og:image" content="/common/layout/Logo_color.png">
+
+    <!-- Chrome, Safari, IE  32*32  https://icoconvert.com/  -->
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <!-- Firefox, Opera (Chrome and Safari say thanks but no thanks) -->
+    <link rel="icon" type="image/png" href="favicon.png" sizes="192x192">
+    <!-- apple safari -->
+    <link rel="apple-touch-icon" type="image/png" href="favicon.png" sizes="180x180">
+    <link href="https://webfontworld.github.io/SCoreDream/SCoreDream.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/common/css/efront.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type='text/javascript' src="/comm/js/script.js"></script> <!-- 회원가입등 공통스크립트 -->
+    <script type="text/javascript" src="/common/js/jquery.fullpage.js"></script>
+    <script type='text/javascript' src="/common/js/swiper.js"></script>
+    <script type='application/json' src="/common/js/swiper.js.map"></script>
+    <script type='text/javascript' src='/common/js/common.js'></script>
+
+    <!-- 크로스브라우징 -->
+    <!--[if lt IE 9]>
+        <script src="/common/js/html5shiv.min.js"></script>
+        <![endif]-->
+
+</head>
+
+<body>
+
+    <header class="header">
+        <div>
+            <h1 class="montserrat"><a href="/"><img src="/common/img/layout/logo.png"
+                        alt="Creative group arthur 크리에이티브그룹아더"></a></h1>
+
+            <div class="etc etcPC montserrat">
+                <a href="javascript:void(0)" class="toggle togglePC">
+                    <div class="icon">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p>MENU</p>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/#section02">ABOUT</a>
+                    </li>
+                    <li>
+                        <a href="/#section03">WHAT WE DO</a>
+                    </li>
+                    <li>
+                        <a href="/#section04">PORTFOLIO</a>
+                    </li>
+                    <li>
+                        <a href="/#section05">RECRUIT</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="etc etcMO montserrat">
+                <a href="javascript:void(0)" class="toggle toggleMO">
+                    <div class="icon">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p>MENU</p>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/#section02">ABOUT</a>
+                    </li>
+                    <li>
+                        <a href="/#section03">WHAT WE DO</a>
+                    </li>
+                    <li>
+                        <a href="/#section04">PORTFOLIO</a>
+                    </li>
+                    <li>
+                        <a href="/#section05">RECRUIT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+<main class="main">
+    <section class="section section01">
+        <div class="parallax_wrap">
+
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <!--
+                    <div class="swiper-slide" data-swiper-autoplay="13200">
+                        <div class="bg">
+                            <video id="main_video" autoplay muted loop playsinline data-autoplay>
+                                <source src="/common/img/main/main_video1.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                    -->
+
+                    <div class="swiper-slide">
+                        <div class="txtArea montserrat">
+                            <h3>LET’S TRY <br><span>SOMETHING DIFFERENT</span></h3>
+                            <p class="sview01">"Our brand will be more delightful with ARTHUR"</p>
+                            <p class="sview02">"We sell emotional experiences, not products"</p>
+                            <p class="sview03">"We create a customer experience"</p>
+                        </div>
+                        <div class="bg01"></div>
+                    </div>
+                    <div class="swiper-slide" data-swiper-autoplay="8900">
+                        <div class="bg">
+                            <video id="main_video" autoplay muted loop playsinline data-autoplay>
+                                <source src="/common/img/main/main_video2.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scrollDiv">
+            <figure></figure>
+            <p class="montserrat">SCROLL DOWN</p>
+        </div>
+        <script>
+            //비주얼
+            var vsSwiper = new Swiper('.main .section01 .swiper-container', {
+                spaceBetween: 0,
+                loop: true,
+                speed: 1500,
+                effect: "fade",
+                centeredSlides: true,
+                allowTouchMove: false,
+                autoplay: {
+                    delay: 8000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                on: {
+                    // 비디오 처음부터 시작하게 하기
+                    transitionStart: function () {
+
+                        var videos = document.querySelectorAll('video');
+
+                        Array.prototype.forEach.call(videos, function (video) {
+                            //   video.pause(0);
+                            video.currentTime = 0;
+                        });
+                    }
+                }
+            });
+        </script>
+    </section><!-- //section01 끝 -->
+
+    <section class="section section02 animatedParent animateOnce">
+        <div class="parallax_wrap">
+            <div class="inner">
+                <h2 class="mTit animated fadeInUpShort delay-250">ABOUT <span class="playfair">Arthur</span></h2>
+                <div class="flexBox">
+                    <div class="leftArea">
+                        <p class="animated fadeInUpShort delay-500">일하는 것이 <span
+                                class="red animated fadeInUpShort delay-650">쬐끔</span> 즐거울 수 있고 </p>
+                        <p class="animated fadeInUpShort delay-750">일하는 곳이 <span
+                                class="red animated fadeInUpShort delay-900">그리</span> 밉지 않고 </p>
+                        <p class="animated fadeInUpShort delay-1000">웃음을 <span
+                                class="red animated fadeInUpShort delay-1150">가끔</span> 지을 수 있게 하는</p>
+                    </div>
+                    <div class="rightArea animated fadeInUpShort delay-1000">
+                        <h5>‘긍정감성’ 을 최우선 가치로 소중하게 생각하는 BTL 솔루션 에이전시</h5>
+                        <p>아더의 ‘긍정감성’은 트렌디 콘텐츠와 크리에이티브로 <br>클라이언트에게 최상의 BTL 솔루션을 제시하여 고객들에게 일상의 색다른 경험을 디자인합니다.</p>
+                    </div>
+                </div>
+                <div class="bottomUl">
+                    <ul>
+                        <li class="animated fadeInUpShort delay-250">
+                            <svg viewBox="0 0 194 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z"
+                                    stroke="white" stroke-width="1" />
+                            </svg>
+                            <p>시각적 디자인</p>
+                        </li>
+                        <li class="animated fadeInUpShort delay-500">
+                            <svg viewBox="0 0 194 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z"
+                                    stroke="white" stroke-width="1" />
+                            </svg>
+                            <p>공감과 참여</p>
+                        </li>
+                        <li class="animated fadeInUpShort delay-750">
+                            <svg viewBox="0 0 194 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z"
+                                    stroke="white" stroke-width="1" />
+                            </svg>
+                            <p>차별화된 콘텐츠</p>
+                        </li>
+                        <li class="animated fadeInUpShort delay-1000">
+                            <svg viewBox="0 0 194 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z"
+                                    stroke="white" stroke-width="1" />
+                            </svg>
+                            <p>바이럴 확대</p>
+                        </li>
+                        <li class="animated fadeInUpShort delay-1250">
+                            <svg viewBox="0 0 194 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z"
+                                    stroke="white" stroke-width="1" />
+                            </svg>
+                            <p>리뷰와 후기</p>
+                        </li>
+                    </ul>
+                    <h4 class="animated fadeInUpShort delay-1500">아더 솔루션의 5가지 크리에이티브 핵심요소</h4>
+                </div>
+            </div>
+        </div>
+        <div class="bgTxt">
+            <p class="bgtxt_motion1"><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE
+                    GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP
+                    ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE
+                    GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP
+                    ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE
+                    GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP
+                    ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE
+                    GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP
+                    ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span><span>CREATIVE
+                    GROUP ARTHUR</span><span>CREATIVE GROUP ARTHUR</span></p>
+        </div>
+    </section><!-- //section02 끝 -->
+
+    <section class="section section03">
+        <div class="parallax_wrap">
+            <ul class="sec03List animatedParent animateOnce">
+                <li>
+                    <a href="/company/our_work01.php">
+                        <div class="txtBox">
+                            <h5 class="montserrat animated fadeInUpShort delay-250">Connected</h5>
+                            <h2 class="montserrat animated fadeInUpShort delay-500">CUSTOMER <br>EXPERIENCE</h2>
+                            <ul>
+                                <li>#Popup store</li>
+                                <li>#Brand store</li>
+                                <li>#Brand Exhibition</li>
+                                <li>#OOH</li>
+                            </ul>
+                        </div>
+                    </a>
+                    <figure class="bg"></figure>
+                </li>
+                <li>
+                    <a href="/company/our_work02.php">
+                        <div class="txtBox">
+                            <h5 class="montserrat animated fadeInUpShort delay-500">Connected</h5>
+                            <h2 class="montserrat animated fadeInUpShort delay-750">AUTOMOBILE <br>MARKETING</h2>
+                            <ul>
+                                <li>#Mobility show</li>
+                                <li>#Auto Exhibition</li>
+                                <li>#Test Drive</li>
+                                <li>#Loyalty Event</li>
+                                <li>#Launching show</li>
+                            </ul>
+                        </div>
+                    </a>
+                    <figure class="bg"></figure>
+                </li>
+                <li>
+                    <a href="/company/our_work03.php">
+                        <div class="txtBox">
+                            <h5 class="montserrat animated fadeInUpShort delay-750">Connected</h5>
+                            <h2 class="montserrat animated fadeInUpShort delay-1000">SHOW <br>PERFORMANCE</h2>
+                            <ul>
+                                <li>#Brand Party</li>
+                                <li>#Gala Dinner</li>
+                                <li>#Award</li>
+                                <li>#Ceremoney</li>
+                                <li>#Festival</li>
+                            </ul>
+                        </div>
+                    </a>
+                    <figure class="bg"></figure>
+                </li>
+                <li>
+                    <a href="/company/our_work04.php">
+                        <div class="txtBox">
+                            <h5 class="montserrat animated fadeInUpShort delay-1000">Connected</h5>
+                            <h2 class="montserrat animated fadeInUpShort delay-1250">GOODS & <br>COLLABORATION</h2>
+                            <ul>
+                                <li>#Goods</li>
+                                <li>#Collaboration</li>
+                                <li>#Diesgn</li>
+                                <li>#VMD</li>
+                                <li>#Giveaway</li>
+                            </ul>
+                        </div>
+                    </a>
+                    <figure class="bg"></figure>
+                </li>
+            </ul>
+        </div>
+    </section><!-- //section03 끝 -->
+
+    <section class="section section04 animatedParent animateOnce">
+        <div class="parallax_wrap">
+            <div class="inner">
+                <div class="flexBox">
+                    <div class="leftArea">
+                        <h2 class="mTit animated fadeInUpShort delay-250">PORTFOLIO</h2>
+                    </div>
+                    <div class="rightArea">
+                        <div class="swiper-button-prev animated fadeInUpShort delay-500"></div>
+                        <div class="swiper-button-next animated fadeInUpShort delay-750"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="rightInner animated fadeInUpShort delay-750">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+
+                        
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2312110007&catcode=14000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2312110007_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>Upgraded Polestar2 Test Drive</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2312110004&catcode=14000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2312110004_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG엔솔 x아이오닉6 극적캠핑 </h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2312110003&catcode=14000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2312110003_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>Polestar 2 on tour</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2312110002&catcode=14000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2312110002_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>SIERRA VIP PARTY</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030011&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030011_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG전자 어나더바이브 @장충 @버들 @선유</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030010&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030010_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG전자 어나더바이브 @합정</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030009&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030009_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG전자 어나더바이브 @양재</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030008&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030008_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>비비고x옥동식 ′곰탕 브루어리′</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030007&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030007_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG올레드 금성오락실 시즌3</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030003&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030003_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>메르세데츠벤츠 The new C-Class Launching</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030002&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030002_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>bibigo ′따뜻한식당′</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302030001&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302030001_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>세계가스총회 2022 SK E&S관</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302020006&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302020006_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>LG올레드 금성오락실 시즌2</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302020005&catcode=13000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302020005_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>Polestar2 Pop-up_2Q</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <a href="/portfolio/portfolio_list.php?ptype=view&prdcode=2302020001&catcode=12000000">
+                                <figure>
+                                    <img src="/common/img/main/sec04_bg.png" alt=""
+                                        style="background:url('/admin/data/product2/2302020001_R.jpg') no-repeat center/cover">
+                                </figure>
+                                <div class="txtBox">
+                                    <h3>조니워커 ′Keep Walking Day′</h3>
+                                    <p></p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div> <!-- swiper-container 끝 -->
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="mainBtn">
+                <a href="/portfolio/portfolio_list.php"><span></span><p>view case</p></a>
+            </div>
+        </div>
+        <script>
+            // section02 슬라이드
+            var noticeSwiper = new Swiper('.main .section04 .swiper-container', {
+                slidesPerView: "1.4",
+                spaceBetween: 10,
+                loop: true,
+                speed: 1000,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.main .section04 .swiper-button-next',
+                    prevEl: '.main .section04 .swiper-button-prev',
+                },
+                pagination: {
+                    el: '.main .section04 .swiper-pagination',
+                    type: 'progressbar',
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: "2",
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: "2.6",
+                        spaceBetween: 30,
+                    },
+                    1200: {
+                        slidesPerView: "3",
+                        spaceBetween: 30,
+                    },
+                },
+            });
+        </script>
+    </section><!-- //section04 끝 -->
+
+    <section class="section section05">
+
+        <div class="parallax_wrap">
+            <div class="inner">
+                <div class="flexBox animatedParent animateOnce">
+                    <div class="leftArea">
+                        <h2 class="mTit animated fadeInUpShort delay-250">RECRUIT</h2>
+                        <h4 class="animated fadeInUpShort delay-500">아더는 <span>도전을 꿈꾸는 열정을 가진 <br>기획자들의 공간</span>입니다.
+                        </h4>
+                        <div class="mainBtn">
+                            <a href="javascript:void(0)" class="popup_open animated fadeInUpShort delay-750" rel="contactus"><span></span><p>view case</p></a>
+                        </div>
+                    </div>
+                    <div class="rightArea">
+                        <div class="redC">
+                            <div class="stroke animated fadeInUpShort delay-500"></div>
+                            <div class="fillD animated fadeInUpShort delay-600"></div>
+                        </div>
+                        <ul>
+                            <li>
+                                <span class="animated fadeInUpShort delay-600">채용제도</span>
+                                <p class="animated fadeInUpShort delay-650">공개채용 + 수시채용</p>
+                            </li>
+                            <li>
+                                <span class="animated fadeInUpShort delay-750">채용방법</span>
+                                <p class="animated fadeInUpShort delay-800">E-mail(arthur@arthur.co.kr)</p>
+                            </li>
+                            <li>
+                                <span class="animated fadeInUpShort delay-900">채용대상</span>
+                                <p class="animated fadeInUpShort delay-950">신입 / 경력직 (포트폴리오 첨부)</p>
+                            </li>
+                            <li>
+                                <span class="animated fadeInUpShort delay-1050">지원자격</span>
+                                <p class="animated fadeInUpShort delay-1100">대학교 졸업 학력, 병역 필 및 면제자 (남자) <br>해외여행의 결격사유가
+                                    없는자 <br>외국어 능력 우대</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mask_ball">
+            <div class="ball01"></div>
+            <div class="ball02"></div>
+            <div class="ball03"></div>
+        </div>
+    </section><!-- section05 불러오기 끝 -->
+
+    <section class="section section06">
+
+        <div class="parallax_wrap">
+            <div class="footerSection"></div>
+        </div>
+    </section><!-- //inc/footer footerSection 불러오기 끝 -->
+</main>
+        <div class="popup" style="display: none;">
+            <div class="bg popup_close"></div>
+            <div class="cont">
+            <a href="javascript:void(0)" class="boxinClose popup_close"></a>
+                <div id="contactus">
+                    <div class="flexTop">
+                        <figure><img src="/common/img/main/sec05_popIcon.png" alt=""></figure>
+                        <h2 class="montserrat">RECRUIT</h2>
+                    </div>
+                    <ul>
+                        <li>
+                            <div class="popSubTit">
+                                <h4>채용안내</h4>
+                                <p>(공개채용 <span>+</span> 수시채용)</p>
+                            </div>
+                            <p>크리에이티브그룹 아더는 정기적으로 인력채용을 하는 공개채용과 수시로 필요한 신입/경력직 인력을 채용하는 수시채용을 진행하고 있습니다. <br>BTL트렌드를 리딩하고 싶은 분들은 언제나 아더에 노크하시길 바랍니다.</p>
+                        </li>
+                        <li>
+                            <div class="popSubTit">
+                                <h4>인재등록</h4>
+                            </div>
+                            <p>크리에이티브그룹 아더는 입사를 희망하는 분들이 이력서를 미리 작성하여 보내주시면 인사담당자가 본사 결원 발생시 우선적으로 검토하는 시스템을 운영합니다. <br>이에 arthur@arthur.co.kr 로 보내주시면 결원 발생시 우선적으로 서류 심사 대상이 됩니다.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+<script>
+    //풀페이지 푸터 사용
+    $(document).ready(function () {
+        $('.main').fullpage({
+            navigation: false,
+            scrollingSpeed: 1500,
+            sectionSelector: '.section',
+            slideSelector: '.fullPageSlide',
+            // responsive: 768,
+            anchors: ['section01', 'section02', 'section03', 'section04', 'section05', 'section06']
+        });
+        var footerSection = $('#footer');
+        $('.footerSection').html(footerSection);
+    });
+
+    $(document).ready(function () {
+        $('.popup_open').click(function () {
+            $('.popup .cont > div').hide();
+            var activePopup = $(this).attr('rel');
+
+            $('.popup').fadeIn();
+            $('.popup .cont > div#' + activePopup).fadeIn();
+
+            var popupWidth = $('.popup .cont').outerWidth();
+            var popupHeight = $('.popup .cont').outerHeight();
+
+            $('.popup .cont').css({
+                'left': ($(window).width() - popupWidth) / 2,
+                'top': ($(window).height() - popupHeight) / 2
+            });
+
+            $(window).resize(function () {
+                var popupWidth = $('.popup .cont').outerWidth();
+                var popupHeight = $('.popup .cont').outerHeight();
+
+                $('.popup .cont').css({
+                    'left': ($(window).width() - popupWidth) / 2,
+                    'top': ($(window).height() - popupHeight) / 2
+                });
+            });
+        });
+
+        $('.popup_close').click(function () {
+            $('.popup').fadeOut();
+        });
+        /* 팝업 클릭시 배경 컨텐츠 스크롤 방지 */
+        $(document).ready(function () {
+            $('.popup_open').click(function () {
+                $('body').css({
+                    overflow: 'hidden'
+                });
+            });
+
+            $('.popup_close').click(function () {
+                $('body').css({
+                    overflow: 'visible'
+                });
+            });
+        });
+    });
+</script>
+
+<!--                ### 팝업 시작 ###            -->
+<script language="javascript">
+<!--
+function readCookie(cookiename)
+{
+ var Found = false;
+
+ cookiedata = document.cookie;
+ if ( cookiedata.indexOf(cookiename) >= 0 ){
+   Found = true;
+ }
+
+ return Found;
+}
+
+function setCookie( name, value, expiredays )
+{
+ var todayDate = new Date();
+ todayDate.setDate( todayDate.getDate() + expiredays );
+ document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + todayDate.toGMTString() + ";"
+}
+//-->
+</script>
+<!--                ### 팝업 끝 ###            -->        <footer class="footer animatedParent animateOnce" id="footer">
+                        <a href="#section01" class="goTop">
+                <img src="/common/img/layout/go_top_icon.png" alt="상단 이동">
+            </a>
+                        <article class="footerArt">
+                <div class="inner">
+                    <div class="flexBox">
+                        <div class="leftArea animated fadeInUpShort delay-250">
+                            <a href="mailto:arthur@arthur.co.kr" class="popup_open" rel="contactForm">
+                                <div>
+                                    <h3 class="montserrat">Let's Get in Touch</h3>
+                                </div>
+                                <span>
+                                    <div class="bg">
+                                        <img src="/common/img/layout/foot_goCircle.png" alt="">
+                                    </div>
+                                    <img src="/common/img/layout/foot_goicon.png" alt="" class="centerImg">
+                                </span>
+
+                                <p class="animated fadeInUpShort delay-500">프로젝트 의뢰하기</p>
+                            </a>
+                        </div>
+                        <div class="rightArea animated fadeInUpShort delay-500">
+                            <div class="bdLine">
+                                <div id="daumRoughmapContainer1673836719953"
+                                    class="root_daum_roughmap root_daum_roughmap_landing" style="width:100%;"></div>
+
+                                <script charset="UTF-8" class="daum_roughmap_loader_script"
+                                    src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script>
+
+                                <!-- 3. 실행 스크립트 -->
+                                <script charset="UTF-8">
+                                    new daum.roughmap.Lander({
+                                        "timestamp": "1673836719953",
+                                        "key": "2dfn8",
+                                    }).render();
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="fgnbArt">
+                <div class="inner">
+                    <div class="flexBox">
+                        <ul class="animated fadeInUpShort delay-250">
+                            <li>
+                                <a href="https://www.facebook.com/2013arthur" target="_blank"><img
+                                        src="/common/img/layout/foot_icon_facebook.png" alt=""></a>
+                            </li>
+                            <li>
+                                <a href="">개인정보처리방침</a>
+                            </li>
+                            <!--<li>
+                                <a href=""><img src="/common/img/layout/foot_icon_twit.png" alt=""></a>
+                            </li>
+                            <li>
+                                <a href=""><img src="/common/img/layout/foot_icon_instar.png" alt=""></a>
+                            </li>-->
+                        </ul>
+                    </div>
+                    <ul class="fAddress animated fadeInUpShort delay-500">
+                        <li>
+                            <span class="montserrat">Address</span>
+                            <p>서울특별시 서초구 신반포로322 언주빌딩 3층</p>
+                        </li>
+                        <li>
+                            <span class="montserrat">Tel</span>
+                            <p class="montserrat">02-6258-0100</p>
+                        </li>
+                        <li>
+                            <span class="montserrat">Fax</span>
+                            <p class="montserrat">02-6258-0111</p>
+                        </li>
+                        <li>
+                            <span class="montserrat">Email</span>
+                            <p class="montserrat">arthur@arthur.co.kr</p>
+                        </li>
+                    </ul>
+                    <p class="copyright montserrat animated fadeInUpShort delay-750">© CreativeGroupArthur. All Rights
+                        Reserved.</p>
+                </div>
+            </article>
+
+        </footer>
+        <script type='text/javascript' src='/common/js/css3-animate.js'></script>
+        <script type='text/javascript' src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+        </body>
+
+        </html>

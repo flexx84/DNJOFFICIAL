@@ -1,0 +1,384 @@
+@charset "utf-8";
+/*============================================================================================================
+    공통
+============================================================================================================*/
+
+/* 비주얼 */
+.visual {position: relative; height:100vh; overflow:hidden;}
+
+.visual .bg { position:absolute; left:0; right:0; top:0; bottom:0; display:block; width:100%; height:100%; transform:scale(1.1) rotate(0.001deg); transition:all 2s ease-out; -webkit-transition:all 2s ease-out; -moz-transition:all 2s ease-out; -ms-transition:all 2s ease-out; -o-transition:all 2s ease-out; -webkit-transform:scale(1.1) rotate(0.001deg); -moz-transform:scale(1.1) rotate(0.001deg); -ms-transform:scale(1.1) rotate(0.001deg); -o-transform:scale(1.1) rotate(0.001deg); }
+.visual .bg.go {transform: scale(1) rotate(0.001deg); -webkit-transform: scale(1) rotate(0.001deg); -moz-transform: scale(1) rotate(0.001deg); -ms-transform: scale(1) rotate(0.001deg); -o-transform: scale(1) rotate(0.001deg);}
+
+.visual .txtBox { position: absolute; left:0; right:0; top:47%; transform:translate(0,-50%); max-width:1440px; margin:0 auto; padding:0 20px; text-align:left; -webkit-transform:translate(0,-50%); -moz-transform:translate(0,-50%); -ms-transform:translate(0,-50%); -o-transform:translate(0,-50%); }
+
+/* 비주얼 스크롤 */
+.visual .scrollDiv {position: absolute; bottom:0; right:calc(50% + 700px); z-index:10;}
+
+.visual .scrollDiv figure {position: relative; width:1px; height:70px; background:rgba(0,0,0,0.4);}
+.visual .scrollDiv figure:before { content:''; position: absolute; top:0; left:0; width:1px; height:0; background:#fff; -webkit-animation-name: height100; animation-name: height100; animation-iteration-count: infinite; -webkit-animation-duration: 3s; animation-duration: 3s; -webkit-animation-fill-mode: both; animation-fill-mode: both; animation-delay:0s; -webkit-animation-delay:0s;}
+.visual .scrollDiv p { position: absolute; transform-origin:50% 50%; top:-62px; left:-50px; font-size:11[x]; color:#fff; width:100px; transform:rotate(-90deg); -webkit-transform:rotate(-90deg); -moz-transform:rotate(-90deg); -ms-transform:rotate(-90deg); -o-transform:rotate(-90deg); }
+
+/* 타이틀 */
+.title {position: relative; margin:0 0 95px; padding:150px 0 0; text-align:center;}
+.title:before {content:''; position:absolute; left:0; right:0; top:0; width:100%; height:200%; background:#000; z-index:-1;}
+.title h2 {font-size:60px; font-weight:700; color:#fff;}
+.title h2 span.lineTxt {-webkit-text-stroke:1px #fff; color:transparent;}
+
+@media all and (max-width:1440px){
+    .visual .scrollDiv {right:auto; left:20px;}
+}
+
+@media all and (max-width:1024px){
+    .visual {height:80vh;}
+    .visual .txtBox {top:50%;}
+
+    .visual .scrollDiv figure {width:1px; height:50px;}
+    .visual .scrollDiv figure:before {width:1px;}
+    .visual .scrollDiv p { position: absolute; transform-origin:50% 50%; top:-62px; left:-50px; font-size:10px; width:100px;}
+    /* 타이틀 */
+    .title {margin:0 0 70px; padding:100px 0 0;}
+    .title:before {height:180%;}
+    .title h2 {font-size:42px;}
+}
+
+@media all and (max-width:768px){
+    .visual {height:65vh;}
+    .visual .scrollDiv figure {width:1px; height:10vw;}
+    .visual .scrollDiv figure:before {width:1px;}
+    .visual .scrollDiv p { position: absolute; transform-origin:50% 50%; top:-12.4vw; left:-10vw; font-size:2.2vw; width:20vw;}
+    /* 타이틀 */
+    .title {margin:0 0 12vw; padding:18vw 0 0;}
+    .title:before {height:180%;}
+    .title h2 {font-size:8vw;}
+}
+
+/* ///////////////////////// WHAT WE DO ///////////////////////// */
+.our_work .visual .txtBox h4 {margin:0 0 8px; font-size:48px; font-family:'Montserrat'; line-height:1.2; font-weight:bold; -webkit-text-stroke:0.5px #fff0ba; color:transparent;}
+.our_work .visual .txtBox h3 {margin:0 0 5px; padding:0 0 0 7px; font-size:48px;  font-family:'Montserrat'; line-height:1.2; letter-spacing:-1px; font-weight:bold; -webkit-text-stroke:0.7px #ffc600; color:transparent;}
+.our_work .visual .txtBox h2 {letter-spacing:-2px; text-transform:uppercase; line-height:1.5; font-size:0; font-weight:bold; color:#fff;}
+.our_work .visual .txtBox h2 span {letter-spacing:-6px; font-size:158px; text-transform:uppercase; font-family:'Montserrat'; line-height:1; font-weight:bold; color:#fff; opacity:0;}
+.our_work .visual .txtBox h2 span.sTxt {font-size:130px;}
+.our_work .visual .txtBox h2 span.go {-webkit-animation-name: titleShow; animation-name: titleShow; }
+
+@keyframes titleShow {
+    0% {
+        opacity:0;
+        filter: blur(3px);
+        -webkit-filter: blur(3px);
+    }
+    100% {
+        opacity:1;
+        filter: blur(0);
+        -webkit-filter: blur(0);
+    }
+}
+
+.our_work .article01 {position: relative; padding:128px 0 185px; text-align:center;}
+.our_work .article01 .sLnb {display:flex; text-align: center; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; padding:0 0 165px; text-align:center;}
+.our_work .article01 .sLnb li {padding:0 38px;}
+.our_work .article01 .sLnb li:first-child {padding-left:0;}
+.our_work .article01 .sLnb li:last-child {padding-right:0;}
+.our_work .article01 .sLnb li a {display:inline-block; padding:0 0 2px; font-size:20px; font-weight:500; color:#464646;}
+.our_work .article01 .sLnb li.active a {color:#e61c23; border-bottom:2px solid #e61c23;}
+
+.our_work .article01 h2 {font-size:86px; line-height:1.3;}
+.our_work .article01 h2 span {font-size:102px;  line-height:0.8; font-weight:bold;-webkit-text-stroke:1px #ff0000; color:transparent;}
+.our_work .article01 p {margin:80px 0 0; font-size:20px; font-weight:500; line-height:1.9; color:#000;}
+
+.our_work .article02 {padding:105px 0 24px; background:#000;}
+.our_work .article02 h2.art02Tit {position: relative; display:block; max-width:1400px; padding:72px 0 0 84px; margin:0 auto; font-size:60px; line-height:0.8; font-weight:800; color:#fff;}
+.our_work .article02 h2.art02Tit:before {content:'02'; position: absolute; left:0; top:0; font-size:24px; font-family:'Montserrat'; letter-spacing:2px; color:#fff;}
+.our_work .article02 h2.art02Tit:after { content:''; position: absolute; left:55px; top:35px; transform:rotate(-45deg); width:1px; height:30px; background:#fff; -webkit-transform:rotate(-45deg); -moz-transform:rotate(-45deg); -ms-transform:rotate(-45deg); -o-transform:rotate(-45deg); }
+
+.our_work .article02 ul {display:flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; margin:85px 0 0;}
+.our_work .article02 ul li {width:calc(100% / 2);}
+.our_work .article02 ul li a {position: relative; display:block;}
+.our_work .article02 ul li a figure img {background-repeat:no-repeat; background-position:center; background-size:cover;}
+.our_work .article02 ul li a .txtBox { position:absolute; top:10px; left:10px; bottom:10px; right:10px; display:flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; width:calc(100% - 20px); height:calc(100% - 20px); padding:40px; background:rgba(0,0,0,0.6); transition:all 0.3s linear; opacity:0; -webkit-transition:all 0.3s linear; -moz-transition:all 0.3s linear; -ms-transition:all 0.3s linear; -o-transition:all 0.3s linear; }
+.our_work .article02 ul li a .txtBox h2 {font-size:18px; font-weight:400; text-align:center; color:#fff;}
+.our_work .article02 ul li:hover a .txtBox {opacity:1;}
+
+@media all and (max-width:1480px){
+    .our_work .visual .txtBox h2 span {letter-spacing:-3px; font-size:120px;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:88px;}
+}
+
+@media all and (max-width:1160px){
+    .our_work .visual .txtBox h2 span {letter-spacing:-3px; font-size:100px;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:88px;}
+    
+    .our_work .article01 .sLnb li {padding:0 22px;}
+    
+    .our_work .article01 p br {display:none;}
+}
+
+@media all and (max-width:1024px){
+    .our_work .visual .txtBox h4 {margin:0 0 6px; font-size:32px;}
+    .our_work .visual .txtBox h3 {margin:0 0 5px; padding:0 0 0 5px; font-size:32px; letter-spacing:-1px; -webkit-text-stroke:0.7px #ffc600;}
+    .our_work .visual .txtBox h2 {letter-spacing:-2px;}
+    .our_work .visual .txtBox h2 span {letter-spacing:-3px; font-size:88px;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:68px;}
+
+    .our_work .article01 {padding:100px 0 120px;}
+    .our_work .article01 .sLnb {padding:0 0 120px;}
+    .our_work .article01 .sLnb li {padding:0 18px;}
+    .our_work .article01 .sLnb li:first-child {padding-left:0;}
+    .our_work .article01 .sLnb li:last-child {padding-right:0;}
+    .our_work .article01 .sLnb li a {padding:0 0 2px; font-size:18px;}
+    .our_work .article01 .sLnb li.active a {border-bottom:2px solid #e61c23;}
+    
+    .our_work .article01 h2 {font-size:52px;}
+    .our_work .article01 h2 span {font-size:70px;}
+    .our_work .article01 p {margin:55px 0 0; font-size:18px;}
+
+    .our_work .article02 {padding:80px 0 20px;}
+    .our_work .article02 h2.art02Tit {padding:40px 0 0 40px; font-size:38px;}
+    .our_work .article02 h2.art02Tit:before {font-size:20px; letter-spacing:2px;}
+    .our_work .article02 h2.art02Tit:after { content:''; position: absolute; left:35px; top:20px; transform:rotate(-45deg); width:1px; height:15px;}
+
+    .our_work .article02 ul {margin:65px 0 0;}
+    .our_work .article02 ul li {width:calc(100% / 2);}
+    .our_work .article02 ul li a {position: relative; display:block;}
+    .our_work .article02 ul li a .txtBox { position:absolute; top:8px; left:8px; bottom:8px; right:8px; width:calc(100% - 16px); height:calc(100% - 16px); padding:20px;}
+    .our_work .article02 ul li a .txtBox h2 {font-size:16px;}
+}
+
+@media all and (max-width:890px){
+    .our_work .article01 {padding:80px 0 100px;}
+    .our_work .article01 .sLnb {flex-wrap: wrap;}
+    .our_work .article01 .sLnb li {width:50%; padding:5px 0;}
+    .our_work .article01 .sLnb li:first-child {padding-left:0;}
+    .our_work .article01 .sLnb li:last-child {padding-right:0;}
+    .our_work .article01 .sLnb li a {padding:0 0 2px; font-size:18px;}
+    .our_work .article01 .sLnb li.active a {border-bottom:2px solid #e61c23;}
+
+}
+@media all and (max-width:840px){
+    .our_work .visual .txtBox h2 span {letter-spacing:-4px; font-size:78px;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:60px;}
+
+}
+
+@media all and (max-width:768px){
+    .our_work .visual .txtBox h4 {margin:0 0 1.2vw; font-size:6vw;}
+    .our_work .visual .txtBox h3 {margin:0 0 1vw; padding:0 0 0 1vw; font-size:6vw; letter-spacing:-0.2vw; -webkit-text-stroke:0.14vw #ffc600;}
+    .our_work .visual .txtBox h2 {letter-spacing:-0.4vw;}
+    .our_work .visual .txtBox h2 span {letter-spacing:-0.6vw; font-size:9.8vw;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:7.2vw;}
+
+    .our_work .article01 {padding:10vw 0 12vw;}
+    .our_work .article01 .sLnb {flex-wrap: wrap; padding:0 0 12vw;}
+    .our_work .article01 .sLnb li {width:50%; padding:1vw 0;}
+    .our_work .article01 .sLnb li:first-child {padding-left:0;}
+    .our_work .article01 .sLnb li:last-child {padding-right:0;}
+    .our_work .article01 .sLnb li a {padding:0 0 0.4vw; font-size:3.4vw;}
+    .our_work .article01 .sLnb li.active a {border-bottom:0.4vw solid #e61c23;}
+    
+    .our_work .article01 h2 {font-size:8vw;}
+    .our_work .article01 h2 span {font-size:10vw; -webkit-text-stroke: 0.2vw #ff0000;}
+    .our_work .article01 p {margin:9vw 0 0; font-size:3.2vw;}
+
+
+
+    .our_work .article02 {padding:12vw 0 4vw;}
+    .our_work .article02 h2.art02Tit {padding:4.8vw 0 0; font-size:6.5vw;}
+    .our_work .article02 h2.art02Tit:before {font-size:3.2vw; letter-spacing:0.4vw;}
+    .our_work .article02 h2.art02Tit:after {display:none;}
+    .our_work .article02 ul {margin:8vw 0 0;}
+    .our_work .article02 ul li {width:100%;}
+    .our_work .article02 ul li a {position: relative; display:block;}
+    .our_work .article02 ul li a .txtBox { position:absolute; top:1.6vw; left:1.6vw; bottom:1.6vw; right:1.6vw; width:calc(100% - 3.2vw); height:calc(100% - 3.2vw); padding:4vw;}
+    .our_work .article02 ul li a .txtBox h2 {font-size:3.2vw;}
+}
+
+@media all and (max-width:500px){
+    .our_work .visual .txtBox h2 span {font-size:8.8vw;}
+    .our_work .visual .txtBox h2 span.sTxt {font-size:6.8vw;}
+
+}
+
+
+
+/* ///////////////////////// 포트폴리오 ///////////////////////// */
+/* 모션 */
+.portfolio_list .viewVisual .bg .wLine2::before { content:''; position: absolute; display:block; left:0; right:0; top:0; width:100%; height:100%; z-index:10; background:#fff; transition:all 0.8s linear; -webkit-transition:all 0.8s linear; -moz-transition:all 0.8s linear; -ms-transition:all 0.8s linear; -o-transition:all 0.8s linear; }
+.portfolio_list .viewVisual .bg .wLine2::after { content:''; position: absolute; display:block; left:0; right:0; bottom:0; width:100%; height:100%; z-index:10; background:#fff; transition:all 0.8s linear; -webkit-transition:all 0.8s linear; -moz-transition:all 0.8s linear; -ms-transition:all 0.8s linear; -o-transition:all 0.8s linear; }
+.portfolio_list .viewVisual .bg .wLine::before { content:''; position: absolute; display:block; left:0; top:0; bottom:0; width:100%; height:100%; z-index:10; background:#fff; transition:all 0.8s linear; -webkit-transition:all 0.8s linear; -moz-transition:all 0.8s linear; -ms-transition:all 0.8s linear; -o-transition:all 0.8s linear; }
+.portfolio_list .viewVisual .bg .wLine::after { content:''; position: absolute; display:block; right:0; top:0; bottom:0; width:100%; height:100%; z-index:10; background:#fff; transition: all 0.8s linear; -webkit-transition: all 0.8s linear; -moz-transition: all 0.8s linear; -ms-transition: all 0.8s linear; -o-transition: all 0.8s linear; }
+.portfolio_list .viewVisual .bg.go .wLine2::before {height:0;}
+.portfolio_list .viewVisual .bg.go .wLine2::after {height:0;}
+.portfolio_list .viewVisual .bg.go .wLine::before {width:0;}
+.portfolio_list .viewVisual .bg.go .wLine::after {width:0;}
+
+/* 비주얼 */
+.portfolio_list .viewVisual .bg:after {content:''; display:block; left:-20px; top:-20px; width:calc(100% + 40px); height:calc(100% + 40px); background:rgba(0,0,0,0.3); z-index:1;}
+.portfolio_list .visual .viewTxtBox { position: absolute; left:0; right:0; top:50%; transform:translate(0,-50%); display:inline-flex; flex-direction: row; justify-content: space-between; align-items: center; max-width:1840px; margin:0 auto; padding:0 20px; text-align:left; -webkit-transform:translate(0,-50%); -moz-transform:translate(0,-50%); -ms-transform:translate(0,-50%); -o-transform:translate(0,-50%); z-index:2;}
+
+.portfolio_list .visual .txtBox h2 {font-size:92px; line-height:1.2; font-weight:bold; color:#fff;}
+.portfolio_list .visual .txtBox h2.lineTxt {-webkit-text-stroke:1px #fff; color:transparent;}
+.portfolio_list .visual .txtBox p {margin:26px 0 0; font-size:24px; font-weight:500; line-height:1.8; color:#fff;}
+/* 뷰페이지 비주얼 */
+.portfolio_list .visual .viewTxtBox h2 {width:calc(100% - 132px); padding:0 20px; text-align:center; font-size:102px; line-height:1.2; font-weight:700; color:#fff;}
+.portfolio_list .visual .viewTxtBox h2:before {content:'['; line-height:1.2;}
+.portfolio_list .visual .viewTxtBox h2:after {content:']'; line-height:1.2;}
+.portfolio_list .visual .viewTxtBox .listBox {display:block; margin-right:33px; width:30px; height:30px;}
+.portfolio_list .visual .viewTxtBox .listBox .listBtn {display:block; width:30px; height:30px; text-indent:-9999px; background:url('/common/img/layout/list_btn.png') no-repeat center/cover;}
+.portfolio_list .visual .viewTxtBox .viewArrow {display:block; width:30px; height:22px; width:66px;}
+.portfolio_list .visual .viewTxtBox .viewArrow ul {display:flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; width:100%; height:100%;}
+.portfolio_list .visual .viewTxtBox .viewArrow ul li a {display:block; width:26px; height:22px; text-indent:-9999px;}
+.portfolio_list .visual .viewTxtBox .viewArrow ul li.prevBtn a {background:url('/common/img/layout/list_prev.png') no-repeat center/cover;}
+.portfolio_list .visual .viewTxtBox .viewArrow ul li.nextBtn a {background:url('/common/img/layout/list_next.png') no-repeat center/cover;}
+
+@media all and (max-width:1024px){
+    .portfolio_list .viewVisual .bg:after {content:''; display:block; left:-10px; top:-10px; width:calc(100% + 20px); height:calc(100% + 20px);}
+    
+    .portfolio_list .visual .txtBox h2 {font-size:72px;}
+    .portfolio_list .visual .txtBox h2.lineTxt {-webkit-text-stroke:1px #fff; color:transparent;}
+    .portfolio_list .visual .txtBox p {margin:20px 0 0; font-size:20px;}
+    /* 뷰페이지 비주얼 */
+    .portfolio_list .visual .viewTxtBox h2 {width:calc(100% - 132px); text-align:center; font-size:72px;}
+    .portfolio_list .visual .viewTxtBox h2:before {content:'['; line-height:1.2;}
+    .portfolio_list .visual .viewTxtBox h2:after {content:']'; line-height:1.2;}
+    .portfolio_list .visual .viewTxtBox .listBox {margin-right:33px; width:30px; height:30px;}
+    .portfolio_list .visual .viewTxtBox .listBox .listBtn {width:30px; height:30px;}
+    .portfolio_list .visual .viewTxtBox .viewArrow {width:30px; height:22px; width:66px;}
+    .portfolio_list .visual .viewTxtBox .viewArrow ul li a {display:block; width:26px; height:22px;}
+}
+
+@media all and (max-width:768px){
+    .portfolio_list .visual .txtBox h2 {font-size:8vw;}
+    .portfolio_list .visual .txtBox h2.lineTxt {-webkit-text-stroke:0.2vw #fff; color:transparent;}
+    .portfolio_list .visual .txtBox p {margin:4vw 0 0; font-size:3.2vw;}
+    .portfolio_list .visual .txtBox p br {display:none;}
+    /* 뷰페이지 비주얼 */
+    .portfolio_list .visual .viewTxtBox h2 {max-width:calc(100% - 120px); width:calc(100% - 22.12vw); text-align:center; font-size:6.8vw;}
+    .portfolio_list .visual .viewTxtBox h2:before {content:'['; line-height:1.2;}
+    .portfolio_list .visual .viewTxtBox h2:after {content:']'; line-height:1.2;}
+    .portfolio_list .visual .viewTxtBox .listBox {margin-right:4vw; width:6vw; height:6vw; max-width:30px; max-height:30px;}
+    .portfolio_list .visual .viewTxtBox .listBox .listBtn {width:6vw; height:6vw;max-width:30px; max-height:30px;}
+    .portfolio_list .visual .viewTxtBox .viewArrow {width:6vw; height:4.4vw; width:12.12vw; max-width:66px; max-height:22px;}
+    .portfolio_list .visual .viewTxtBox .viewArrow ul li a {display:block; width:5.2vw; height:4.4vw; max-width:26px; max-height:22px;}
+}
+
+.portfolio_list .title {margin:0 0 60px;}
+.portfolio_list .title:before {height:260.1%;}
+
+.portfolio_list .article01 {margin:0 0 125px;}
+.portfolio_list .article01 ul {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start;}
+.portfolio_list .article01 ul li {width:31.85%; margin:0 2.225% 4.44% 0;}
+.portfolio_list .article01 ul li:nth-child(3n) {margin-right:0;}
+
+.portfolio_list .article01 ul li .txtBox {padding:25px 0 0;}
+.portfolio_list .article01 ul li .txtBox h3 {font-size:22px; font-weight:500; color:#343434;}
+.portfolio_list .article01 ul li .txtBox p {margin:14px 0 0; font-size:16px; font-family:'Montserrat'; font-weight:500; color:#7a7a7a;}
+
+.portfolio_list .article01 ul li:hover .txtBox h3 {color:#f52f23;}
+
+.portfolio_list .pdr_lnb {position:relative; display:inline-block; margin:0 0 70px;}
+.portfolio_list .pdr_lnb > a {position:relative; display:flex; width:142px; height:48px; padding:0 20px; align-items: center; font-size:18px; font-family:'Montserrat'; color:#fff; border-bottom:2px solid #fe0000;}
+.portfolio_list .pdr_lnb > a span { position: absolute; top:50%; right:0; transform:translate(0,-50%); -webkit-transform:translate(0,-50%); -moz-transform:translate(0,-50%); -ms-transform:translate(0,-50%); -o-transform:translate(0,-50%); }
+.portfolio_list .pdr_lnb > ul {position: absolute; top:48px; left:0; right:0; display:none; padding:10px 0; background:#333; z-index:20;}
+.portfolio_list .pdr_lnb > ul li {margin:0 0 10px;}
+.portfolio_list .pdr_lnb > ul li:last-child {margin:0;}
+.portfolio_list .pdr_lnb > ul li a {display:block; width:100%; padding:0 20px; font-size:16px; font-family:'Montserrat'; color:#fff;}
+
+@media all and (max-width:1024px){
+    .portfolio_list .title {margin:0 0 50px;}
+    .portfolio_list .title:before {height:260.1%;}
+    
+    .portfolio_list .article01 {margin:0 0 100px;}
+    .portfolio_list .article01 ul {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start;}
+    .portfolio_list .article01 ul li {width:32%; margin:0 2% 4.5% 0;}
+    .portfolio_list .article01 ul li:nth-child(3n) {margin-right:0;}
+    
+    .portfolio_list .article01 ul li .txtBox {padding:20px 0 0;}
+    .portfolio_list .article01 ul li .txtBox h3 {font-size:20px;}
+    .portfolio_list .article01 ul li .txtBox p {margin:8px 0 0; font-size:15px;}
+
+    .portfolio_list .pdr_lnb {margin:0 0 55px;}
+    .portfolio_list .pdr_lnb > a {width:142px; height:48px; padding:0 16px; align-items: center; font-size:18px; border-bottom:2px solid #fe0000;}
+    .portfolio_list .pdr_lnb > ul {top:48px; left:0; right:0; padding:10px 0;}
+    .portfolio_list .pdr_lnb > ul li {margin:0 0 8px;}
+    .portfolio_list .pdr_lnb > ul li a {padding:0 16px; font-size:15px;}
+}
+
+@media all and (max-width:768px){
+    .portfolio_list .title {margin:0 0 10vw; padding:12vw 0 0;}
+    .portfolio_list .title:before {height:260.1%;}
+    
+    .portfolio_list .article01 {margin:0 0 12vw;}
+    .portfolio_list .article01 ul {display:flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+    .portfolio_list .article01 ul li {width:49%; margin:0 2% 4.5% 0;}
+    .portfolio_list .article01 ul li:nth-child(3n) {margin-right:2%;}
+    .portfolio_list .article01 ul li:nth-child(2n) {margin-right:0;}
+    
+    .portfolio_list .article01 ul li .txtBox {padding:3.6vw 0 0;}
+    .portfolio_list .article01 ul li .txtBox h3 {font-size:4vw;}
+    .portfolio_list .article01 ul li .txtBox p {margin:1.6vw 0 0; font-size:3vw;}
+
+    .portfolio_list .pdr_lnb {margin:0 0 10vw;}
+    .portfolio_list .pdr_lnb > a {width:28vw; height:9.8vw; padding:0 3.2vw; font-size:3.2vw; border-bottom:0.4vw solid #fe0000;}
+    .portfolio_list .pdr_lnb > ul {top:9.8vw; left:0; right:0; padding:2vw 0;}
+    .portfolio_list .pdr_lnb > ul li {margin:0 0 1.6vw;}
+    .portfolio_list .pdr_lnb > ul li a {padding:0 3.2vw; font-size:3vw;}
+}
+
+.portfolio_list .viewTitle {display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; align-items: center; padding:50px 0 80px; }
+.portfolio_list .viewTitle h2 {font-size:36px; font-weight:500; color:#222;}
+.portfolio_list .viewTitle ul {display:flex; padding:0 0 0 20px;}
+.portfolio_list .viewTitle ul li {margin-right:100px; text-align:center;}
+.portfolio_list .viewTitle ul li:last-child {margin-right:0;}
+.portfolio_list .viewTitle ul li h4 {font-size:20px; font-weight:600; color:#222;}
+.portfolio_list .viewTitle ul li p {margin:10px 0 0; font-size:18px; font-weight:500; color:#666;}
+
+.portfolio_list .pro_view {margin:0 0 140px;}
+.portfolio_list .pro_view figure {margin:0 0 50px;}
+.portfolio_list .pro_view figure:last-child {margin:0;}
+
+.portfolio_list .loadMore {margin:35px 0 0; padding:0 0 48px; text-align:center;}
+.portfolio_list .loadMore a { display:inline-flex; justify-content: center; align-items: center; padding:12px 22px; border:1px solid #fe0000; border-radius:100px; -webkit-border-radius:100px; -moz-border-radius:100px; -ms-border-radius:100px; -o-border-radius:100px; }
+.portfolio_list .loadMore a span {position: relative; display:block; width:30px; height:30px; background:#fe0000; border-radius:100%; -webkit-border-radius:100%; -moz-border-radius:100%; -ms-border-radius:100%; -o-border-radius:100%; }
+.portfolio_list .loadMore a span:before { content:''; position: absolute; left:50%; top:calc(50% - 6px); display:block; width:2px; height:8px; transform:rotate(-45deg); background:#fff;}
+.portfolio_list .loadMore a span:after { content:''; position: absolute; left:50%; top:calc(50% - 1px); display:block; width:2px; height:8px; transform:rotate(45deg); background:#fff;}
+.portfolio_list .loadMore a p {margin-left:22px; font-size:18px; font-family:'Montserrat'; line-height:0.8; font-weight:500; color:#fe0000;}
+
+
+@media all and (max-width:1024px){
+    .portfolio_list .viewTitle {display:block; padding:42px 0 70px; }
+    .portfolio_list .viewTitle h2 {font-size:32px;}
+    .portfolio_list .viewTitle ul {display:flex; justify-content:flex-end; margin:25px 0 0; padding:0;}
+    .portfolio_list .viewTitle ul li {margin-right:60px;}
+    .portfolio_list .viewTitle ul li h4 {font-size:18px;}
+    .portfolio_list .viewTitle ul li p {margin:6px 0 0; font-size:16px;}
+
+    .portfolio_list .pro_view {margin:0 0 100px}
+    .portfolio_list .pro_view figure {margin:0 0 40px;}
+    .portfolio_list .pro_view figure:last-child {margin:0;}
+    
+    .portfolio_list .loadMore {margin:30px 0 0; padding:0 0 40px;}
+    .portfolio_list .loadMore a {padding:10px 18px; border-radius:100px; -webkit-border-radius:100px; -moz-border-radius:100px; -ms-border-radius:100px; -o-border-radius:100px; }
+    .portfolio_list .loadMore a span {width:26px; height:26px;}
+    .portfolio_list .loadMore a span:before {left:50%; top:calc(50% - 6px); display:block; width:2px; height:8px; transform:rotate(-45deg); background:#fff;}
+    .portfolio_list .loadMore a span:after {left:50%; top:calc(50% - 1px); display:block; width:2px; height:8px; transform:rotate(45deg); background:#fff;}
+    .portfolio_list .loadMore a p {margin-left:15px; font-size:16px;}
+}
+
+@media all and (max-width:768px){
+    .portfolio_list .viewTitle {display:block; padding:6vw 0 10vw; }
+    .portfolio_list .viewTitle h2 {font-size:6vw;}
+    .portfolio_list .viewTitle ul {margin:4vw 0 0;}
+    .portfolio_list .viewTitle ul li {margin-right:5vw;}
+    .portfolio_list .viewTitle ul li h4 {font-size:3.4vw;}
+    .portfolio_list .viewTitle ul li p {margin:1.2vw 0 0; font-size:3.2vw;}
+
+    .portfolio_list .pro_view {margin:0 0 14vw}
+    .portfolio_list .pro_view figure {margin:0 0 8vw;}
+    
+	
+    .portfolio_list .loadMore {margin:6vw 0 0; padding:0 0 8vw;}
+    .portfolio_list .loadMore a { padding:1.6vw 2.6vw; border-radius:20vw; -webkit-border-radius:20vw; -moz-border-radius:20vw; -ms-border-radius:20vw; -o-border-radius:20vw; }
+    .portfolio_list .loadMore a span {width:5.2vw; height:5.2vw;}
+    .portfolio_list .loadMore a span:before {left:50%; top:calc(50% - 1.2vw); display:block; width:0.4vw; height:1.6vw; transform:rotate(-45deg);}
+    .portfolio_list .loadMore a span:after {left:50%; top:calc(50% - 0.2vw); display:block; width:0.4vw; height:1.6vw; transform:rotate(45deg);}
+    .portfolio_list .loadMore a p {margin-left:3vw; font-size:3.2vw;}
+}

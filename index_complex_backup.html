@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="ko">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+   <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+   <title>
+    크리에이티브그룹 아더
+   </title>
+   <meta content="telephone=no" name="format-detection"/>
+   <meta content="크리에이티브그룹 아더" name="keywords">
+    <meta content="크리에이티브그룹 아더" name="description">
+     <meta content="website" property="og:type"/>
+     <meta content="크리에이티브그룹 아더" property="og:title"/>
+     <meta content="크리에이티브그룹 아더" property="og:description"/>
+     <meta content="/common/layout/Logo_color.png" property="og:image"/>
+     <!-- Chrome, Safari, IE  32*32  https://icoconvert.com/  -->
+     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+     <!-- Firefox, Opera (Chrome and Safari say thanks but no thanks) -->
+     <link href="favicon.png" rel="icon" sizes="192x192" type="image/png"/>
+     <!-- apple safari -->
+     <link href="favicon.png" rel="apple-touch-icon" sizes="180x180" type="image/png"/>
+     <link href="https://webfontworld.github.io/SCoreDream/SCoreDream.css" rel="stylesheet"/>
+     <link href="common/css/efront.css" rel="stylesheet" type="text/css">
+     
+     <!-- Fluid Cursor CSS -->
+     <style>
+       #fluid-canvas {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         pointer-events: none;
+         z-index: 9999;
+         mix-blend-mode: difference;
+       }
+     </style>
+     
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
+      </script>
+      <script src="comm/js/script.js" type="text/javascript">
+      </script>
+      <!-- 회원가입등 공통스크립트 -->
+      <script src="common/js/jquery.fullpage.js" type="text/javascript">
+      </script>
+      <script src="common/js/swiper.js" type="text/javascript">
+      </script>
+      <script src="common/js/swiper.js.map" type="application/json">
+      </script>
+      <script src="common/js/common.js" type="text/javascript">
+      </script>
+      <!-- Simple Mouse Effect -->
+      <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('🎯 마우스 효과 초기화 시작...');
+          
+          // Create canvas for mouse effect
+          const canvas = document.createElement('canvas');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+
+        let config = {
+          TEXTURE_DOWNSAMPLE: 1,
+          DENSITY_DISSIPATION: 0.98,
+          VELOCITY_DISSIPATION: 0.99,
+          PRESSURE_DISSIPATION: 0.8,
+          PRESSURE_ITERATIONS: 25,
+          CURL: 28,
+          SPLAT_RADIUS: 0.004 };
+
+        let pointers = [];
+        let splatStack = [];
+
+        const { gl, ext } = getWebGLContext(canvas);
+
+        function getWebGLContext(canvas) {
+          const params = { alpha: false, depth: false, stencil: false, antialias: false };
+
+          let gl = canvas.getContext('webgl2', params);
+          const isWebGL2 = !!gl;
+          if (!isWebGL2)
+          gl = canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params);
+
+          let halfFloat;
+          let supportLinearFiltering;
+          if (isWebGL2) {
+            gl.getExtension('EXT_color_buffer_float');
+            supportLinearFiltering = gl.getExtension('OES_texture_float_linear');
+          } else {
+            halfFloat = gl.getExtension('OES_texture_half_float');
+            supportLinearFiltering = gl.getExtension('OES_texture_half_float_linear');
+          }
+
+          gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+          const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat.HALF_FLOAT_OES;
+          let formatRGBA;
+          let formatRG;
+          let formatR;
+
+          if (isWebGL2)
+          {
+            formatRGBA = getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, halfFloatTexType);
+            formatRG = getSupportedFormat(gl, gl.RG16F, gl.RG, halfFloatTexType);
+            formatR = getSupportedFormat(gl, gl.R16F, gl.RED, halfFloatTexType);
+          } else
+
+          {
+            formatRGBA = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+            formatRG = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+            formatR = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+          }
+
+          return {
+            gl,
+            ext: {
+              formatRGBA,
+              formatRG,
+              formatR,
+              halfFloatTexType,
+              supportLinearFiltering } };
+        }
+
+        function getSupportedFormat(gl, internalFormat, format, type)
+        {
+          if (!supportRenderTextureFormat(gl, internalFormat, format, type))
+          {
+            switch (internalFormat) {
+              case gl.R16F:
+                return getSupportedFormat(gl, gl.RG16F, gl.RG, type);
+              case gl.RG16F:
+                return getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, type);
+              default:
+                return null;}
+          }
+
+          return {
+            internalFormat,
+            format };
+        }
+
+        function supportRenderTextureFormat(gl, internalFormat, format, type) {
+          let texture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, format, type, null);
+
+          let fbo = gl.createFramebuffer();
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+
+          const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+          if (status != gl.FRAMEBUFFER_COMPLETE)
+          return false;
+          return true;
+        }
+
+        function pointerPrototype() {
+          this.id = -1;
+          this.x = 0;
+          this.y = 0;
+          this.dx = 0;
+          this.dy = 0;
+          this.down = false;
+          this.moved = false;
+          this.color = [30, 0, 300];
+        }
+
+        pointers.push(new pointerPrototype());
+
+        class GLProgram {
+          constructor(vertexShader, fragmentShader) {
+            this.uniforms = {};
+            this.program = gl.createProgram();
+
+            gl.attachShader(this.program, vertexShader);
+            gl.attachShader(this.program, fragmentShader);
+            gl.linkProgram(this.program);
+
+            if (!gl.getProgramParameter(this.program, gl.LINK_STATUS))
+            throw gl.getProgramInfoLog(this.program);
+
+            const uniformCount = gl.getProgramParameter(this.program, gl.ACTIVE_UNIFORMS);
+            for (let i = 0; i < uniformCount; i++) {
+              const uniformName = gl.getActiveUniform(this.program, i).name;
+              this.uniforms[uniformName] = gl.getUniformLocation(this.program, uniformName);
+            }
+          }
+
+          bind() {
+            gl.useProgram(this.program);
+          }        }
+        </script>
+        
+        <!-- WebGL Fluid Cursor Shaders and Main Logic -->
+        <script type="text/javascript">
+          function compileShader(type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+            throw gl.getShaderInfoLog(shader);
+
+            return shader;
+          };
+
+          const baseVertexShader = compileShader(gl.VERTEX_SHADER, `
+              precision highp float;
+              precision mediump sampler2D;
+
+              attribute vec2 aPosition;
+              varying vec2 vUv;
+              varying vec2 vL;
+              varying vec2 vR;
+              varying vec2 vT;
+              varying vec2 vB;
+              uniform vec2 texelSize;
+
+              void main () {
+                  vUv = aPosition * 0.5 + 0.5;
+                  vL = vUv - vec2(texelSize.x, 0.0);
+                  vR = vUv + vec2(texelSize.x, 0.0);
+                  vT = vUv + vec2(0.0, texelSize.y);
+                  vB = vUv - vec2(0.0, texelSize.y);
+                  gl_Position = vec4(aPosition, 0.0, 1.0);
+              }
+          `);
+
+          const clearShader = compileShader(gl.FRAGMENT_SHADER, `
+              precision highp float;
+              precision mediump sampler2D;
+
+              varying vec2 vUv;
+              uniform sampler2D uTexture;
+              uniform float value;
+
+              void main () {
+                  gl_FragColor = value * texture2D(uTexture, vUv);
+              }
+          `);
+
+          const displayShader = compileShader(gl.FRAGMENT_SHADER, `
+              precision highp float;
+              precision mediump sampler2D;
+
+              varying vec2 vUv;
+              uniform sampler2D uTexture;
+
+              void main () {
+                  gl_FragColor = texture2D(uTexture, vUv);
+              }
+          `);
+
+          const splatShader = compileShader(gl.FRAGMENT_SHADER, `
+              precision highp float;
+              precision mediump sampler2D;
+
+              varying vec2 vUv;
+              uniform sampler2D uTarget;
+              uniform float aspectRatio;
+              uniform vec3 color;
+              uniform vec2 point;
+              uniform float radius;
+
+              void main () {
+                  vec2 p = vUv - point.xy;
+                  p.x *= aspectRatio;
+                  vec3 splat = exp(-dot(p, p) / radius) * color;
+                  vec3 base = texture2D(uTarget, vUv).xyz;
+                  gl_FragColor = vec4(base + splat, 1.0);
+              }
+          `);
+
+          let textureWidth;
+          let textureHeight;
+          let density;
+          let velocity;
+          let divergence;
+          let curl;
+          let pressure;
+          initFramebuffers();
+
+          const clearProgram = new GLProgram(baseVertexShader, clearShader);
+          const displayProgram = new GLProgram(baseVertexShader, displayShader);
+          const splatProgram = new GLProgram(baseVertexShader, splatShader);
+
+          function initFramebuffers() {
+            textureWidth = gl.drawingBufferWidth >> config.TEXTURE_DOWNSAMPLE;
+            textureHeight = gl.drawingBufferHeight >> config.TEXTURE_DOWNSAMPLE;
+
+            const texType = ext.halfFloatTexType;
+            const rgba = ext.formatRGBA;
+            const rg = ext.formatRG;
+            const r = ext.formatR;
+
+            density = createDoubleFBO(2, textureWidth, textureHeight, rgba.internalFormat, rgba.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST);
+            velocity = createDoubleFBO(0, textureWidth, textureHeight, rg.internalFormat, rg.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST);
+            divergence = createFBO(4, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
+            curl = createFBO(5, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
+            pressure = createDoubleFBO(6, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
+          }
+
+          function createFBO(texId, w, h, internalFormat, format, type, param) {
+            gl.activeTexture(gl.TEXTURE0 + texId);
+            let texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, param);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null);
+
+            let fbo = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+            gl.viewport(0, 0, w, h);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            return [texture, fbo, texId];
+          }
+
+          function createDoubleFBO(texId, w, h, internalFormat, format, type, param) {
+            let fbo1 = createFBO(texId, w, h, internalFormat, format, type, param);
+            let fbo2 = createFBO(texId + 1, w, h, internalFormat, format, type, param);
+
+            return {
+              get read() {
+                return fbo1;
+              },
+              get write() {
+                return fbo2;
+              },
+              swap() {
+                let temp = fbo1;
+                fbo1 = fbo2;
+                fbo2 = temp;
+              } };
+          }
+
+          const blit = (() => {
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 0, 2, 3]), gl.STATIC_DRAW);
+            gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(0);
+
+            return destination => {
+              gl.bindFramebuffer(gl.FRAMEBUFFER, destination);
+              gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+            };
+          })();
+
+          function splat(x, y, dx, dy, color) {
+            splatProgram.bind();
+            gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read[2]);
+            gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
+            gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1.0 - y / canvas.height);
+            gl.uniform3f(splatProgram.uniforms.color, dx, -dy, 1.0);
+            gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS);
+            blit(velocity.write[1]);
+            velocity.swap();
+
+            gl.uniform1i(splatProgram.uniforms.uTarget, density.read[2]);
+            gl.uniform3f(splatProgram.uniforms.color, color[0] * 0.3, color[1] * 0.3, color[2] * 0.3);
+            blit(density.write[1]);
+            density.swap();
+          }
+
+          function multipleSplats(amount) {
+            for (let i = 0; i < amount; i++) {
+              const color = [Math.random() * 10, Math.random() * 10, Math.random() * 10];
+              const x = canvas.width * Math.random();
+              const y = canvas.height * Math.random();
+              const dx = 1000 * (Math.random() - 0.5);
+              const dy = 1000 * (Math.random() - 0.5);
+              splat(x, y, dx, dy, color);
+            }
+          }
+
+          function resizeCanvas() {
+            if (canvas.width != canvas.clientWidth || canvas.height != canvas.clientHeight) {
+              canvas.width = canvas.clientWidth;
+              canvas.height = canvas.clientHeight;
+              initFramebuffers();
+            }
+          }
+
+          let lastTime = Date.now();
+          multipleSplats(parseInt(Math.random() * 20) + 5);
+          update();
+
+          function update() {
+            resizeCanvas();
+
+            const dt = Math.min((Date.now() - lastTime) / 1000, 0.016);
+            lastTime = Date.now();
+
+            gl.viewport(0, 0, textureWidth, textureHeight);
+
+            for (let i = 0; i < pointers.length; i++) {
+              const pointer = pointers[i];
+              if (pointer.moved) {
+                splat(pointer.x, pointer.y, pointer.dx, pointer.dy, pointer.color);
+                pointer.moved = false;
+              }
+            }
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            displayProgram.bind();
+            gl.uniform1i(displayProgram.uniforms.uTexture, density.read[2]);
+            blit(null);
+
+            requestAnimationFrame(update);
+          }
+
+          canvas.addEventListener('mousemove', e => {
+            pointers[0].moved = pointers[0].down;
+            pointers[0].dx = (e.offsetX - pointers[0].x) * 10.0;
+            pointers[0].dy = (e.offsetY - pointers[0].y) * 10.0;
+            pointers[0].x = e.offsetX;
+            pointers[0].y = e.offsetY;
+          });
+
+          canvas.addEventListener('mousedown', () => {
+            pointers[0].down = true;
+            pointers[0].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+          });
+
+          window.addEventListener('mouseup', () => {
+            pointers[0].down = false;
+          });
+        </script>
+        
+      <!-- 크로스브라우징 -->
+      <!--[if lt IE 9]>
+        <script src="/common/js/html5shiv.min.js"></script>
+        <![endif]-->
+     </link>
+    </meta>
+   </meta>
+  </meta>
+ </head>
+<body>
+ <header class="header">
+   <div>
+    <h1 class="montserrat">
+     <a href="index.html">
+      <img alt="Creative group arthur 크리에이티브그룹아더" src="common\img\layout\logo.png"/>
+     </a>
+    </h1>
+    <div class="etc etcPC montserrat">
+     <a class="toggle togglePC" href="javascript:void(0)">
+      <div class="icon">
+       <span>
+       </span>
+       <span>
+       </span>
+       <span>
+       </span>
+      </div>
+      <p>
+       MENU
+      </p>
+     </a>
+     <ul>
+      <li>
+       <a href="index.html">
+        ABOUT
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        WHAT WE DO
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        PORTFOLIO
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        RECRUIT
+       </a>
+      </li>
+     </ul>
+    </div>
+    <div class="etc etcMO montserrat">
+     <a class="toggle toggleMO" href="javascript:void(0)">
+      <div class="icon">
+       <span>
+       </span>
+       <span>
+       </span>
+       <span>
+       </span>
+      </div>
+      <p>
+       MENU
+      </p>
+     </a>
+     <ul>
+      <li>
+       <a href="index.html">
+        ABOUT
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        WHAT WE DO
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        PORTFOLIO
+       </a>
+      </li>
+      <li>
+       <a href="index.html">
+        RECRUIT
+       </a>
+      </li>
+     </ul>
+    </div>
+   </div>
+  </header>
+  <main class="main">
+   <section class="section section01">
+    <div class="parallax_wrap">
+     <div class="swiper-container">
+      <div class="swiper-wrapper">
+       <!--
+                    <div class="swiper-slide" data-swiper-autoplay="13200">
+                        <div class="bg">
+                            <video id="main_video" autoplay muted loop playsinline data-autoplay>
+                                <source src="/common/img/main/main_video1.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                    -->
+       <div class="swiper-slide">
+        <div class="txtArea montserrat">
+         <h3>
+          LET’S TRY
+          <br/>
+          <span>
+           SOMETHING DIFFERENT
+          </span>
+         </h3>
+         <p class="sview01">
+          "Our brand will be more delightful with ARTHUR"
+         </p>
+         <p class="sview02">
+          "We sell emotional experiences, not products"
+         </p>
+         <p class="sview03">
+          "We create a customer experience"
+         </p>
+        </div>
+        <div class="bg01">
+        </div>
+       </div>
+       <div class="swiper-slide" data-swiper-autoplay="8900">
+        <div class="bg">
+         <video autoplay="" data-autoplay="" id="main_video" loop="" muted="" playsinline="">
+          <source src="/common/img/main/main_video2.mp4" type="video/mp4"/>
+         </video>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="scrollDiv">
+     <figure>
+     </figure>
+     <p class="montserrat">
+      SCROLL DOWN
+     </p>
+    </div>
+    <script>
+     //비주얼
+            var vsSwiper = new Swiper('.main .section01 .swiper-container', {
+                spaceBetween: 0,
+                loop: true,
+                speed: 1500,
+                effect: "fade",
+                centeredSlides: true,
+                allowTouchMove: false,
+                autoplay: {
+                    delay: 8000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                on: {
+                    // 비디오 처음부터 시작하게 하기
+                    transitionStart: function () {
+
+                        var videos = document.querySelectorAll('video');
+
+                        Array.prototype.forEach.call(videos, function (video) {
+                            //   video.pause(0);
+                            video.currentTime = 0;
+                        });
+                    }
+                }
+            });
+    </script>
+   </section>
+   <!-- //section01 끝 -->
+   <section class="section section02 animatedParent animateOnce">
+    <div class="parallax_wrap">
+     <div class="inner">
+      <h2 class="mTit animated fadeInUpShort delay-250">
+       ABOUT
+       <span class="playfair">
+        Arthur
+       </span>
+      </h2>
+      <div class="flexBox">
+       <div class="leftArea">
+        <p class="animated fadeInUpShort delay-500">
+         일하는 것이
+         <span class="red animated fadeInUpShort delay-650">
+          쬐끔
+         </span>
+         즐거울 수 있고
+        </p>
+        <p class="animated fadeInUpShort delay-750">
+         일하는 곳이
+         <span class="red animated fadeInUpShort delay-900">
+          그리
+         </span>
+         밉지 않고
+        </p>
+        <p class="animated fadeInUpShort delay-1000">
+         웃음을
+         <span class="red animated fadeInUpShort delay-1150">
+          가끔
+         </span>
+         지을 수 있게 하는
+        </p>
+       </div>
+       <div class="rightArea animated fadeInUpShort delay-1000">
+        <h5>
+         ‘긍정감성’ 을 최우선 가치로 소중하게 생각하는 BTL 솔루션 에이전시
+        </h5>
+        <p>
+         아더의 ‘긍정감성’은 트렌디 콘텐츠와 크리에이티브로
+         <br/>
+         클라이언트에게 최상의 BTL 솔루션을 제시하여 고객들에게 일상의 색다른 경험을 디자인합니다.
+        </p>
+       </div>
+      </div>
+      <div class="bottomUl">
+       <ul>
+        <li class="animated fadeInUpShort delay-250">
+         <svg fill="none" viewbox="0 0 194 194" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z" stroke="white" stroke-width="1">
+          </path>
+         </svg>
+         <p>
+          시각적 디자인
+         </p>
+        </li>
+        <li class="animated fadeInUpShort delay-500">
+         <svg fill="none" viewbox="0 0 194 194" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z" stroke="white" stroke-width="1">
+          </path>
+         </svg>
+         <p>
+          공감과 참여
+         </p>
+        </li>
+        <li class="animated fadeInUpShort delay-750">
+         <svg fill="none" viewbox="0 0 194 194" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z" stroke="white" stroke-width="1">
+          </path>
+         </svg>
+         <p>
+          차별화된 콘텐츠
+         </p>
+        </li>
+        <li class="animated fadeInUpShort delay-1000">
+         <svg fill="none" viewbox="0 0 194 194" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z" stroke="white" stroke-width="1">
+          </path>
+         </svg>
+         <p>
+          바이럴 확대
+         </p>
+        </li>
+        <li class="animated fadeInUpShort delay-1250">
+         <svg fill="none" viewbox="0 0 194 194" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.5 97C0.5 43.7942 43.7942 0.5 97 0.5C150.214 0.5 193.5 43.7942 193.5 97C193.5 150.214 150.214 193.5 97 193.5C43.7942 193.5 0.5 150.214 0.5 97Z" stroke="white" stroke-width="1">
+          </path>
+         </svg>
+         <p>
+          리뷰와 후기
+         </p>
+        </li>
+       </ul>
+       <h4 class="animated fadeInUpShort delay-1500">
+        아더 솔루션의 5가지 크리에이티브 핵심요소
+       </h4>
+      </div>
+     </div>
+    </div>
+    <div class="bgTxt">
+     <p class="bgtxt_motion1">
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE
+                    GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP
+                    ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE
+                    GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP
+                    ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE
+                    GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP
+                    ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE
+                    GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP
+                    ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE
+                    GROUP ARTHUR
+      </span>
+      <span>
+       CREATIVE GROUP ARTHUR
+      </span>
+     </p>
+    </div>
+   </section>
+   <!-- //section02 끝 -->
+   <section class="section section03">
+    <div class="parallax_wrap">
+     <ul class="sec03List animatedParent animateOnce">
+      <li>
+       <a href="company\our_work01.php">
+        <div class="txtBox">
+         <h5 class="montserrat animated fadeInUpShort delay-250">
+          Connected
+         </h5>
+         <h2 class="montserrat animated fadeInUpShort delay-500">
+          CUSTOMER
+          <br/>
+          EXPERIENCE
+         </h2>
+         <ul>
+          <li>
+           #Popup store
+          </li>
+          <li>
+           #Brand store
+          </li>
+          <li>
+           #Brand Exhibition
+          </li>
+          <li>
+           #OOH
+          </li>
+         </ul>
+        </div>
+       </a>
+       <figure class="bg">
+       </figure>
+      </li>
+      <li>
+       <a href="company\our_work02.php">
+        <div class="txtBox">
+         <h5 class="montserrat animated fadeInUpShort delay-500">
+          Connected
+         </h5>
+         <h2 class="montserrat animated fadeInUpShort delay-750">
+          AUTOMOBILE
+          <br/>
+          MARKETING
+         </h2>
+         <ul>
+          <li>
+           #Mobility show
+          </li>
+          <li>
+           #Auto Exhibition
+          </li>
+          <li>
+           #Test Drive
+          </li>
+          <li>
+           #Loyalty Event
+          </li>
+          <li>
+           #Launching show
+          </li>
+         </ul>
+        </div>
+       </a>
+       <figure class="bg">
+       </figure>
+      </li>
+      <li>
+       <a href="company\our_work03.php">
+        <div class="txtBox">
+         <h5 class="montserrat animated fadeInUpShort delay-750">
+          Connected
+         </h5>
+         <h2 class="montserrat animated fadeInUpShort delay-1000">
+          SHOW
+          <br/>
+          PERFORMANCE
+         </h2>
+         <ul>
+          <li>
+           #Brand Party
+          </li>
+          <li>
+           #Gala Dinner
+          </li>
+          <li>
+           #Award
+          </li>
+          <li>
+           #Ceremoney
+          </li>
+          <li>
+           #Festival
+          </li>
+         </ul>
+        </div>
+       </a>
+       <figure class="bg">
+       </figure>
+      </li>
+      <li>
+       <a href="company\our_work04.php">
+        <div class="txtBox">
+         <h5 class="montserrat animated fadeInUpShort delay-1000">
+          Connected
+         </h5>
+         <h2 class="montserrat animated fadeInUpShort delay-1250">
+          GOODS &amp;
+          <br/>
+          COLLABORATION
+         </h2>
+         <ul>
+          <li>
+           #Goods
+          </li>
+          <li>
+           #Collaboration
+          </li>
+          <li>
+           #Diesgn
+          </li>
+          <li>
+           #VMD
+          </li>
+          <li>
+           #Giveaway
+          </li>
+         </ul>
+        </div>
+       </a>
+       <figure class="bg">
+       </figure>
+      </li>
+     </ul>
+    </div>
+   </section>
+   <!-- //section03 끝 -->
+   <section class="section section04 animatedParent animateOnce">
+    <div class="parallax_wrap">
+     <div class="inner">
+      <div class="flexBox">
+       <div class="leftArea">
+        <h2 class="mTit animated fadeInUpShort delay-250">
+         PORTFOLIO
+        </h2>
+       </div>
+       <div class="rightArea">
+        <div class="swiper-button-prev animated fadeInUpShort delay-500">
+        </div>
+        <div class="swiper-button-next animated fadeInUpShort delay-750">
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="rightInner animated fadeInUpShort delay-750">
+      <div class="swiper-container">
+       <div class="swiper-wrapper">
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2312110007_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            Upgraded Polestar2 Test Drive
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2312110004_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG엔솔 x아이오닉6 극적캠핑
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2312110003_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            Polestar 2 on tour
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2312110002_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            SIERRA VIP PARTY
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030011_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG전자 어나더바이브 @장충 @버들 @선유
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030010_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG전자 어나더바이브 @합정
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030009_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG전자 어나더바이브 @양재
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030008_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            비비고x옥동식 ′곰탕 브루어리′
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030007_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG올레드 금성오락실 시즌3
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030003_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            메르세데츠벤츠 The new C-Class Launching
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030002_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            bibigo ′따뜻한식당′
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302030001_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            세계가스총회 2022 SK E&amp;S관
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302020006_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            LG올레드 금성오락실 시즌2
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302020005_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            Polestar2 Pop-up_2Q
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+        <div class="swiper-slide">
+         <a href="portfolio/portfolio_list.php">
+          <figure>
+           <img alt="" src="./common/img/main/sec04_bg.png" style="background:url('./admin/data/product2/2302020001_R.jpg') no-repeat center/cover"/>
+          </figure>
+          <div class="txtBox">
+           <h3>
+            조니워커 ′Keep Walking Day′
+           </h3>
+           <p>
+           </p>
+          </div>
+         </a>
+        </div>
+       </div>
+      </div>
+      <!-- swiper-container 끝 -->
+      <div class="swiper-pagination">
+      </div>
+     </div>
+     <div class="mainBtn">
+      <a href="portfolio/portfolio_list.php">
+       <span>
+       </span>
+       <p>
+        view case
+       </p>
+      </a>
+     </div>
+    </div>
+    <script>
+     // section02 슬라이드
+            var noticeSwiper = new Swiper('.main .section04 .swiper-container', {
+                slidesPerView: "1.4",
+                spaceBetween: 10,
+                loop: true,
+                speed: 1000,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.main .section04 .swiper-button-next',
+                    prevEl: '.main .section04 .swiper-button-prev',
+                },
+                pagination: {
+                    el: '.main .section04 .swiper-pagination',
+                    type: 'progressbar',
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: "2",
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: "2.6",
+                        spaceBetween: 30,
+                    },
+                    1200: {
+                        slidesPerView: "3",
+                        spaceBetween: 30,
+                    },
+                },
+            });
+    </script>
+   </section>
+   <!-- //section04 끝 -->
+   <section class="section section05">
+    <div class="parallax_wrap">
+     <div class="inner">
+      <div class="flexBox animatedParent animateOnce">
+       <div class="leftArea">
+        <h2 class="mTit animated fadeInUpShort delay-250">
+         RECRUIT
+        </h2>
+        <h4 class="animated fadeInUpShort delay-500">
+         아더는
+         <span>
+          도전을 꿈꾸는 열정을 가진
+          <br/>
+          기획자들의 공간
+         </span>
+         입니다.
+        </h4>
+        <div class="mainBtn">
+         <a class="popup_open animated fadeInUpShort delay-750" href="javascript:void(0)" rel="contactus">
+          <span>
+          </span>
+          <p>
+           view case
+          </p>
+         </a>
+        </div>
+       </div>
+       <div class="rightArea">
+        <div class="redC">
+         <div class="stroke animated fadeInUpShort delay-500">
+         </div>
+         <div class="fillD animated fadeInUpShort delay-600">
+         </div>
+        </div>
+        <ul>
+         <li>
+          <span class="animated fadeInUpShort delay-600">
+           채용제도
+          </span>
+          <p class="animated fadeInUpShort delay-650">
+           공개채용 + 수시채용
+          </p>
+         </li>
+         <li>
+          <span class="animated fadeInUpShort delay-750">
+           채용방법
+          </span>
+          <p class="animated fadeInUpShort delay-800">
+           E-mail(arthur@arthur.co.kr)
+          </p>
+         </li>
+         <li>
+          <span class="animated fadeInUpShort delay-900">
+           채용대상
+          </span>
+          <p class="animated fadeInUpShort delay-950">
+           신입 / 경력직 (포트폴리오 첨부)
+          </p>
+         </li>
+         <li>
+          <span class="animated fadeInUpShort delay-1050">
+           지원자격
+          </span>
+          <p class="animated fadeInUpShort delay-1100">
+           대학교 졸업 학력, 병역 필 및 면제자 (남자)
+           <br/>
+           해외여행의 결격사유가
+                                    없는자
+           <br/>
+           외국어 능력 우대
+          </p>
+         </li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="mask_ball">
+     <div class="ball01">
+     </div>
+     <div class="ball02">
+     </div>
+     <div class="ball03">
+     </div>
+    </div>
+   </section>
+   <!-- section05 불러오기 끝 -->
+   <section class="section section06">
+    <div class="parallax_wrap">
+     <div class="footerSection">
+     </div>
+    </div>
+   </section>
+   <!-- //inc/footer footerSection 불러오기 끝 -->
+  </main>
+  <div class="popup" style="display: none;">
+   <div class="bg popup_close">
+   </div>
+   <div class="cont">
+    <a class="boxinClose popup_close" href="javascript:void(0)">
+    </a>
+    <div id="contactus">
+     <div class="flexTop">
+      <figure>
+       <img alt="" src="common\img\main\sec05_popIcon.png"/>
+      </figure>
+      <h2 class="montserrat">
+       RECRUIT
+      </h2>
+     </div>
+     <ul>
+      <li>
+       <div class="popSubTit">
+        <h4>
+         채용안내
+        </h4>
+        <p>
+         (공개채용
+         <span>
+          +
+         </span>
+         수시채용)
+        </p>
+       </div>
+       <p>
+        크리에이티브그룹 아더는 정기적으로 인력채용을 하는 공개채용과 수시로 필요한 신입/경력직 인력을 채용하는 수시채용을 진행하고 있습니다.
+        <br/>
+        BTL트렌드를 리딩하고 싶은 분들은 언제나 아더에 노크하시길 바랍니다.
+       </p>
+      </li>
+      <li>
+       <div class="popSubTit">
+        <h4>
+         인재등록
+        </h4>
+       </div>
+       <p>
+        크리에이티브그룹 아더는 입사를 희망하는 분들이 이력서를 미리 작성하여 보내주시면 인사담당자가 본사 결원 발생시 우선적으로 검토하는 시스템을 운영합니다.
+        <br/>
+        이에 arthur@arthur.co.kr 로 보내주시면 결원 발생시 우선적으로 서류 심사 대상이 됩니다.
+       </p>
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <script>
+   //풀페이지 푸터 사용
+    $(document).ready(function () {
+        $('.main').fullpage({
+            navigation: false,
+            scrollingSpeed: 1500,
+            sectionSelector: '.section',
+            slideSelector: '.fullPageSlide',
+            // responsive: 768,
+            anchors: ['section01', 'section02', 'section03', 'section04', 'section05', 'section06']
+        });
+        var footerSection = $('#footer');
+        $('.footerSection').html(footerSection);
+    });
+
+    $(document).ready(function () {
+        $('.popup_open').click(function () {
+            $('.popup .cont > div').hide();
+            var activePopup = $(this).attr('rel');
+
+            $('.popup').fadeIn();
+            $('.popup .cont > div#' + activePopup).fadeIn();
+
+            var popupWidth = $('.popup .cont').outerWidth();
+            var popupHeight = $('.popup .cont').outerHeight();
+
+            $('.popup .cont').css({
+                'left': ($(window).width() - popupWidth) / 2,
+                'top': ($(window).height() - popupHeight) / 2
+            });
+
+            $(window).resize(function () {
+                var popupWidth = $('.popup .cont').outerWidth();
+                var popupHeight = $('.popup .cont').outerHeight();
+
+                $('.popup .cont').css({
+                    'left': ($(window).width() - popupWidth) / 2,
+                    'top': ($(window).height() - popupHeight) / 2
+                });
+            });
+        });
+
+        $('.popup_close').click(function () {
+            $('.popup').fadeOut();
+        });
+        /* 팝업 클릭시 배경 컨텐츠 스크롤 방지 */
+        $(document).ready(function () {
+            $('.popup_open').click(function () {
+                $('body').css({
+                    overflow: 'hidden'
+                });
+            });
+
+            $('.popup_close').click(function () {
+                $('body').css({
+                    overflow: 'visible'
+                });
+            });
+        });
+    });
+  </script>
+  <!--                ### 팝업 시작 ###            -->
+  <script language="javascript">
+   <!--
+function readCookie(cookiename)
+{
+ var Found = false;
+
+ cookiedata = document.cookie;
+ if ( cookiedata.indexOf(cookiename) >= 0 ){
+   Found = true;
+ }
+
+ return Found;
+}
+
+function setCookie( name, value, expiredays )
+{
+ var todayDate = new Date();
+ todayDate.setDate( todayDate.getDate() + expiredays );
+ document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + todayDate.toGMTString() + ";"
+}
+//-->
+  </script>
+  <!--                ### 팝업 끝 ###            -->
+  <footer class="footer animatedParent animateOnce" id="footer">
+   <a class="goTop" href="#section01">
+    <img alt="상단 이동" src="common\img\layout\go_top_icon.png"/>
+   </a>
+   <article class="footerArt">
+    <div class="inner">
+     <div class="flexBox">
+      <div class="leftArea animated fadeInUpShort delay-250">
+       <a class="popup_open" href="arthur@arthur.co.kr" rel="contactForm">
+        <div>
+         <h3 class="montserrat">
+          Let's Get in Touch
+         </h3>
+        </div>
+        <span>
+         <div class="bg">
+          <img alt="" src="common\img\layout\foot_goCircle.png"/>
+         </div>
+         <img alt="" class="centerImg" src="common\img\layout\foot_goicon.png"/>
+        </span>
+        <p class="animated fadeInUpShort delay-500">
+         프로젝트 의뢰하기
+        </p>
+       </a>
+      </div>
+      <div class="rightArea animated fadeInUpShort delay-500">
+       <div class="bdLine">
+        <div class="root_daum_roughmap root_daum_roughmap_landing" id="daumRoughmapContainer1673836719953" style="width:100%;">
+        </div>
+        <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js">
+        </script>
+        <!-- 3. 실행 스크립트 -->
+        <script charset="UTF-8">
+         new daum.roughmap.Lander({
+                                        "timestamp": "1673836719953",
+                                        "key": "2dfn8",
+                                    }).render();
+        </script>
+       </div>
+      </div>
+     </div>
+    </div>
+   </article>
+   <article class="fgnbArt">
+    <div class="inner">
+     <div class="flexBox">
+      <ul class="animated fadeInUpShort delay-250">
+       <li>
+        <a href="https://www.facebook.com/2013arthur" target="_blank">
+         <img alt="" src="common\img\layout\foot_icon_facebook.png"/>
+        </a>
+       </li>
+       <li>
+        <a href="index.html">
+         개인정보처리방침
+        </a>
+       </li>
+       <!--<li>
+                                <a href=""><img src="/common/img/layout/foot_icon_twit.png" alt=""></a>
+                            </li>
+                            <li>
+                                <a href=""><img src="/common/img/layout/foot_icon_instar.png" alt=""></a>
+                            </li>-->
+      </ul>
+     </div>
+     <ul class="fAddress animated fadeInUpShort delay-500">
+      <li>
+       <span class="montserrat">
+        Address
+       </span>
+       <p>
+        서울특별시 서초구 신반포로322 언주빌딩 3층
+       </p>
+      </li>
+      <li>
+       <span class="montserrat">
+        Tel
+       </span>
+       <p class="montserrat">
+        02-6258-0100
+       </p>
+      </li>
+      <li>
+       <span class="montserrat">
+        Fax
+       </span>
+       <p class="montserrat">
+        02-6258-0111
+       </p>
+      </li>
+      <li>
+       <span class="montserrat">
+        Email
+       </span>
+       <p class="montserrat">
+        arthur@arthur.co.kr
+       </p>
+      </li>
+     </ul>
+     <p class="copyright montserrat animated fadeInUpShort delay-750">
+      © CreativeGroupArthur. All Rights
+                        Reserved.
+     </p>
+    </div>
+   </article>
+  </footer>
+  <script src="common\js\css3-animate.js" type="text/javascript">
+  </script>
+  <script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js" type="text/javascript">
+  </script>
+ </body>
+</html>

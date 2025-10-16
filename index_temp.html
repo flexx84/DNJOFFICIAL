@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+   <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+   <title>
+    크리에이티브그룹 아더
+   </title>
+   <meta content="telephone=no" name="format-detection"/>
+   <meta content="크리에이티브그룹 아더" name="keywords">
+    <meta content="크리에이티브그룹 아더" name="description">
+     <meta content="website" property="og:type"/>
+     <meta content="크리에이티브그룹 아더" property="og:title"/>
+     <meta content="크리에이티브그룹 아더" property="og:description"/>
+     <meta content="/common/layout/Logo_color.png" property="og:image"/>
+     <!-- Chrome, Safari, IE  32*32  https://icoconvert.com/  -->
+     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+     <!-- Firefox, Opera (Chrome and Safari say thanks but no thanks) -->
+     <link href="favicon.png" rel="icon" sizes="192x192" type="image/png"/>
+     <!-- apple safari -->
+     <link href="favicon.png" rel="apple-touch-icon" sizes="180x180" type="image/png"/>
+     <link href="https://webfontworld.github.io/SCoreDream/SCoreDream.css" rel="stylesheet"/>
+     <link href="common/css/efront.css" rel="stylesheet" type="text/css">
+     
+     <!-- Fluid Cursor CSS -->
+     <style>
+       #fluid-canvas {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         pointer-events: none;
+         z-index: 9999;
+         mix-blend-mode: difference;
+       }
+     </style>
+     
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
+      </script>
+      <script src="comm/js/script.js" type="text/javascript">
+      </script>
+      <!-- 회원가입등 공통스크립트 -->
+      <script src="common/js/jquery.fullpage.js" type="text/javascript">
+      </script>
+      <script src="common/js/swiper.js" type="text/javascript">
+      </script>
+      <script src="common/js/swiper.js.map" type="application/json">
+      </script>
+      <script src="common/js/common.js" type="text/javascript">
+      </script>
+      
+      <!-- Simple Mouse Effect -->
+      <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('🎯 마우스 효과 초기화 시작...');
+          
+          // Create canvas for mouse effect
+          const canvas = document.createElement('canvas');
+          canvas.id = 'fluid-canvas';
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          document.body.appendChild(canvas);
+          
+          const ctx = canvas.getContext('2d');
+          
+          // Mouse tracking
+          let mouseX = 0;
+          let mouseY = 0;
+          let isMouseDown = false;
+          
+          // Particles array
+          const particles = [];
+          
+          // Particle class
+          class Particle {
+            constructor(x, y, color) {
+              this.x = x;
+              this.y = y;
+              this.vx = (Math.random() - 0.5) * 4;
+              this.vy = (Math.random() - 0.5) * 4;
+              this.color = color;
+              this.life = 1;
+              this.decay = Math.random() * 0.02 + 0.01;
+              this.size = Math.random() * 8 + 2;
+            }
+            
+            update() {
+              this.x += this.vx;
+              this.y += this.vy;
+              this.life -= this.decay;
+              this.size *= 0.99;
+            }
+            
+            draw(ctx) {
+              ctx.save();
+              ctx.globalAlpha = this.life;
+              ctx.fillStyle = this.color;
+              ctx.beginPath();
+              ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.restore();
+            }
+          }
+          
+          // Generate random color
+          function randomColor() {
+            const colors = ['#ff000b', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'];
+            return colors[Math.floor(Math.random() * colors.length)];
+          }
+          
+          // Animation loop
+          function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+              const particle = particles[i];
+              particle.update();
+              particle.draw(ctx);
+              
+              if (particle.life <= 0 || particle.size <= 0.1) {
+                particles.splice(i, 1);
+              }
+            }
+            
+            // Create new particles on mouse move
+            if (isMouseDown) {
+              for (let i = 0; i < 3; i++) {
+                particles.push(new Particle(mouseX, mouseY, randomColor()));
+              }
+            }
+            
+            requestAnimationFrame(animate);
+          }
+          
+          // Mouse events
+          document.addEventListener('mousemove', function(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Create trail particles
+            if (Math.random() > 0.7) {
+              particles.push(new Particle(mouseX, mouseY, randomColor()));
+            }
+          });
+          
+          document.addEventListener('mousedown', function() {
+            isMouseDown = true;
+          });
+          
+          document.addEventListener('mouseup', function() {
+            isMouseDown = false;
+          });
+          
+          // Window resize
+          window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+          });
+          
+          // Start animation
+          animate();
+          console.log('✅ 마우스 효과 초기화 완료!');
+        });
+      </script>
+      
+      <!-- 크로스브라우징 -->
+      <!--[if lt IE 9]>
+        <script src="/common/js/html5shiv.min.js"></script>
+        <![endif]-->
+     </link>
+    </meta>
+   </meta>
+  </meta>
+ </head>
+<body>
+ <header class="header">
+   <div>
+    <h1 class="montserrat">
+     <a href="index.html">
+      <img alt="Creative group arthur 크리에이티브그룹아더" src="common\img\layout\logo.png"/>
+     </a>
+    </h1>
+    <div class="etc etcPC montserrat">
+     <a class="toggle togglePC" href="javascript:void(0)">
+      <div class="icon">
+       <span>
+       </span>
+       <span>
+       </span>
+       <span>
+       </span>
+      </div>
+      <p>
+       MENU
+      </p>
+     </a>
+    </div>
+   </div>
+  </header>
+  
+  <!-- 나머지 기존 HTML 내용이 여기에 들어갑니다 -->
+  <!-- 이 부분은 원본 파일에서 복사해야 합니다 -->
+  
+ </body>
+</html>
