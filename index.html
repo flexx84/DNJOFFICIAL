@@ -4158,32 +4158,35 @@ function setCookie( name, value, expiredays )
     `;
     document.head.appendChild(style);
   </script>
-  <!-- 조건부 관리 모드 버튼 (인라인 스크립트) -->
+  <!-- 새로운 관리 모드 시스템 (인라인 스크립트) -->
   <script>
-    console.log('조건부 관리 모드 스크립트 시작');
+    console.log('새로운 관리 모드 시스템 시작');
     
-    let adminMode = false;
-    let menuClickCount = 0;
-    let menuClickTimer = null;
-    let adminButtonVisible = false;
+    // 전역 변수 초기화
+    window.adminSystem = {
+      isActive: false,
+      buttonVisible: false,
+      menuClickCount: 0,
+      menuClickTimer: null,
+      adminPanel: null,
+      adminIndicator: null,
+      adminButton: null
+    };
     
-    // 관리 모드 패널 존재 여부 확인
-    function checkAdminPanelExists() {
-      const adminPanel = document.getElementById('adminMode');
-      const adminIndicator = document.getElementById('adminIndicator');
-      console.log('관리 모드 패널 확인:', adminPanel);
-      console.log('관리 모드 인디케이터 확인:', adminIndicator);
-      return adminPanel && adminIndicator;
-    }
-    
-    // 관리 모드 버튼 생성 (조건부)
-    function createConditionalAdminButton() {
-      console.log('조건부 관리 모드 버튼 생성 시작');
+    // 새로운 관리 모드 시스템 초기화
+    function initAdminSystem() {
+      console.log('관리 모드 시스템 초기화 시작');
       
-      // 관리 모드 패널이 존재하지 않으면 버튼 생성하지 않음
-      if (!checkAdminPanelExists()) {
-        console.log('관리 모드 패널이 존재하지 않습니다. 버튼을 생성하지 않습니다.');
-        return;
+      // 관리 모드 요소들 찾기
+      window.adminSystem.adminPanel = document.getElementById('adminMode');
+      window.adminSystem.adminIndicator = document.getElementById('adminIndicator');
+      
+      console.log('관리 모드 패널:', window.adminSystem.adminPanel);
+      console.log('관리 모드 인디케이터:', window.adminSystem.adminIndicator);
+      
+      if (!window.adminSystem.adminPanel || !window.adminSystem.adminIndicator) {
+        console.log('관리 모드 요소들을 찾을 수 없습니다!');
+        return false;
       }
       
       // 기존 관리 모드 버튼들 모두 제거
@@ -4194,11 +4197,11 @@ function setCookie( name, value, expiredays )
         }
       });
       
-      // 새로운 조건부 버튼 생성 (처음에는 숨김)
-      const conditionalButton = document.createElement('div');
-      conditionalButton.id = 'conditionalAdminButton';
-      conditionalButton.innerHTML = '🔧 관리모드';
-      conditionalButton.style.cssText = `
+      // 새로운 관리 모드 버튼 생성
+      window.adminSystem.adminButton = document.createElement('div');
+      window.adminSystem.adminButton.id = 'newAdminButton';
+      window.adminSystem.adminButton.innerHTML = '🔧 관리모드';
+      window.adminSystem.adminButton.style.cssText = `
         position: fixed !important;
         top: 10px !important;
         right: 10px !important;
@@ -4218,73 +4221,65 @@ function setCookie( name, value, expiredays )
         transition: all 0.3s ease !important;
       `;
       
-      conditionalButton.onclick = function(e) {
+      // 클릭 이벤트 등록
+      window.adminSystem.adminButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('조건부 관리 모드 버튼 클릭됨!');
-        
-        try {
-          const adminPanel = document.getElementById('adminMode');
-          const adminIndicator = document.getElementById('adminIndicator');
-          
-          if (!adminPanel || !adminIndicator) {
-            console.log('관리 모드 요소들을 찾을 수 없습니다!');
-            return;
-          }
-          
-          const isCurrentlyVisible = adminPanel.style.display === 'block' || 
-                                    (adminPanel.style.display === '' && window.getComputedStyle(adminPanel).display !== 'none');
-          
-          if (!isCurrentlyVisible) {
-            // 관리 모드 활성화
-            adminPanel.style.display = 'block';
-            adminPanel.style.zIndex = '9999999';
-            adminIndicator.style.display = 'block';
-            adminIndicator.textContent = '관리 모드 활성화';
-            adminMode = true;
-            console.log('관리 모드 활성화됨!');
-          } else {
-            // 관리 모드 비활성화
-            adminPanel.style.display = 'none';
-            adminIndicator.style.display = 'none';
-            adminMode = false;
-            console.log('관리 모드 비활성화됨!');
-          }
-        } catch (error) {
-          console.error('관리 모드 토글 중 오류:', error);
-        }
-      };
+        console.log('관리 모드 버튼 클릭됨!');
+        toggleAdminMode();
+      });
       
       // DOM에 추가 (숨김 상태)
-      document.body.appendChild(conditionalButton);
-      console.log('조건부 관리 모드 버튼 생성 완료 (숨김 상태)');
+      document.body.appendChild(window.adminSystem.adminButton);
+      console.log('새로운 관리 모드 버튼 생성 완료 (숨김 상태)');
+      
+      return true;
     }
     
-    // 관리 모드 버튼 표시 (활성화 조건 달성 시)
+    // 관리 모드 토글
+    function toggleAdminMode() {
+      console.log('관리 모드 토글 시작, 현재 상태:', window.adminSystem.isActive);
+      
+      if (window.adminSystem.isActive) {
+        // 비활성화
+        window.adminSystem.adminPanel.style.display = 'none';
+        window.adminSystem.adminIndicator.style.display = 'none';
+        window.adminSystem.isActive = false;
+        console.log('관리 모드 비활성화됨!');
+      } else {
+        // 활성화
+        window.adminSystem.adminPanel.style.display = 'block';
+        window.adminSystem.adminPanel.style.zIndex = '9999999';
+        window.adminSystem.adminIndicator.style.display = 'block';
+        window.adminSystem.adminIndicator.textContent = '관리 모드 활성화';
+        window.adminSystem.isActive = true;
+        console.log('관리 모드 활성화됨!');
+      }
+    }
+    
+    // 관리 모드 버튼 표시
     function showAdminButton() {
-      if (adminButtonVisible) {
+      if (window.adminSystem.buttonVisible) {
         console.log('관리 모드 버튼이 이미 표시되어 있습니다.');
         return;
       }
       
-      const button = document.getElementById('conditionalAdminButton');
-      if (button) {
-        button.style.display = 'block';
-        button.style.visibility = 'visible';
-        button.style.opacity = '1';
-        adminButtonVisible = true;
+      if (window.adminSystem.adminButton) {
+        window.adminSystem.adminButton.style.display = 'block';
+        window.adminSystem.adminButton.style.visibility = 'visible';
+        window.adminSystem.adminButton.style.opacity = '1';
+        window.adminSystem.buttonVisible = true;
         console.log('관리 모드 버튼 표시됨');
       }
     }
     
     // 관리 모드 버튼 숨김
     function hideAdminButton() {
-      const button = document.getElementById('conditionalAdminButton');
-      if (button) {
-        button.style.display = 'none';
-        button.style.visibility = 'hidden';
-        button.style.opacity = '0';
-        adminButtonVisible = false;
+      if (window.adminSystem.adminButton) {
+        window.adminSystem.adminButton.style.display = 'none';
+        window.adminSystem.adminButton.style.visibility = 'hidden';
+        window.adminSystem.adminButton.style.opacity = '0';
+        window.adminSystem.buttonVisible = false;
         console.log('관리 모드 버튼 숨김됨');
       }
     }
@@ -4304,23 +4299,26 @@ function setCookie( name, value, expiredays )
             button.textContent.includes('≡') ||
             button.className.includes('toggle')
           )) {
-            button.addEventListener('click', function() {
-              menuClickCount++;
-              console.log('MENU 버튼 클릭:', menuClickCount, '/ 5');
+            button.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
               
-              if (menuClickTimer) {
-                clearTimeout(menuClickTimer);
+              window.adminSystem.menuClickCount++;
+              console.log('MENU 버튼 클릭:', window.adminSystem.menuClickCount, '/ 5');
+              
+              if (window.adminSystem.menuClickTimer) {
+                clearTimeout(window.adminSystem.menuClickTimer);
               }
               
-              if (menuClickCount >= 5) {
+              if (window.adminSystem.menuClickCount >= 5) {
                 console.log('MENU 버튼 5번 클릭 달성 - 관리 모드 버튼 표시');
                 showAdminButton();
-                menuClickCount = 0;
+                window.adminSystem.menuClickCount = 0;
               } else {
-                console.log('MENU 버튼 클릭 필요:', (5 - menuClickCount), '번 더');
-                menuClickTimer = setTimeout(() => {
+                console.log('MENU 버튼 클릭 필요:', (5 - window.adminSystem.menuClickCount), '번 더');
+                window.adminSystem.menuClickTimer = setTimeout(() => {
                   console.log('MENU 버튼 카운터 리셋 (2초 경과)');
-                  menuClickCount = 0;
+                  window.adminSystem.menuClickCount = 0;
                 }, 2000);
               }
             });
@@ -4337,7 +4335,7 @@ function setCookie( name, value, expiredays )
         if (e.ctrlKey && e.shiftKey && e.key === 'G') {
           e.preventDefault();
           console.log('Ctrl+Shift+G 키보드 단축키 - 관리 모드 버튼 표시');
-          if (!adminButtonVisible) {
+          if (!window.adminSystem.buttonVisible) {
             showAdminButton();
           } else {
             console.log('관리 모드 버튼이 이미 표시되어 있습니다.');
@@ -4346,16 +4344,14 @@ function setCookie( name, value, expiredays )
       });
     }
     
-    // 초기화 함수
-    function initializeConditionalAdmin() {
-      console.log('조건부 관리 모드 초기화 시작');
+    // 새로운 초기화 함수
+    function initializeNewAdminSystem() {
+      console.log('새로운 관리 모드 시스템 초기화 시작');
       
-      // 관리 모드 패널 확인 후 버튼 생성
-      if (checkAdminPanelExists()) {
-        createConditionalAdminButton();
+      if (initAdminSystem()) {
         setupMenuButtonListener();
         setupKeyboardShortcut();
-        console.log('조건부 관리 모드 초기화 완료');
+        console.log('새로운 관리 모드 시스템 초기화 완료');
       } else {
         console.log('관리 모드 패널이 없어서 초기화를 건너뜁니다.');
       }
@@ -4363,20 +4359,33 @@ function setCookie( name, value, expiredays )
     
     // DOM 로드 완료 후 실행
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeConditionalAdmin);
+      document.addEventListener('DOMContentLoaded', initializeNewAdminSystem);
     } else {
-      initializeConditionalAdmin();
+      initializeNewAdminSystem();
     }
     
     // 지연 초기화 (안전장치)
-    setTimeout(initializeConditionalAdmin, 1000);
+    setTimeout(initializeNewAdminSystem, 1000);
     
     // 글로벌 함수 등록
     window.showAdminButton = showAdminButton;
     window.hideAdminButton = hideAdminButton;
-    window.initializeAdmin = initializeConditionalAdmin;
+    window.toggleAdminMode = toggleAdminMode;
+    window.initializeAdmin = initializeNewAdminSystem;
     
-    console.log('조건부 관리 모드 스크립트 완료');
+    // 디버깅 함수
+    window.debugAdminSystem = function() {
+      console.log('=== 관리 모드 시스템 디버그 ===');
+      console.log('adminSystem:', window.adminSystem);
+      console.log('isActive:', window.adminSystem.isActive);
+      console.log('buttonVisible:', window.adminSystem.buttonVisible);
+      console.log('menuClickCount:', window.adminSystem.menuClickCount);
+      console.log('adminPanel:', window.adminSystem.adminPanel);
+      console.log('adminIndicator:', window.adminSystem.adminIndicator);
+      console.log('adminButton:', window.adminSystem.adminButton);
+    };
+    
+    console.log('새로운 관리 모드 시스템 완료');
   </script>
 
   </body>
