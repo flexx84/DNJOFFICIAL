@@ -2927,21 +2927,33 @@ function setCookie( name, value, expiredays )
       // 여전히 찾지 못했다면 강제로 요소 생성
       if (!AdminSystem.adminPanel) {
         console.log('패널을 찾지 못함. 강제 생성 시도...');
+        
         // 실제 패널을 찾아서 참조
         const realPanel = document.querySelector('div[id="adminMode"]');
         if (realPanel) {
           AdminSystem.adminPanel = realPanel;
           console.log('✅ 실제 패널 찾아서 참조 설정됨');
+        } else {
+          // 패널이 전혀 없다면 새로 생성
+          console.log('패널이 DOM에 없음. 새로 생성...');
+          AdminSystem.adminPanel = createAdminPanel();
+          console.log('✅ 새 패널 생성됨');
         }
       }
       
       if (!AdminSystem.adminIndicator) {
         console.log('인디케이터를 찾지 못함. 강제 생성 시도...');
+        
         // 실제 인디케이터를 찾아서 참조
         const realIndicator = document.querySelector('div[id="adminIndicator"]');
         if (realIndicator) {
           AdminSystem.adminIndicator = realIndicator;
           console.log('✅ 실제 인디케이터 찾아서 참조 설정됨');
+        } else {
+          // 인디케이터가 전혀 없다면 새로 생성
+          console.log('인디케이터가 DOM에 없음. 새로 생성...');
+          AdminSystem.adminIndicator = createAdminIndicator();
+          console.log('✅ 새 인디케이터 생성됨');
         }
       }
       
@@ -2952,6 +2964,115 @@ function setCookie( name, value, expiredays )
       
       return AdminSystem.adminPanel && AdminSystem.adminIndicator;
     };
+    
+    // 관리 모드 패널 생성 함수
+    function createAdminPanel() {
+      const panel = document.createElement('div');
+      panel.className = 'admin-mode';
+      panel.id = 'adminMode';
+      panel.style.cssText = `
+        display: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.95) !important;
+        z-index: 10000 !important;
+        color: white !important;
+        font-family: 'SCoreDream', Arial, sans-serif !important;
+      `;
+      
+      panel.innerHTML = `
+        <div class="admin-panel" style="
+          background: linear-gradient(135deg, #1a1a1a, #2d2d2d) !important;
+          border-radius: 15px !important;
+          padding: 30px !important;
+          max-width: 1200px !important;
+          max-height: 90vh !important;
+          overflow-y: auto !important;
+          margin: 50px auto !important;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+          border: 2px solid #ff000b !important;
+        ">
+          <div class="admin-header" style="
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 30px !important;
+            padding-bottom: 20px !important;
+            border-bottom: 2px solid #ff000b !important;
+          ">
+            <h2 class="admin-title" style="
+              color: #ff000b !important;
+              font-size: 28px !important;
+              font-weight: bold !important;
+              margin: 0 !important;
+            ">🔧 관리 모드</h2>
+            <button class="admin-close" onclick="toggleAdminMode()" style="
+              background: #ff000b !important;
+              color: white !important;
+              border: none !important;
+              padding: 10px 20px !important;
+              border-radius: 8px !important;
+              cursor: pointer !important;
+              font-size: 16px !important;
+              font-weight: bold !important;
+            ">닫기</button>
+          </div>
+          
+          <div class="admin-content" style="
+            color: white !important;
+            font-size: 18px !important;
+            text-align: center !important;
+            padding: 50px 20px !important;
+          ">
+            <h3 style="color: #ff000b !important; margin-bottom: 20px !important;">관리 모드가 활성화되었습니다!</h3>
+            <p style="margin-bottom: 30px !important;">이 패널을 통해 웹사이트의 각 섹션을 편집할 수 있습니다.</p>
+            <div style="
+              background: rgba(255, 0, 11, 0.1) !important;
+              border: 1px solid #ff000b !important;
+              border-radius: 8px !important;
+              padding: 20px !important;
+              margin: 20px 0 !important;
+            ">
+              <p style="margin: 0 !important; font-weight: bold !important;">⚠️ 관리 모드 패널이 새로 생성되었습니다.</p>
+              <p style="margin: 5px 0 0 0 !important; font-size: 14px !important;">원본 패널을 찾을 수 없어 임시 패널이 생성되었습니다.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(panel);
+      return panel;
+    }
+    
+    // 관리 모드 인디케이터 생성 함수
+    function createAdminIndicator() {
+      const indicator = document.createElement('div');
+      indicator.className = 'admin-indicator';
+      indicator.id = 'adminIndicator';
+      indicator.style.cssText = `
+        display: none !important;
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        background: linear-gradient(135deg, #ff000b, #cc0009) !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 25px !important;
+        font-weight: bold !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 15px rgba(255, 0, 11, 0.4) !important;
+        animation: pulse 2s infinite !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+      `;
+      
+      indicator.innerHTML = '⚙️ 관리 모드 활성화';
+      document.body.appendChild(indicator);
+      return indicator;
+    }
     
     // 페이지 로드 후 즉시 긴급 수정 실행
     setTimeout(() => {
