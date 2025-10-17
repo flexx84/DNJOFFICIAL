@@ -1974,7 +1974,7 @@
        </div>
        
        <!-- 스타일 편집 탭 내용 -->
-       <div id="style-tab" class="popup-tab-content">
+       <div id="popup-style-tab" class="popup-tab-content">
          <div class="popup-form-group">
            <label class="popup-label">텍스트 색상</label>
            <input type="color" id="popup-text-color" class="popup-color-input" value="#ffffff">
@@ -2283,6 +2283,14 @@
            <div class="form-controls">
              <button class="btn btn-primary" onclick="applySectionStyle('section01')">✅ 섹션 1 스타일 적용</button>
              <button class="btn btn-secondary" onclick="resetSectionStyle('section01')">🔄 초기화</button>
+             <button class="btn btn-info" onclick="previewSectionStyle('section01')">👁️ 미리보기</button>
+           </div>
+           <div class="style-preview" id="section01-preview" style="display: none;">
+             <h5>섹션 1 미리보기</h5>
+             <div class="preview-content" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h3 style="color: #ff000b;">메인 제목</h3>
+               <p style="color: #333;">서브 제목 및 설명 텍스트</p>
+             </div>
            </div>
          </div>
          
@@ -2316,6 +2324,14 @@
            <div class="form-controls">
              <button class="btn btn-primary" onclick="applySectionStyle('section02')">✅ 섹션 2 스타일 적용</button>
              <button class="btn btn-secondary" onclick="resetSectionStyle('section02')">🔄 초기화</button>
+             <button class="btn btn-info" onclick="previewSectionStyle('section02')">👁️ 미리보기</button>
+           </div>
+           <div class="style-preview" id="section02-preview" style="display: none;">
+             <h5>섹션 2 미리보기</h5>
+             <div class="preview-content" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h3 style="color: #ff000b;">회사 소개 제목</h3>
+               <p style="color: #333;">회사 소개 내용</p>
+             </div>
            </div>
          </div>
          
@@ -2349,6 +2365,14 @@
            <div class="form-controls">
              <button class="btn btn-primary" onclick="applySectionStyle('section03')">✅ 섹션 3 스타일 적용</button>
              <button class="btn btn-secondary" onclick="resetSectionStyle('section03')">🔄 초기화</button>
+             <button class="btn btn-info" onclick="previewSectionStyle('section03')">👁️ 미리보기</button>
+           </div>
+           <div class="style-preview" id="section03-preview" style="display: none;">
+             <h5>섹션 3 미리보기</h5>
+             <div class="preview-content" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h3 style="color: #ff000b;">서비스 제목</h3>
+               <p style="color: #333;">서비스 설명</p>
+             </div>
            </div>
          </div>
          
@@ -2382,6 +2406,14 @@
            <div class="form-controls">
              <button class="btn btn-primary" onclick="applySectionStyle('section04')">✅ 섹션 4 스타일 적용</button>
              <button class="btn btn-secondary" onclick="resetSectionStyle('section04')">🔄 초기화</button>
+             <button class="btn btn-info" onclick="previewSectionStyle('section04')">👁️ 미리보기</button>
+           </div>
+           <div class="style-preview" id="section04-preview" style="display: none;">
+             <h5>섹션 4 미리보기</h5>
+             <div class="preview-content" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h3 style="color: #ff000b;">연락처 제목</h3>
+               <p style="color: #333;">연락처 정보</p>
+             </div>
            </div>
          </div>
          
@@ -2648,6 +2680,46 @@
              <button class="btn btn-secondary" onclick="loadAllTexts()">📥 모든 텍스트 로드</button>
              <button class="btn btn-secondary" onclick="saveAllTexts()">💾 모든 텍스트 저장</button>
              <button class="btn btn-danger" onclick="resetAllTexts()">🔄 모든 텍스트 초기화</button>
+             <button class="btn btn-info" onclick="showAllTextPreviews()">👁️ 모든 텍스트 미리보기</button>
+           </div>
+         </div>
+         
+         <!-- 텍스트 미리보기 영역 -->
+         <div class="text-preview-section" id="text-preview-section" style="display: none; margin-top: 20px;">
+           <h4 class="form-label">📱 텍스트 미리보기</h4>
+           <div class="preview-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+             <div class="preview-card" id="section01-text-preview" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h5>섹션 1 미리보기</h5>
+               <div class="preview-text-content">
+                 <h3 id="preview-section01-title" style="color: #ff000b;">제목</h3>
+                 <h4 id="preview-section01-subtitle" style="color: #666;">부제목</h4>
+                 <p id="preview-section01-description" style="color: #333;">설명</p>
+               </div>
+             </div>
+             <div class="preview-card" id="section02-text-preview" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h5>섹션 2 미리보기</h5>
+               <div class="preview-text-content">
+                 <h3 id="preview-section02-title" style="color: #ff000b;">제목</h3>
+                 <h4 id="preview-section02-subtitle" style="color: #666;">부제목</h4>
+                 <p id="preview-section02-description" style="color: #333;">설명</p>
+               </div>
+             </div>
+             <div class="preview-card" id="section03-text-preview" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h5>섹션 3 미리보기</h5>
+               <div class="preview-text-content">
+                 <h3 id="preview-section03-title" style="color: #ff000b;">제목</h3>
+                 <h4 id="preview-section03-subtitle" style="color: #666;">부제목</h4>
+                 <p id="preview-section03-description" style="color: #333;">설명</p>
+               </div>
+             </div>
+             <div class="preview-card" id="section04-text-preview" style="padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;">
+               <h5>섹션 4 미리보기</h5>
+               <div class="preview-text-content">
+                 <h3 id="preview-section04-title" style="color: #ff000b;">제목</h3>
+                 <h4 id="preview-section04-subtitle" style="color: #666;">부제목</h4>
+                 <p id="preview-section04-description" style="color: #333;">설명</p>
+               </div>
+             </div>
            </div>
          </div>
        </div>
@@ -5694,7 +5766,13 @@ function setCookie( name, value, expiredays )
       
       // 선택된 탭 활성화
       const selectedTab = document.querySelector(`[onclick="switchPopupTab('${tabName}')"]`);
-      const selectedContent = document.getElementById(`${tabName}-tab`);
+      let selectedContent;
+      
+      if (tabName === 'style') {
+        selectedContent = document.getElementById('popup-style-tab');
+      } else {
+        selectedContent = document.getElementById(`${tabName}-tab`);
+      }
       
       if (selectedTab) selectedTab.classList.add('active');
       if (selectedContent) selectedContent.classList.add('active');
@@ -6668,6 +6746,13 @@ function setCookie( name, value, expiredays )
       
       showSuccessMessage('모든 텍스트가 로드되었습니다!');
       console.log('✅ 모든 텍스트 로드 완료');
+      
+      // 텍스트 로드 후 미리보기도 업데이트
+      setTimeout(() => {
+        if (typeof updateAllTextPreviews === 'function') {
+          updateAllTextPreviews();
+        }
+      }, 100);
     };
     
     // 섹션별 텍스트 로드
@@ -7237,6 +7322,136 @@ function setCookie( name, value, expiredays )
       console.log('✅ 투명도 슬라이더 설정 완료');
     }
     
+    // 섹션별 스타일 미리보기 함수
+    window.previewSectionStyle = function(sectionId) {
+      console.log(`=== ${sectionId} 스타일 미리보기 시작 ===`);
+      
+      const previewDiv = document.getElementById(`${sectionId}-preview`);
+      if (!previewDiv) {
+        console.log(`❌ ${sectionId} 미리보기 영역을 찾을 수 없음`);
+        return;
+      }
+
+      // 입력값들 가져오기
+      const bgColor = document.getElementById(`${sectionId}-bg-color`)?.value || '#ffffff';
+      const textColor = document.getElementById(`${sectionId}-text-color`)?.value || '#333333';
+      const titleColor = document.getElementById(`${sectionId}-title-color`)?.value || '#ff000b';
+      const bgOpacity = document.getElementById(`${sectionId}-bg-opacity`)?.value || 1.0;
+      const textOpacity = document.getElementById(`${sectionId}-text-opacity`)?.value || 1.0;
+
+      console.log(`입력된 스타일 값들:`, {
+        bgColor, textColor, titleColor, bgOpacity, textOpacity
+      });
+
+      // 미리보기 영역 업데이트
+      const previewContent = previewDiv.querySelector('.preview-content');
+      if (previewContent) {
+        previewContent.style.backgroundColor = hexToRgba(bgColor, bgOpacity);
+        previewContent.style.color = hexToRgba(textColor, textOpacity);
+        
+        const previewTitle = previewContent.querySelector('h3');
+        if (previewTitle) {
+          previewTitle.style.color = titleColor;
+        }
+        
+        const previewText = previewContent.querySelector('p');
+        if (previewText) {
+          previewText.style.color = hexToRgba(textColor, textOpacity);
+        }
+      }
+
+      // 미리보기 표시/숨김 토글
+      if (previewDiv.style.display === 'none' || previewDiv.style.display === '') {
+        previewDiv.style.display = 'block';
+        console.log(`✅ ${sectionId} 미리보기 표시됨`);
+      } else {
+        previewDiv.style.display = 'none';
+        console.log(`✅ ${sectionId} 미리보기 숨김`);
+      }
+    };
+
+    // 모든 텍스트 미리보기 표시 함수
+    window.showAllTextPreviews = function() {
+      console.log('=== 모든 텍스트 미리보기 표시 ===');
+      
+      const previewSection = document.getElementById('text-preview-section');
+      if (!previewSection) {
+        console.log('❌ 텍스트 미리보기 영역을 찾을 수 없음');
+        return;
+      }
+
+      // 미리보기 표시/숨김 토글
+      if (previewSection.style.display === 'none' || previewSection.style.display === '') {
+        previewSection.style.display = 'block';
+        
+        // 모든 섹션의 텍스트 미리보기 업데이트
+        updateAllTextPreviews();
+        
+        console.log('✅ 모든 텍스트 미리보기 표시됨');
+      } else {
+        previewSection.style.display = 'none';
+        console.log('✅ 모든 텍스트 미리보기 숨김');
+      }
+    };
+
+    // 모든 텍스트 미리보기 업데이트 함수
+    window.updateAllTextPreviews = function() {
+      console.log('=== 모든 텍스트 미리보기 업데이트 ===');
+      
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      
+      sections.forEach(sectionId => {
+        updateSectionTextPreview(sectionId);
+      });
+    };
+
+    // 개별 섹션 텍스트 미리보기 업데이트 함수
+    window.updateSectionTextPreview = function(sectionId) {
+      console.log(`=== ${sectionId} 텍스트 미리보기 업데이트 ===`);
+      
+      // 실제 웹사이트에서 텍스트 가져오기
+      const section = document.querySelector(`.${sectionId}`);
+      if (!section) {
+        console.log(`❌ ${sectionId} 섹션을 찾을 수 없음`);
+        return;
+      }
+
+      // 섹션에서 텍스트 요소들 찾기
+      const titleElement = section.querySelector('h1, h2, h3');
+      const subtitleElement = section.querySelector('h4, h5, h6, .subtitle');
+      const descriptionElement = section.querySelector('p, .description');
+
+      // 미리보기 요소들 찾기
+      const previewTitle = document.getElementById(`preview-${sectionId}-title`);
+      const previewSubtitle = document.getElementById(`preview-${sectionId}-subtitle`);
+      const previewDescription = document.getElementById(`preview-${sectionId}-description`);
+
+      // 미리보기 텍스트 업데이트
+      if (previewTitle && titleElement) {
+        previewTitle.textContent = titleElement.textContent || '제목';
+      }
+      
+      if (previewSubtitle && subtitleElement) {
+        previewSubtitle.textContent = subtitleElement.textContent || '부제목';
+      }
+      
+      if (previewDescription && descriptionElement) {
+        previewDescription.textContent = descriptionElement.textContent || '설명';
+      }
+
+      console.log(`✅ ${sectionId} 텍스트 미리보기 업데이트 완료`);
+    };
+
+    // 개별 텍스트 미리보기 업데이트 함수
+    window.updateTextPreview = function(sectionId, textType, value) {
+      console.log(`=== ${sectionId} ${textType} 미리보기 업데이트: ${value} ===`);
+      
+      const previewElement = document.getElementById(`preview-${sectionId}-${textType}`);
+      if (previewElement) {
+        previewElement.textContent = value || (textType === 'title' ? '제목' : textType === 'subtitle' ? '부제목' : '설명');
+      }
+    };
+
     // 디버깅을 위한 전역 함수들
     window.debugStyleEditing = function() {
       console.log('=== 스타일 편집 디버깅 ===');
