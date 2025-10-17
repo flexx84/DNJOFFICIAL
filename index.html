@@ -1599,6 +1599,98 @@
     body:not(.admin-mode-active) .text-editable::after {
       display: none;
     }
+    
+    /* 관리모드 패널 내 텍스트 편집 스타일 */
+    .text-edit-section {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid #ff000b;
+    }
+    
+    .selected-text-display {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px dashed #555;
+      margin-bottom: 15px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .no-selection {
+      color: #888;
+      font-style: italic;
+    }
+    
+    .selected-text-content {
+      color: #ff000b;
+      font-weight: bold;
+      background: rgba(255, 0, 11, 0.1);
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+    
+    .section-text-editor {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+    
+    .section-text-editor h5 {
+      color: #ff000b;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .bulk-edit-container {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #555;
+      border-radius: 8px;
+      background: #2a2a2a;
+      padding: 10px;
+    }
+    
+    .bulk-edit-item {
+      padding: 15px;
+      border-bottom: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .bulk-edit-item:last-child {
+      border-bottom: none;
+    }
+    
+    .bulk-edit-info {
+      color: #ccc;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .bulk-edit-textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    .bulk-edit-textarea:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
   </style>
  </head>
 <body>
@@ -1839,6 +1931,7 @@
      <div class="admin-tabs">
        <button class="admin-tab active" onclick="switchTab('content')">콘텐츠 편집</button>
        <button class="admin-tab" onclick="switchTab('style')">스타일 편집</button>
+       <button class="admin-tab" onclick="switchTab('textedit')">📝 텍스트 편집</button>
        <button class="admin-tab" onclick="switchTab('images')">🖼️ 이미지 관리</button>
        <button class="admin-tab" onclick="switchTab('settings')">설정</button>
      </div>
@@ -2174,6 +2267,131 @@
              <button class="btn btn-primary" onclick="updateImageStats()">📊 통계 업데이트</button>
              <button class="btn btn-secondary" onclick="exportImageList()">📤 이미지 목록 내보내기</button>
              <button class="btn btn-danger" onclick="optimizeImages()">⚡ 이미지 최적화</button>
+           </div>
+         </div>
+       </div>
+     </div>
+     
+     <!-- 텍스트 편집 탭 -->
+     <div id="textedit-tab" class="tab-content">
+       <div class="section-editor">
+         <h3 class="section-title">📝 전체 텍스트 편집</h3>
+         <div class="form-group">
+           <p class="form-description">
+             웹사이트의 모든 텍스트를 한 곳에서 편집할 수 있습니다. 편집하고 싶은 텍스트를 클릭하거나 직접 입력하세요.
+           </p>
+         </div>
+         
+         <!-- 빠른 텍스트 편집 -->
+         <div class="text-edit-section">
+           <h4 class="form-label">⚡ 빠른 편집</h4>
+           <div class="form-group">
+             <label class="form-label">선택한 텍스트</label>
+             <div class="selected-text-display" id="adminSelectedText">
+               <span class="no-selection">편집하고 싶은 텍스트를 클릭하세요</span>
+             </div>
+             <textarea id="adminQuickEdit" class="form-textarea" placeholder="새로운 텍스트를 입력하세요" style="display: none;"></textarea>
+             <div class="form-controls" id="adminQuickEditControls" style="display: none;">
+               <button class="btn btn-primary" onclick="applyAdminQuickEdit()">✅ 적용</button>
+               <button class="btn btn-secondary" onclick="cancelAdminQuickEdit()">❌ 취소</button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 섹션별 텍스트 편집 -->
+         <div class="text-edit-section">
+           <h4 class="form-label">🎯 섹션별 편집</h4>
+           
+           <!-- 섹션 1 -->
+           <div class="section-text-editor" data-section="section01">
+             <h5 class="form-label">섹션 1 - 메인</h5>
+             <div class="form-row">
+               <div class="form-group">
+                 <label class="form-label">메인 제목</label>
+                 <input type="text" id="section01-main-title" class="form-input" placeholder="메인 제목">
+               </div>
+               <div class="form-group">
+                 <label class="form-label">서브 제목</label>
+                 <input type="text" id="section01-sub-title" class="form-input" placeholder="서브 제목">
+               </div>
+             </div>
+             <div class="form-group">
+               <label class="form-label">설명</label>
+               <textarea id="section01-description" class="form-textarea" placeholder="설명을 입력하세요"></textarea>
+             </div>
+           </div>
+           
+           <!-- 섹션 2 -->
+           <div class="section-text-editor" data-section="section02">
+             <h5 class="form-label">섹션 2 - 회사 소개</h5>
+             <div class="form-group">
+               <label class="form-label">제목</label>
+               <input type="text" id="section02-title" class="form-input" placeholder="제목">
+             </div>
+             <div class="form-group">
+               <label class="form-label">부제목</label>
+               <input type="text" id="section02-subtitle" class="form-input" placeholder="부제목">
+             </div>
+             <div class="form-group">
+               <label class="form-label">설명</label>
+               <textarea id="section02-description" class="form-textarea" placeholder="회사 소개 내용"></textarea>
+             </div>
+           </div>
+           
+           <!-- 섹션 3 -->
+           <div class="section-text-editor" data-section="section03">
+             <h5 class="form-label">섹션 3 - 서비스</h5>
+             <div class="form-group">
+               <label class="form-label">제목</label>
+               <input type="text" id="section03-title" class="form-input" placeholder="서비스 제목">
+             </div>
+             <div class="form-group">
+               <label class="form-label">서비스 1</label>
+               <input type="text" id="section03-service1" class="form-input" placeholder="서비스 1">
+             </div>
+             <div class="form-group">
+               <label class="form-label">서비스 2</label>
+               <input type="text" id="section03-service2" class="form-input" placeholder="서비스 2">
+             </div>
+           </div>
+           
+           <!-- 섹션 4 -->
+           <div class="section-text-editor" data-section="section04">
+             <h5 class="form-label">섹션 4 - 포트폴리오</h5>
+             <div class="form-group">
+               <label class="form-label">제목</label>
+               <input type="text" id="section04-title" class="form-input" placeholder="포트폴리오 제목">
+             </div>
+             <div class="form-group">
+               <label class="form-label">설명</label>
+               <textarea id="section04-description" class="form-textarea" placeholder="포트폴리오 설명"></textarea>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 일괄 편집 -->
+         <div class="text-edit-section">
+           <h4 class="form-label">📋 일괄 편집</h4>
+           <div class="form-group">
+             <p class="form-description">모든 텍스트를 한번에 편집할 수 있습니다.</p>
+             <div class="bulk-edit-container" id="adminBulkEditContainer">
+               <!-- 동적으로 생성될 텍스트 목록 -->
+             </div>
+             <div class="form-controls">
+               <button class="btn btn-primary" onclick="applyAdminBulkEdit()">✅ 모든 변경사항 적용</button>
+               <button class="btn btn-secondary" onclick="refreshAdminBulkEdit()">🔄 목록 새로고침</button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 텍스트 편집 도구 -->
+         <div class="text-edit-section">
+           <h4 class="form-label">🔧 편집 도구</h4>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="enableTextSelection()">🎯 텍스트 선택 모드</button>
+             <button class="btn btn-secondary" onclick="loadAllTexts()">📥 모든 텍스트 로드</button>
+             <button class="btn btn-secondary" onclick="saveAllTexts()">💾 모든 텍스트 저장</button>
+             <button class="btn btn-danger" onclick="resetAllTexts()">🔄 모든 텍스트 초기화</button>
            </div>
          </div>
        </div>
@@ -3495,11 +3713,12 @@ function setCookie( name, value, expiredays )
         transition: all 0.3s ease !important;
       `;
       
-      // 클릭 이벤트 등록 (5회 클릭으로 토글)
+      // 클릭 이벤트 등록 (1회 클릭으로 관리모드 활성화)
       AdminSystem.adminButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        handleAdminButtonClick();
+        console.log('=== 관리모드 버튼 클릭됨 ===');
+        toggleAdminMode();
       });
       
       // DOM에 추가 (숨김 상태)
@@ -6047,6 +6266,322 @@ function setCookie( name, value, expiredays )
       
       showSuccessMessage(`${appliedCount}개의 텍스트가 성공적으로 수정되었습니다!`);
       console.log(`✅ 일괄 편집 적용 완료: ${appliedCount}개`);
+    };
+    
+    // ===== 관리모드 패널 내 텍스트 편집 시스템 =====
+    
+    let adminSelectedElement = null;
+    
+    // 관리모드 패널 내 빠른 편집 적용
+    window.applyAdminQuickEdit = function() {
+      console.log('=== 관리모드 빠른 편집 적용 ===');
+      
+      if (!adminSelectedElement) {
+        showErrorMessage('편집할 텍스트를 선택해주세요.');
+        return;
+      }
+      
+      const textarea = document.getElementById('adminQuickEdit');
+      const newText = textarea.value.trim();
+      
+      if (!newText) {
+        showErrorMessage('텍스트를 입력해주세요.');
+        return;
+      }
+      
+      // 텍스트 적용
+      adminSelectedElement.textContent = newText;
+      
+      // 로컬 스토리지에 저장
+      const elementId = generateElementId(adminSelectedElement);
+      localStorage.setItem(`text_edit_${elementId}`, newText);
+      
+      showSuccessMessage('텍스트가 성공적으로 수정되었습니다!');
+      console.log('✅ 관리모드 빠른 편집 적용 완료');
+    };
+    
+    // 관리모드 패널 내 빠른 편집 취소
+    window.cancelAdminQuickEdit = function() {
+      console.log('=== 관리모드 빠른 편집 취소 ===');
+      
+      if (adminSelectedElement) {
+        adminSelectedElement.classList.remove('text-selected');
+        adminSelectedElement = null;
+      }
+      
+      const display = document.getElementById('adminSelectedText');
+      const textarea = document.getElementById('adminQuickEdit');
+      const controls = document.getElementById('adminQuickEditControls');
+      
+      if (display) {
+        display.innerHTML = '<span class="no-selection">편집하고 싶은 텍스트를 클릭하세요</span>';
+      }
+      if (textarea) {
+        textarea.style.display = 'none';
+        textarea.value = '';
+      }
+      if (controls) {
+        controls.style.display = 'none';
+      }
+      
+      console.log('✅ 관리모드 빠른 편집 취소됨');
+    };
+    
+    // 텍스트 선택 모드 활성화
+    window.enableTextSelection = function() {
+      console.log('=== 텍스트 선택 모드 활성화 ===');
+      
+      // 모든 텍스트 요소에 클릭 이벤트 추가
+      const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div');
+      
+      textElements.forEach(element => {
+        if (element.textContent.trim() && !element.classList.contains('admin-text-selection-active')) {
+          element.classList.add('admin-text-selection-active');
+          element.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            selectTextForAdmin(this);
+          });
+        }
+      });
+      
+      showSuccessMessage('텍스트 선택 모드가 활성화되었습니다. 편집하고 싶은 텍스트를 클릭하세요.');
+      console.log('✅ 텍스트 선택 모드 활성화됨');
+    };
+    
+    // 관리모드용 텍스트 선택
+    function selectTextForAdmin(element) {
+      console.log('=== 관리모드용 텍스트 선택 ===');
+      
+      // 이전 선택 해제
+      if (adminSelectedElement) {
+        adminSelectedElement.classList.remove('text-selected');
+      }
+      
+      // 새 요소 선택
+      adminSelectedElement = element;
+      adminSelectedElement.classList.add('text-selected');
+      
+      // 선택된 텍스트 정보 업데이트
+      updateAdminSelectedText();
+      
+      console.log('✅ 관리모드용 텍스트 선택됨:', element.textContent.trim());
+    }
+    
+    // 관리모드 선택된 텍스트 정보 업데이트
+    function updateAdminSelectedText() {
+      const display = document.getElementById('adminSelectedText');
+      const textarea = document.getElementById('adminQuickEdit');
+      const controls = document.getElementById('adminQuickEditControls');
+      
+      if (adminSelectedElement && display) {
+        const text = adminSelectedElement.textContent.trim();
+        display.innerHTML = `
+          <div class="selected-text-content">"${text}"</div>
+          <div style="margin-top: 5px; color: #888; font-size: 12px;">
+            태그: ${adminSelectedElement.tagName.toLowerCase()}
+          </div>
+        `;
+        
+        if (textarea) {
+          textarea.style.display = 'block';
+          textarea.value = text;
+        }
+        
+        if (controls) {
+          controls.style.display = 'block';
+        }
+      }
+    }
+    
+    // 모든 텍스트 로드
+    window.loadAllTexts = function() {
+      console.log('=== 모든 텍스트 로드 ===');
+      
+      // 섹션별 텍스트 로드
+      loadSectionTexts();
+      
+      // 일괄 편집 목록 새로고침
+      refreshAdminBulkEdit();
+      
+      showSuccessMessage('모든 텍스트가 로드되었습니다!');
+      console.log('✅ 모든 텍스트 로드 완료');
+    };
+    
+    // 섹션별 텍스트 로드
+    function loadSectionTexts() {
+      const sectionSelectors = {
+        'section01': {
+          'main-title': '.section01 h3',
+          'sub-title': '.section01 .sview01',
+          'description': '.section01 .sview02'
+        },
+        'section02': {
+          'title': '.section02 .mTit',
+          'subtitle': '.section02 h5',
+          'description': '.section02 p'
+        },
+        'section03': {
+          'title': '.section03 .mTit',
+          'service1': '.section03 .txtBox h5:first-child',
+          'service2': '.section03 .txtBox h2:first-child'
+        },
+        'section04': {
+          'title': '.section04 .mTit',
+          'description': '.section04 .txtBox h3:first-child'
+        }
+      };
+      
+      Object.keys(sectionSelectors).forEach(sectionId => {
+        const selectors = sectionSelectors[sectionId];
+        Object.keys(selectors).forEach(fieldId => {
+          const element = document.querySelector(selectors[fieldId]);
+          const input = document.getElementById(`${sectionId}-${fieldId}`);
+          
+          if (element && input) {
+            input.value = element.textContent.trim();
+          }
+        });
+      });
+    }
+    
+    // 모든 텍스트 저장
+    window.saveAllTexts = function() {
+      console.log('=== 모든 텍스트 저장 ===');
+      
+      let savedCount = 0;
+      
+      // 섹션별 텍스트 저장
+      const sectionSelectors = {
+        'section01': {
+          'main-title': '.section01 h3',
+          'sub-title': '.section01 .sview01',
+          'description': '.section01 .sview02'
+        },
+        'section02': {
+          'title': '.section02 .mTit',
+          'subtitle': '.section02 h5',
+          'description': '.section02 p'
+        },
+        'section03': {
+          'title': '.section03 .mTit',
+          'service1': '.section03 .txtBox h5:first-child',
+          'service2': '.section03 .txtBox h2:first-child'
+        },
+        'section04': {
+          'title': '.section04 .mTit',
+          'description': '.section04 .txtBox h3:first-child'
+        }
+      };
+      
+      Object.keys(sectionSelectors).forEach(sectionId => {
+        const selectors = sectionSelectors[sectionId];
+        Object.keys(selectors).forEach(fieldId => {
+          const element = document.querySelector(selectors[fieldId]);
+          const input = document.getElementById(`${sectionId}-${fieldId}`);
+          
+          if (element && input && input.value.trim()) {
+            element.textContent = input.value.trim();
+            
+            // 로컬 스토리지에 저장
+            const elementId = generateElementId(element);
+            localStorage.setItem(`text_edit_${elementId}`, input.value.trim());
+            
+            savedCount++;
+          }
+        });
+      });
+      
+      showSuccessMessage(`${savedCount}개의 텍스트가 저장되었습니다!`);
+      console.log(`✅ 모든 텍스트 저장 완료: ${savedCount}개`);
+    };
+    
+    // 모든 텍스트 초기화
+    window.resetAllTexts = function() {
+      console.log('=== 모든 텍스트 초기화 ===');
+      
+      if (confirm('모든 텍스트를 원래대로 복원하시겠습니까?')) {
+        // 로컬 스토리지에서 모든 텍스트 편집 데이터 제거
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if (key.startsWith('text_edit_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // 페이지 새로고침으로 원래 텍스트 복원
+        location.reload();
+        
+        console.log('✅ 모든 텍스트 초기화됨');
+      }
+    };
+    
+    // 관리모드 일괄 편집 목록 새로고침
+    window.refreshAdminBulkEdit = function() {
+      console.log('=== 관리모드 일괄 편집 목록 새로고침 ===');
+      
+      const container = document.getElementById('adminBulkEditContainer');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      
+      const textSelectors = [
+        '.section01 h3', '.section01 .sview01', '.section01 .sview02',
+        '.section02 .mTit', '.section02 h5', '.section02 p',
+        '.section03 .mTit', '.section03 .txtBox h5', '.section03 .txtBox h2',
+        '.section04 .mTit', '.section04 .txtBox h3', '.section04 .txtBox p'
+      ];
+      
+      textSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((element, index) => {
+          if (element && element.textContent.trim()) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'bulk-edit-item';
+            itemElement.innerHTML = `
+              <div class="bulk-edit-info">
+                ${selector} - ${element.tagName.toLowerCase()} (${index + 1})
+              </div>
+              <textarea class="bulk-edit-textarea" data-selector="${selector}" data-index="${index}">
+                ${element.textContent.trim()}
+              </textarea>
+            `;
+            container.appendChild(itemElement);
+          }
+        });
+      });
+      
+      console.log('✅ 관리모드 일괄 편집 목록 새로고침 완료');
+    };
+    
+    // 관리모드 일괄 편집 적용
+    window.applyAdminBulkEdit = function() {
+      console.log('=== 관리모드 일괄 편집 적용 ===');
+      
+      const textareas = document.querySelectorAll('#adminBulkEditContainer .bulk-edit-textarea');
+      let appliedCount = 0;
+      
+      textareas.forEach(textarea => {
+        const selector = textarea.getAttribute('data-selector');
+        const index = parseInt(textarea.getAttribute('data-index'));
+        const newText = textarea.value.trim();
+        
+        if (newText) {
+          const elements = document.querySelectorAll(selector);
+          if (elements[index]) {
+            elements[index].textContent = newText;
+            
+            // 로컬 스토리지에 저장
+            const elementId = generateElementId(elements[index]);
+            localStorage.setItem(`text_edit_${elementId}`, newText);
+            
+            appliedCount++;
+          }
+        }
+      });
+      
+      showSuccessMessage(`${appliedCount}개의 텍스트가 성공적으로 수정되었습니다!`);
+      console.log(`✅ 관리모드 일괄 편집 적용 완료: ${appliedCount}개`);
     };
     
     // 맵 설정 관련 함수들
