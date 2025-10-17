@@ -1076,6 +1076,7 @@
      <div class="admin-tabs">
        <button class="admin-tab active" onclick="switchTab('content')">콘텐츠 편집</button>
        <button class="admin-tab" onclick="switchTab('style')">스타일 편집</button>
+       <button class="admin-tab" onclick="switchTab('images')">🖼️ 이미지 관리</button>
        <button class="admin-tab" onclick="switchTab('settings')">설정</button>
      </div>
      
@@ -1305,6 +1306,113 @@
            </div>
          </div>
          <button class="btn" onclick="applySectionStyles('section01')">섹션 스타일 적용</button>
+       </div>
+     </div>
+     
+     <!-- 이미지 관리 탭 -->
+     <div id="images-tab" class="tab-content">
+       <div class="image-manager">
+         <h3 class="section-title">🖼️ 웹사이트 이미지 관리</h3>
+         
+         <!-- 로고 이미지 관리 -->
+         <div class="image-section">
+           <h4 class="image-section-title">📋 로고 이미지</h4>
+           <div class="image-item">
+             <div class="image-info">
+               <div class="image-preview">
+                 <img id="logo-preview" src="common/img/layout/logo.png" alt="로고 미리보기" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+이미지 없음</text></svg>'">
+               </div>
+               <div class="image-details">
+                 <p><strong>파일 경로:</strong> <span id="logo-path">common/img/layout/logo.png</span></p>
+                 <p><strong>용도:</strong> 메인 로고</p>
+                 <p><strong>위치:</strong> 헤더 상단</p>
+               </div>
+             </div>
+             <div class="image-controls">
+               <input type="file" id="logo-upload" accept="image/*" style="display: none;" onchange="handleLogoUpload(this)">
+               <button class="btn btn-primary" onclick="document.getElementById('logo-upload').click()">🔄 교체</button>
+               <button class="btn btn-danger" onclick="deleteImage('logo')">🗑️ 삭제</button>
+               <button class="btn btn-secondary" onclick="resetImage('logo')">↩️ 초기화</button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 메인 배경 비디오 관리 -->
+         <div class="image-section">
+           <h4 class="image-section-title">🎬 메인 배경 비디오</h4>
+           <div class="image-item">
+             <div class="image-info">
+               <div class="image-preview">
+                 <video id="video-preview" width="200" height="120" controls>
+                   <source src="common/img/main/main_video1.mp4" type="video/mp4">
+                   비디오를 재생할 수 없습니다.
+                 </video>
+               </div>
+               <div class="image-details">
+                 <p><strong>파일 경로:</strong> <span id="video-path">common/img/main/main_video1.mp4</span></p>
+                 <p><strong>용도:</strong> 메인 섹션 배경</p>
+                 <p><strong>위치:</strong> 섹션 1 (메인 슬라이더)</p>
+               </div>
+             </div>
+             <div class="image-controls">
+               <input type="file" id="video-upload" accept="video/*" style="display: none;" onchange="handleVideoUpload(this)">
+               <button class="btn btn-primary" onclick="document.getElementById('video-upload').click()">🔄 교체</button>
+               <button class="btn btn-danger" onclick="deleteImage('video')">🗑️ 삭제</button>
+               <button class="btn btn-secondary" onclick="resetImage('video')">↩️ 초기화</button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 포트폴리오 이미지 관리 -->
+         <div class="image-section">
+           <h4 class="image-section-title">🖼️ 포트폴리오 이미지들</h4>
+           <div class="portfolio-grid" id="portfolio-grid">
+             <!-- 포트폴리오 이미지들이 동적으로 로드됩니다 -->
+           </div>
+           <div class="image-controls">
+             <input type="file" id="portfolio-upload" accept="image/*" multiple style="display: none;" onchange="handlePortfolioUpload(this)">
+             <button class="btn btn-primary" onclick="document.getElementById('portfolio-upload').click()">📁 새 이미지 추가</button>
+             <button class="btn btn-danger" onclick="clearAllPortfolio()">🗑️ 전체 삭제</button>
+             <button class="btn btn-secondary" onclick="refreshPortfolioGrid()">🔄 새로고침</button>
+           </div>
+         </div>
+         
+         <!-- 아이콘 이미지 관리 -->
+         <div class="image-section">
+           <h4 class="image-section-title">🎯 아이콘 이미지들</h4>
+           <div class="icon-grid" id="icon-grid">
+             <!-- 아이콘 이미지들이 동적으로 로드됩니다 -->
+           </div>
+           <div class="image-controls">
+             <input type="file" id="icon-upload" accept="image/*" style="display: none;" onchange="handleIconUpload(this)">
+             <button class="btn btn-primary" onclick="document.getElementById('icon-upload').click()">📁 새 아이콘 추가</button>
+             <button class="btn btn-secondary" onclick="refreshIconGrid()">🔄 새로고침</button>
+           </div>
+         </div>
+         
+         <!-- 전체 이미지 관리 -->
+         <div class="image-section">
+           <h4 class="image-section-title">📊 전체 이미지 통계</h4>
+           <div class="image-stats" id="image-stats">
+             <div class="stat-item">
+               <span class="stat-label">총 이미지 수:</span>
+               <span class="stat-value" id="total-images">0</span>
+             </div>
+             <div class="stat-item">
+               <span class="stat-label">총 용량:</span>
+               <span class="stat-value" id="total-size">0 MB</span>
+             </div>
+             <div class="stat-item">
+               <span class="stat-label">마지막 업데이트:</span>
+               <span class="stat-value" id="last-update">-</span>
+             </div>
+           </div>
+           <div class="image-controls">
+             <button class="btn btn-primary" onclick="updateImageStats()">📊 통계 업데이트</button>
+             <button class="btn btn-secondary" onclick="exportImageList()">📤 이미지 목록 내보내기</button>
+             <button class="btn btn-danger" onclick="optimizeImages()">⚡ 이미지 최적화</button>
+           </div>
+         </div>
        </div>
      </div>
      
@@ -3686,7 +3794,273 @@ function setCookie( name, value, expiredays )
       restoreAllSavedData();
       setupAutoSave();
       showSaveStatus();
+      initializeImageManager();
     }, 2000);
+    
+    // ===== 이미지 관리 시스템 =====
+    
+    // 이미지 관리자 초기화
+    function initializeImageManager() {
+      console.log('=== 이미지 관리자 초기화 ===');
+      loadPortfolioImages();
+      loadIconImages();
+      updateImageStats();
+    }
+    
+    // 로고 이미지 업로드 처리
+    window.handleLogoUpload = function(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          // 미리보기 업데이트
+          const preview = document.getElementById('logo-preview');
+          preview.src = e.target.result;
+          
+          // 실제 웹사이트 로고 업데이트
+          const actualLogo = document.querySelector('img[alt*="Creative group arthur"], img[alt*="크리에이티브그룹아더"]');
+          if (actualLogo) {
+            actualLogo.src = e.target.result;
+          }
+          
+          // 로컬 스토리지에 저장
+          localStorage.setItem('admin_logo_data', e.target.result);
+          localStorage.setItem('admin_logo_timestamp', Date.now().toString());
+          
+          showSuccessMessage('로고가 성공적으로 업데이트되었습니다!');
+          console.log('✅ 로고 업데이트됨:', file.name);
+        };
+        
+        reader.readAsDataURL(file);
+      }
+    };
+    
+    // 비디오 업로드 처리
+    window.handleVideoUpload = function(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          // 미리보기 업데이트
+          const preview = document.getElementById('video-preview');
+          preview.src = e.target.result;
+          
+          // 실제 웹사이트 비디오 업데이트
+          const actualVideo = document.querySelector('#main_video source');
+          if (actualVideo) {
+            actualVideo.src = e.target.result;
+            actualVideo.parentElement.load(); // 비디오 다시 로드
+          }
+          
+          // 로컬 스토리지에 저장
+          localStorage.setItem('admin_video_data', e.target.result);
+          localStorage.setItem('admin_video_timestamp', Date.now().toString());
+          
+          showSuccessMessage('메인 비디오가 성공적으로 업데이트되었습니다!');
+          console.log('✅ 비디오 업데이트됨:', file.name);
+        };
+        
+        reader.readAsDataURL(file);
+      }
+    };
+    
+    // 포트폴리오 이미지 로드
+    function loadPortfolioImages() {
+      const portfolioGrid = document.getElementById('portfolio-grid');
+      if (!portfolioGrid) return;
+      
+      // 포트폴리오 이미지 경로들 (실제 이미지 경로들)
+      const portfolioImages = [
+        'admin/data/product2/2312110007_R.jpg',
+        'admin/data/product2/2312110004_R.jpg',
+        'admin/data/product2/2312110003_R.jpg',
+        'admin/data/product2/2312110002_R.jpg',
+        'admin/data/product2/2302030011_R.jpg',
+        'admin/data/product2/2302030010_R.jpg',
+        'admin/data/product2/2302030009_R.jpg',
+        'admin/data/product2/2302030008_R.jpg',
+        'admin/data/product2/2302030007_R.jpg',
+        'admin/data/product2/2302030003_R.jpg',
+        'admin/data/product2/2302030002_R.jpg',
+        'admin/data/product2/2302030001_R.jpg',
+        'admin/data/product2/2302020006_R.jpg',
+        'admin/data/product2/2302020005_R.jpg',
+        'admin/data/product2/2302020001_R.jpg'
+      ];
+      
+      portfolioGrid.innerHTML = '';
+      
+      portfolioImages.forEach((imagePath, index) => {
+        const portfolioItem = document.createElement('div');
+        portfolioItem.className = 'portfolio-item';
+        portfolioItem.innerHTML = `
+          <img src="${imagePath}" alt="포트폴리오 ${index + 1}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+이미지 없음</text></svg>'">
+          <div class="item-info">포트폴리오 ${index + 1}</div>
+          <div class="item-controls">
+            <button class="btn btn-primary" onclick="replacePortfolioImage(${index})">🔄 교체</button>
+            <button class="btn btn-danger" onclick="deletePortfolioImage(${index})">🗑️ 삭제</button>
+          </div>
+        `;
+        portfolioGrid.appendChild(portfolioItem);
+      });
+      
+      console.log('✅ 포트폴리오 이미지 로드됨:', portfolioImages.length + '개');
+    }
+    
+    // 아이콘 이미지 로드
+    function loadIconImages() {
+      const iconGrid = document.getElementById('icon-grid');
+      if (!iconGrid) return;
+      
+      const iconImages = [
+        { path: 'common/img/layout/go_top_icon.png', name: '상단 이동 아이콘' },
+        { path: 'common/img/layout/foot_goCircle.png', name: '원형 아이콘' },
+        { path: 'common/img/layout/foot_goicon.png', name: '이동 아이콘' },
+        { path: 'common/img/layout/foot_icon_facebook.png', name: '페이스북 아이콘' },
+        { path: 'common/img/main/sec05_popIcon.png', name: '팝업 아이콘' }
+      ];
+      
+      iconGrid.innerHTML = '';
+      
+      iconImages.forEach((icon, index) => {
+        const iconItem = document.createElement('div');
+        iconItem.className = 'icon-item';
+        iconItem.innerHTML = `
+          <img src="${icon.path}" alt="${icon.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+이미지 없음</text></svg>'">
+          <div class="item-info">${icon.name}</div>
+          <div class="item-controls">
+            <button class="btn btn-primary" onclick="replaceIconImage(${index})">🔄 교체</button>
+            <button class="btn btn-danger" onclick="deleteIconImage(${index})">🗑️ 삭제</button>
+          </div>
+        `;
+        iconGrid.appendChild(iconItem);
+      });
+      
+      console.log('✅ 아이콘 이미지 로드됨:', iconImages.length + '개');
+    }
+    
+    // 이미지 삭제 함수
+    window.deleteImage = function(imageType) {
+      if (confirm(`${imageType} 이미지를 삭제하시겠습니까?`)) {
+        try {
+          switch(imageType) {
+            case 'logo':
+              // 로고 숨기기
+              const logo = document.querySelector('img[alt*="Creative group arthur"], img[alt*="크리에이티브그룹아더"]');
+              if (logo) {
+                logo.style.display = 'none';
+              }
+              localStorage.removeItem('admin_logo_data');
+              break;
+            case 'video':
+              // 비디오 숨기기
+              const video = document.querySelector('#main_video');
+              if (video) {
+                video.style.display = 'none';
+              }
+              localStorage.removeItem('admin_video_data');
+              break;
+          }
+          
+          showSuccessMessage(`${imageType} 이미지가 삭제되었습니다!`);
+          console.log(`✅ ${imageType} 이미지 삭제됨`);
+        } catch (error) {
+          console.error(`${imageType} 이미지 삭제 실패:`, error);
+          showErrorMessage(`${imageType} 이미지 삭제에 실패했습니다.`);
+        }
+      }
+    };
+    
+    // 이미지 초기화 함수
+    window.resetImage = function(imageType) {
+      if (confirm(`${imageType} 이미지를 원래대로 복원하시겠습니까?`)) {
+        try {
+          switch(imageType) {
+            case 'logo':
+              // 원래 로고로 복원
+              const logo = document.querySelector('img[alt*="Creative group arthur"], img[alt*="크리에이티브그룹아더"]');
+              if (logo) {
+                logo.src = 'common/img/layout/logo.png';
+                logo.style.display = 'block';
+              }
+              localStorage.removeItem('admin_logo_data');
+              break;
+            case 'video':
+              // 원래 비디오로 복원
+              const video = document.querySelector('#main_video');
+              if (video) {
+                const source = video.querySelector('source');
+                if (source) {
+                  source.src = 'common/img/main/main_video1.mp4';
+                  video.load();
+                }
+                video.style.display = 'block';
+              }
+              localStorage.removeItem('admin_video_data');
+              break;
+          }
+          
+          showSuccessMessage(`${imageType} 이미지가 원래대로 복원되었습니다!`);
+          console.log(`✅ ${imageType} 이미지 복원됨`);
+        } catch (error) {
+          console.error(`${imageType} 이미지 복원 실패:`, error);
+          showErrorMessage(`${imageType} 이미지 복원에 실패했습니다.`);
+        }
+      }
+    };
+    
+    // 이미지 통계 업데이트
+    window.updateImageStats = function() {
+      const totalImages = document.querySelectorAll('img, video').length;
+      const lastUpdate = new Date().toLocaleString();
+      
+      document.getElementById('total-images').textContent = totalImages;
+      document.getElementById('last-update').textContent = lastUpdate;
+      
+      console.log('✅ 이미지 통계 업데이트됨:', { totalImages, lastUpdate });
+      showSuccessMessage('이미지 통계가 업데이트되었습니다!');
+    };
+    
+    // 포트폴리오 그리드 새로고침
+    window.refreshPortfolioGrid = function() {
+      loadPortfolioImages();
+      showSuccessMessage('포트폴리오 이미지 목록이 새로고침되었습니다!');
+    };
+    
+    // 아이콘 그리드 새로고침
+    window.refreshIconGrid = function() {
+      loadIconImages();
+      showSuccessMessage('아이콘 이미지 목록이 새로고침되었습니다!');
+    };
+    
+    // 이미지 목록 내보내기
+    window.exportImageList = function() {
+      const images = Array.from(document.querySelectorAll('img')).map(img => ({
+        src: img.src,
+        alt: img.alt,
+        width: img.width,
+        height: img.height
+      }));
+      
+      const dataStr = JSON.stringify(images, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(dataBlob);
+      link.download = 'website_images_list.json';
+      link.click();
+      
+      showSuccessMessage('이미지 목록이 다운로드되었습니다!');
+      console.log('✅ 이미지 목록 내보내기 완료');
+    };
+    
+    // 이미지 최적화 (시뮬레이션)
+    window.optimizeImages = function() {
+      showSuccessMessage('이미지 최적화가 완료되었습니다! (시뮬레이션)');
+      console.log('✅ 이미지 최적화 시뮬레이션 완료');
+    };
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
