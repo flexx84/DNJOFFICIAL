@@ -7663,16 +7663,48 @@ function setCookie( name, value, expiredays )
           }
         }
         
-        // 배경 이미지 복원
-        const bgImageData = localStorage.getItem('bg_image_data');
+        // 배경 이미지 복원 - 여러 키에서 시도
+        let bgImageData = localStorage.getItem('bg_image_data') || 
+                         localStorage.getItem('bg_image_backup');
+        
         if (bgImageData) {
-          const bgElement = document.querySelector('.section01 .bg01');
-          if (bgElement) {
-            bgElement.style.backgroundImage = `url(${bgImageData})`;
-            bgElement.style.backgroundSize = 'cover';
-            bgElement.style.backgroundPosition = 'center';
-            console.log('✅ 배경 이미지 복원됨');
+          console.log('🔄 배경 이미지 복원 시도 중...');
+          
+          // 여러 선택자로 배경 요소 찾기
+          let bgElement = null;
+          const selectors = [
+            '.section01 .bg01',
+            '.section01 .swiper-slide .bg01',
+            '.section01 .swiper-slide.swiper-slide-active .bg01',
+            '.bg01'
+          ];
+          
+          for (let selector of selectors) {
+            bgElement = document.querySelector(selector);
+            if (bgElement) {
+              console.log(`✅ 배경 요소 찾음: ${selector}`);
+              break;
+            }
           }
+          
+          if (bgElement) {
+            // !important로 강제 적용
+            bgElement.style.setProperty('background-image', `url(${bgImageData})`, 'important');
+            bgElement.style.setProperty('background-size', 'cover', 'important');
+            bgElement.style.setProperty('background-position', 'center', 'important');
+            bgElement.style.setProperty('display', 'block', 'important');
+            
+            console.log('✅ 배경 이미지 복원됨');
+            console.log('🎨 복원된 스타일:', {
+              backgroundImage: bgElement.style.backgroundImage,
+              backgroundSize: bgElement.style.backgroundSize,
+              display: bgElement.style.display
+            });
+          } else {
+            console.log('❌ 배경 요소를 찾을 수 없음 - 복원 실패');
+          }
+        } else {
+          console.log('❌ 저장된 배경 이미지 데이터가 없음');
         }
         
         console.log('✅ 이미지 데이터 복원 완료');
@@ -7876,11 +7908,22 @@ function setCookie( name, value, expiredays )
           console.log('✅ 비디오 표시됨');
         }
         
-        // 배경 이미지 숨기기
-        const bgElement = document.querySelector('.section01 .bg01');
-        if (bgElement) {
-          bgElement.style.display = 'none';
-          console.log('✅ 배경 이미지 숨김');
+        // 배경 이미지 숨기기 - 여러 선택자 시도
+        let bgElement = null;
+        const selectors = [
+          '.section01 .bg01',
+          '.section01 .swiper-slide .bg01',
+          '.section01 .swiper-slide.swiper-slide-active .bg01',
+          '.bg01'
+        ];
+        
+        for (let selector of selectors) {
+          bgElement = document.querySelector(selector);
+          if (bgElement) {
+            bgElement.style.setProperty('display', 'none', 'important');
+            console.log(`✅ 배경 이미지 숨김: ${selector}`);
+            break;
+          }
         }
         
       } else {
@@ -7895,11 +7938,22 @@ function setCookie( name, value, expiredays )
           console.log('✅ 비디오 숨김');
         }
         
-        // 배경 이미지 보이기
-        const bgElement = document.querySelector('.section01 .bg01');
-        if (bgElement) {
-          bgElement.style.display = 'block';
-          console.log('✅ 배경 이미지 표시됨');
+        // 배경 이미지 보이기 - 여러 선택자 시도
+        let bgElement = null;
+        const selectors = [
+          '.section01 .bg01',
+          '.section01 .swiper-slide .bg01',
+          '.section01 .swiper-slide.swiper-slide-active .bg01',
+          '.bg01'
+        ];
+        
+        for (let selector of selectors) {
+          bgElement = document.querySelector(selector);
+          if (bgElement) {
+            bgElement.style.setProperty('display', 'block', 'important');
+            console.log(`✅ 배경 이미지 표시됨: ${selector}`);
+            break;
+          }
         }
         
         // 배경 이미지 미리보기 로드
@@ -7916,34 +7970,95 @@ function setCookie( name, value, expiredays )
       console.log('=== 배경 이미지 업로드 처리 ===');
       
       const file = input.files[0];
-      if (!file) return;
+      if (!file) {
+        console.log('❌ 파일이 선택되지 않음');
+        return;
+      }
+      
+      console.log('📁 선택된 파일:', file.name, file.size, 'bytes');
       
       const reader = new FileReader();
       reader.onload = function(e) {
+        console.log('📖 파일 읽기 완료, 크기:', e.target.result.length, 'characters');
+        
         // 미리보기 업데이트
         const preview = document.getElementById('preview-bg-image');
         const previewContainer = preview.parentElement;
         const noPreview = previewContainer.querySelector('.no-preview');
         
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        if (noPreview) noPreview.style.display = 'none';
-        
-        // 실제 배경 이미지 적용
-        const bgElement = document.querySelector('.section01 .bg01');
-        if (bgElement) {
-          bgElement.style.backgroundImage = `url(${e.target.result})`;
-          bgElement.style.backgroundSize = 'cover';
-          bgElement.style.backgroundPosition = 'center';
-          console.log('✅ 배경 이미지 적용됨');
+        if (preview && previewContainer) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          if (noPreview) noPreview.style.display = 'none';
+          console.log('✅ 미리보기 업데이트됨');
+        } else {
+          console.log('❌ 미리보기 요소를 찾을 수 없음');
         }
         
-        // localStorage에 저장
+        // 실제 배경 이미지 적용 - 여러 선택자 시도
+        let bgElement = null;
+        const selectors = [
+          '.section01 .bg01',
+          '.section01 .swiper-slide .bg01',
+          '.section01 .swiper-slide.swiper-slide-active .bg01',
+          '.bg01',
+          '.section01 .bg01'
+        ];
+        
+        for (let selector of selectors) {
+          bgElement = document.querySelector(selector);
+          if (bgElement) {
+            console.log(`✅ 배경 요소 찾음: ${selector}`);
+            break;
+          }
+        }
+        
+        if (bgElement) {
+          // !important 스타일로 강제 적용
+          bgElement.style.setProperty('background-image', `url(${e.target.result})`, 'important');
+          bgElement.style.setProperty('background-size', 'cover', 'important');
+          bgElement.style.setProperty('background-position', 'center', 'important');
+          bgElement.style.setProperty('display', 'block', 'important');
+          
+          console.log('✅ 배경 이미지 강제 적용됨');
+          console.log('🎨 적용된 스타일:', {
+            backgroundImage: bgElement.style.backgroundImage,
+            backgroundSize: bgElement.style.backgroundSize,
+            display: bgElement.style.display
+          });
+        } else {
+          console.log('❌ 배경 요소를 찾을 수 없음');
+          // 모든 가능한 요소들 검색
+          const allElements = document.querySelectorAll('*');
+          console.log('🔍 전체 요소 수:', allElements.length);
+          const bgElements = Array.from(allElements).filter(el => 
+            el.className && el.className.includes('bg01')
+          );
+          console.log('🔍 bg01 클래스를 가진 요소들:', bgElements);
+        }
+        
+        // localStorage에 저장 - 여러 키로 저장하여 안전성 확보
+        const timestamp = Date.now().toString();
         localStorage.setItem('bg_image_data', e.target.result);
-        localStorage.setItem('bg_image_last_update', Date.now().toString());
+        localStorage.setItem('bg_image_backup', e.target.result);
+        localStorage.setItem('bg_image_last_update', timestamp);
+        localStorage.setItem('bg_image_filename', file.name);
+        localStorage.setItem('bg_image_filesize', file.size.toString());
+        
+        console.log('💾 localStorage 저장 완료:', {
+          dataSize: e.target.result.length,
+          filename: file.name,
+          filesize: file.size,
+          timestamp: timestamp
+        });
         
         showSuccessMessage('배경 이미지가 업로드되고 적용되었습니다!');
         console.log('✅ 배경 이미지 업로드 및 적용 완료');
+      };
+      
+      reader.onerror = function(error) {
+        console.error('❌ 파일 읽기 오류:', error);
+        showErrorMessage('파일을 읽는 중 오류가 발생했습니다.');
       };
       
       reader.readAsDataURL(file);
@@ -7989,6 +8104,85 @@ function setCookie( name, value, expiredays )
         toggleVideoUsage(); // UI 업데이트
         console.log(`✅ 비디오 설정 복원됨: ${videoEnabled}`);
       }
+    };
+
+    // 배경 이미지 디버깅 함수
+    window.debugBackgroundImage = function() {
+      console.log('=== 배경 이미지 디버깅 ===');
+      
+      // 모든 bg01 관련 요소 찾기
+      const allElements = document.querySelectorAll('*');
+      const bgElements = Array.from(allElements).filter(el => 
+        el.className && el.className.includes('bg01')
+      );
+      
+      console.log('🔍 bg01 클래스를 가진 요소들:', bgElements.length);
+      bgElements.forEach((el, index) => {
+        console.log(`${index + 1}. 요소:`, {
+          tagName: el.tagName,
+          className: el.className,
+          id: el.id,
+          computedStyle: window.getComputedStyle(el).backgroundImage,
+          inlineStyle: el.style.backgroundImage,
+          display: window.getComputedStyle(el).display
+        });
+      });
+      
+      // localStorage 상태 확인
+      const bgData = localStorage.getItem('bg_image_data');
+      const bgBackup = localStorage.getItem('bg_image_backup');
+      console.log('💾 localStorage 상태:', {
+        bg_image_data: bgData ? `${bgData.length} chars` : 'null',
+        bg_image_backup: bgBackup ? `${bgBackup.length} chars` : 'null',
+        bg_image_last_update: localStorage.getItem('bg_image_last_update'),
+        bg_image_filename: localStorage.getItem('bg_image_filename')
+      });
+      
+      // 현재 CSS 스타일 확인
+      const styleSheets = document.styleSheets;
+      console.log('🎨 CSS 스타일시트 수:', styleSheets.length);
+      
+      return {
+        bgElements: bgElements,
+        localStorage: {
+          bg_image_data: !!bgData,
+          bg_image_backup: !!bgBackup,
+          last_update: localStorage.getItem('bg_image_last_update')
+        }
+      };
+    };
+
+    // 배경 이미지 강제 복원 함수
+    window.forceRestoreBackgroundImage = function() {
+      console.log('=== 배경 이미지 강제 복원 ===');
+      
+      const bgData = localStorage.getItem('bg_image_data') || localStorage.getItem('bg_image_backup');
+      if (!bgData) {
+        console.log('❌ 복원할 배경 이미지 데이터가 없음');
+        return false;
+      }
+      
+      // 모든 bg01 요소에 강제 적용
+      const allElements = document.querySelectorAll('*');
+      const bgElements = Array.from(allElements).filter(el => 
+        el.className && el.className.includes('bg01')
+      );
+      
+      if (bgElements.length === 0) {
+        console.log('❌ bg01 요소를 찾을 수 없음');
+        return false;
+      }
+      
+      bgElements.forEach((el, index) => {
+        el.style.setProperty('background-image', `url(${bgData})`, 'important');
+        el.style.setProperty('background-size', 'cover', 'important');
+        el.style.setProperty('background-position', 'center', 'important');
+        el.style.setProperty('display', 'block', 'important');
+        console.log(`✅ ${index + 1}번째 요소에 배경 이미지 적용됨`);
+      });
+      
+      showSuccessMessage('배경 이미지가 강제 복원되었습니다!');
+      return true;
     };
 
     // 디버깅을 위한 전역 함수들
