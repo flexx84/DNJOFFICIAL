@@ -1603,7 +1603,7 @@
  </head>
 <body>
  <!-- 관리 모드 인디케이터 -->
- <div class="admin-indicator" id="adminIndicator" onclick="openTextEditPopup()">관리 모드 활성화</div>
+ <div class="admin-indicator" id="adminIndicator">관리 모드 활성화</div>
 
  <!-- 텍스트 편집 팝업 -->
  <div class="text-edit-popup" id="textEditPopup">
@@ -3825,6 +3825,20 @@ function setCookie( name, value, expiredays )
     window.hideAdminButton = hideAdminButton;
     window.toggleAdminMode = toggleAdminMode;
     
+    // 디버깅용 텍스트 편집 팝업 강제 열기
+    window.forceOpenTextEditPopup = function() {
+      console.log('=== 텍스트 편집 팝업 강제 열기 ===');
+      
+      const popup = document.getElementById('textEditPopup');
+      if (popup) {
+        popup.style.setProperty('display', 'flex', 'important');
+        popup.style.setProperty('z-index', '10000000', 'important');
+        console.log('✅ 텍스트 편집 팝업 강제로 열림');
+      } else {
+        console.error('❌ 텍스트 편집 팝업을 찾을 수 없습니다!');
+      }
+    };
+    
     // 디버깅용 강제 관리모드 버튼 표시
     window.forceShowAdminButton = function() {
       console.log('=== 강제 관리모드 버튼 표시 ===');
@@ -5605,6 +5619,9 @@ function setCookie( name, value, expiredays )
       
       textEditPopup = document.getElementById('textEditPopup');
       
+      // 관리자모드 인디케이터에 클릭 이벤트 추가
+      setupAdminIndicatorClickListener();
+      
       // 기존 텍스트 요소들을 클릭 가능하게 만들기
       setupTextClickListeners();
       
@@ -5612,6 +5629,37 @@ function setCookie( name, value, expiredays )
       refreshBulkList();
       
       console.log('✅ 텍스트 편집 시스템 초기화 완료');
+    }
+    
+    // 관리자모드 인디케이터 클릭 이벤트 설정
+    function setupAdminIndicatorClickListener() {
+      console.log('=== 관리자모드 인디케이터 클릭 이벤트 설정 ===');
+      
+      const adminIndicator = document.getElementById('adminIndicator');
+      if (adminIndicator) {
+        // 기존 이벤트 리스너 제거
+        adminIndicator.onclick = null;
+        
+        // 새로운 이벤트 리스너 추가
+        adminIndicator.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('=== 관리자모드 인디케이터 클릭됨 ===');
+          openTextEditPopup();
+        });
+        
+        // 더블클릭 이벤트도 추가 (백업용)
+        adminIndicator.addEventListener('dblclick', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('=== 관리자모드 인디케이터 더블클릭됨 ===');
+          openTextEditPopup();
+        });
+        
+        console.log('✅ 관리자모드 인디케이터 클릭 이벤트 설정 완료');
+      } else {
+        console.error('❌ 관리자모드 인디케이터를 찾을 수 없습니다!');
+      }
     }
     
     // 텍스트 클릭 리스너 설정
@@ -5707,15 +5755,78 @@ function setCookie( name, value, expiredays )
     window.openTextEditPopup = function() {
       console.log('=== 텍스트 편집 팝업 열기 ===');
       
-      if (textEditPopup) {
-        textEditPopup.style.display = 'flex';
+      // 팝업 요소 다시 찾기 (혹시 모를 경우를 대비)
+      const popup = document.getElementById('textEditPopup');
+      
+      if (popup) {
+        // 강제로 스타일 적용
+        popup.style.setProperty('display', 'flex', 'important');
+        popup.style.setProperty('position', 'fixed', 'important');
+        popup.style.setProperty('top', '0', 'important');
+        popup.style.setProperty('left', '0', 'important');
+        popup.style.setProperty('width', '100%', 'important');
+        popup.style.setProperty('height', '100%', 'important');
+        popup.style.setProperty('z-index', '10000000', 'important');
+        popup.style.setProperty('background', 'rgba(0, 0, 0, 0.9)', 'important');
         
         // 빠른 편집 탭 활성화
-        switchTextEditTab('quick');
+        setTimeout(() => {
+          switchTextEditTab('quick');
+        }, 100);
         
         console.log('✅ 텍스트 편집 팝업 열림');
+      } else {
+        console.error('❌ 텍스트 편집 팝업을 찾을 수 없습니다!');
+        
+        // 팝업이 없다면 강제 생성
+        createTextEditPopup();
       }
     };
+    
+    // 텍스트 편집 팝업 강제 생성
+    function createTextEditPopup() {
+      console.log('=== 텍스트 편집 팝업 강제 생성 ===');
+      
+      const popup = document.createElement('div');
+      popup.id = 'textEditPopup';
+      popup.className = 'text-edit-popup';
+      popup.style.cssText = `
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+        z-index: 10000000 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        font-family: Arial, sans-serif !important;
+      `;
+      
+      popup.innerHTML = `
+        <div style="background: #1a1a1a; border: 2px solid #ff000b; border-radius: 15px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(255, 0, 11, 0.3);">
+          <div style="background: linear-gradient(135deg, #ff000b, #cc0009); color: white; padding: 20px; border-radius: 13px 13px 0 0; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; font-size: 24px; font-weight: bold;">📝 텍스트 편집</h2>
+            <button onclick="closeTextEditPopup()" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer; padding: 5px 10px; border-radius: 5px;">×</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #ff000b; margin-bottom: 20px;">
+              <h3 style="color: #ff000b; margin-bottom: 15px; font-size: 18px;">🎯 텍스트 편집 시스템</h3>
+              <p style="color: #ccc; margin-bottom: 15px;">텍스트 편집 팝업이 성공적으로 열렸습니다!</p>
+              <div style="margin-top: 20px;">
+                <button onclick="closeTextEditPopup()" style="background: #ff000b; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;">✅ 닫기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(popup);
+      textEditPopup = popup;
+      
+      console.log('✅ 텍스트 편집 팝업 강제 생성 완료');
+    }
     
     // 텍스트 편집 팝업 닫기
     window.closeTextEditPopup = function() {
