@@ -956,6 +956,28 @@
       }
     }
     
+    @keyframes slideIn {
+      from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+      to {
+        transform: translate(-50%, -40%);
+        opacity: 0;
+      }
+    }
+    
     .admin-tabs {
       display: flex;
       margin-bottom: 20px;
@@ -3088,35 +3110,246 @@ function setCookie( name, value, expiredays )
     
     // ===== 관리 모드 기능 함수들 =====
     
-    // 섹션 변경 적용 함수
+    // 입력 검증 함수
+    function validateSectionInputs(sectionId) {
+      const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+      if (!sectionEditor) {
+        console.error(`섹션 에디터를 찾을 수 없음: ${sectionId}`);
+        return false;
+      }
+      
+      const requiredInputs = sectionEditor.querySelectorAll('input[required], textarea[required]');
+      for (let input of requiredInputs) {
+        if (!input.value.trim()) {
+          input.style.borderColor = '#ff000b';
+          input.focus();
+          showErrorMessage(`필수 입력 항목이 비어있습니다: ${input.previousElementSibling?.textContent || input.placeholder}`);
+          return false;
+        } else {
+          input.style.borderColor = '#555';
+        }
+      }
+      
+      return true;
+    }
+    
+    // 로컬 스토리지에 안전하게 저장
+    function saveToLocalStorage(sectionId) {
+      try {
+        const sectionData = {};
+        const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+        
+        if (sectionEditor) {
+          const inputs = sectionEditor.querySelectorAll('input, textarea, select');
+          inputs.forEach(input => {
+            if (input.type === 'file') {
+              // 파일은 별도 처리
+              if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  sectionData[input.id] = e.target.result;
+                  localStorage.setItem(`admin_${sectionId}`, JSON.stringify(sectionData));
+                };
+                reader.readAsDataURL(input.files[0]);
+              }
+            } else {
+              sectionData[input.id] = input.value;
+            }
+          });
+          
+          // 즉시 저장
+          localStorage.setItem(`admin_${sectionId}`, JSON.stringify(sectionData));
+          localStorage.setItem(`admin_${sectionId}_timestamp`, Date.now().toString());
+          
+          console.log(`✅ 로컬 스토리지에 저장됨: ${sectionId}`, sectionData);
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('로컬 스토리지 저장 실패:', error);
+        return false;
+      }
+    }
+    
+    // 로컬 스토리지에서 데이터 복원
+    function loadFromLocalStorage(sectionId) {
+      try {
+        const savedData = localStorage.getItem(`admin_${sectionId}`);
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+          
+          if (sectionEditor) {
+            Object.keys(data).forEach(key => {
+              const input = document.getElementById(key);
+              if (input && input.type !== 'file') {
+                input.value = data[key];
+              }
+            });
+            
+            console.log(`✅ 로컬 스토리지에서 복원됨: ${sectionId}`);
+            return true;
+          }
+        }
+        return false;
+      } catch (error) {
+        console.error('로컬 스토리지 로드 실패:', error);
+        return false;
+      }
+    }
+    
+    // 성공 메시지 표시
+    function showSuccessMessage(message) {
+      // 기존 메시지 제거
+      const existingMessage = document.querySelector('.admin-success-message');
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'admin-success-message';
+      messageDiv.style.cssText = `
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+        color: white !important;
+        padding: 20px 30px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        z-index: 10000001 !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        max-width: 400px !important;
+        animation: slideIn 0.3s ease-out !important;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      // 3초 후 자동 제거
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (messageDiv.parentNode) {
+              messageDiv.remove();
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+    
+    // 오류 메시지 표시
+    function showErrorMessage(message) {
+      const existingMessage = document.querySelector('.admin-error-message');
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'admin-error-message';
+      messageDiv.style.cssText = `
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+        color: white !important;
+        padding: 20px 30px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        z-index: 10000001 !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        max-width: 400px !important;
+        animation: slideIn 0.3s ease-out !important;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      // 5초 후 자동 제거
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (messageDiv.parentNode) {
+              messageDiv.remove();
+            }
+          }, 300);
+        }
+      }, 5000);
+    }
+    
+    // 미리보기 업데이트
+    function updatePreview(sectionId) {
+      const preview = document.getElementById(`${sectionId}-preview`);
+      if (preview) {
+        preview.innerHTML = `<p style="color: #4CAF50; font-weight: bold;">✅ ${sectionId} 섹션이 성공적으로 업데이트되었습니다!</p>`;
+        
+        // 3초 후 미리보기 내용 제거
+        setTimeout(() => {
+          preview.innerHTML = '';
+        }, 3000);
+      }
+    }
+    
+    // 강화된 섹션 변경 적용 함수
     window.applyChanges = function(sectionId) {
       console.log(`=== 섹션 ${sectionId} 변경 적용 시작 ===`);
       
       try {
+        // 입력 검증
+        if (!validateSectionInputs(sectionId)) {
+          console.warn(`⚠️ 섹션 ${sectionId} 입력 검증 실패`);
+          return false;
+        }
+        
         // 섹션별로 처리
+        let success = false;
         switch(sectionId) {
           case 'section01':
-            applySection01Changes();
+            success = applySection01Changes();
             break;
           case 'section02':
-            applySection02Changes();
+            success = applySection02Changes();
             break;
           case 'section03':
-            applySection03Changes();
+            success = applySection03Changes();
             break;
           case 'section04':
-            applySection04Changes();
+            success = applySection04Changes();
             break;
           default:
             console.warn('알 수 없는 섹션 ID:', sectionId);
+            return false;
         }
         
-        console.log(`✅ 섹션 ${sectionId} 변경 적용 완료`);
-        alert(`${sectionId} 섹션이 업데이트되었습니다!`);
+        if (success) {
+          // 변경사항을 확실하게 저장
+          saveToLocalStorage(sectionId);
+          // 변경사항을 서버에 전송 (향후 구현)
+          // sendToServer(sectionId);
+          
+          console.log(`✅ 섹션 ${sectionId} 변경 적용 및 저장 완료`);
+          showSuccessMessage(`${sectionId} 섹션이 성공적으로 업데이트되고 저장되었습니다!`);
+          
+          // 미리보기 업데이트
+          updatePreview(sectionId);
+          
+          return true;
+        } else {
+          console.error(`❌ 섹션 ${sectionId} 변경 적용 실패`);
+          showErrorMessage(`${sectionId} 섹션 업데이트에 실패했습니다.`);
+          return false;
+        }
         
       } catch (error) {
-        console.error(`❌ 섹션 ${sectionId} 변경 적용 실패:`, error);
-        alert('변경 적용 중 오류가 발생했습니다.');
+        console.error(`❌ 섹션 ${sectionId} 변경 적용 중 오류:`, error);
+        showErrorMessage(`변경 적용 중 오류가 발생했습니다: ${error.message}`);
+        return false;
       }
     };
     
@@ -3143,42 +3376,79 @@ function setCookie( name, value, expiredays )
     
     // 섹션 1 (메인 슬라이더) 변경 적용
     function applySection01Changes() {
-      const title = document.getElementById('section01-title')?.value;
-      const subtitle = document.getElementById('section01-subtitle')?.value;
-      const description = document.getElementById('section01-description')?.value;
-      const bgImage = document.getElementById('section01-bg-image')?.files[0];
-      
-      console.log('섹션 1 변경사항:', { title, subtitle, description, bgImage });
-      
-      // 실제 웹사이트 요소에 적용
-      const mainTitle = document.querySelector('.section01 h3');
-      if (mainTitle && title) {
-        mainTitle.textContent = title;
-      }
-      
-      const subTitle = document.querySelector('.section01 .sview01');
-      if (subTitle && subtitle) {
-        subTitle.textContent = subtitle;
-      }
-      
-      // 배경 이미지 처리
-      if (bgImage) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const bgElement = document.querySelector('.section01 .bg01');
-          if (bgElement) {
-            bgElement.style.backgroundImage = `url(${e.target.result})`;
-            bgElement.style.backgroundSize = 'cover';
-            bgElement.style.backgroundPosition = 'center';
+      try {
+        const title = document.getElementById('section01-title')?.value?.trim();
+        const subtitle = document.getElementById('section01-subtitle')?.value?.trim();
+        const description = document.getElementById('section01-description')?.value?.trim();
+        const bgImage = document.getElementById('section01-bg-image')?.files[0];
+        
+        console.log('섹션 1 변경사항:', { title, subtitle, description, bgImage });
+        
+        let changesApplied = false;
+        
+        // 실제 웹사이트 요소에 적용
+        if (title) {
+          const mainTitle = document.querySelector('.section01 h3');
+          if (mainTitle) {
+            mainTitle.textContent = title;
+            changesApplied = true;
+            console.log('✅ 메인 제목 적용됨:', title);
           }
+        }
+        
+        if (subtitle) {
+          const subTitle = document.querySelector('.section01 .sview01');
+          if (subTitle) {
+            subTitle.textContent = subtitle;
+            changesApplied = true;
+            console.log('✅ 서브 제목 적용됨:', subtitle);
+          }
+        }
+        
+        if (description) {
+          const descElement = document.querySelector('.section01 .sview02');
+          if (descElement) {
+            descElement.textContent = description;
+            changesApplied = true;
+            console.log('✅ 설명 적용됨:', description);
+          }
+        }
+        
+        // 배경 이미지 처리
+        if (bgImage) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const bgElement = document.querySelector('.section01 .bg01');
+            if (bgElement) {
+              bgElement.style.backgroundImage = `url(${e.target.result})`;
+              bgElement.style.backgroundSize = 'cover';
+              bgElement.style.backgroundPosition = 'center';
+              console.log('✅ 배경 이미지 적용됨');
+            }
+          };
+          reader.readAsDataURL(bgImage);
+          changesApplied = true;
+        }
+        
+        // 강화된 로컬 스토리지 저장
+        const sectionData = {
+          title: title || '',
+          subtitle: subtitle || '',
+          description: description || '',
+          timestamp: Date.now()
         };
-        reader.readAsDataURL(bgImage);
+        
+        localStorage.setItem('section01_data', JSON.stringify(sectionData));
+        localStorage.setItem('section01_last_update', Date.now().toString());
+        
+        console.log('✅ 섹션 1 데이터 저장됨:', sectionData);
+        
+        return changesApplied;
+        
+      } catch (error) {
+        console.error('섹션 1 적용 중 오류:', error);
+        return false;
       }
-      
-      // 로컬 스토리지에 저장
-      localStorage.setItem('section01_title', title || '');
-      localStorage.setItem('section01_subtitle', subtitle || '');
-      localStorage.setItem('section01_description', description || '');
     }
     
     // 섹션 2 (회사 소개) 변경 적용
@@ -3309,6 +3579,114 @@ function setCookie( name, value, expiredays )
     setTimeout(() => tryInitializeAdminSystem(), 3000);
     setTimeout(() => tryInitializeAdminSystem(), 5000);
     setTimeout(() => tryInitializeAdminSystem(), 10000);
+    
+    // ===== 자동 저장 및 데이터 복원 시스템 =====
+    
+    // 페이지 로드 시 저장된 데이터 복원
+    function restoreAllSavedData() {
+      console.log('=== 저장된 데이터 복원 시작 ===');
+      
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      let restoredCount = 0;
+      
+      sections.forEach(sectionId => {
+        if (loadFromLocalStorage(sectionId)) {
+          restoredCount++;
+          console.log(`✅ ${sectionId} 데이터 복원됨`);
+        }
+      });
+      
+      if (restoredCount > 0) {
+        showSuccessMessage(`${restoredCount}개 섹션의 저장된 데이터가 복원되었습니다!`);
+      }
+      
+      console.log(`=== 데이터 복원 완료: ${restoredCount}/${sections.length} ===`);
+    }
+    
+    // 자동 저장 기능 (입력 시마다 자동 저장)
+    function setupAutoSave() {
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      
+      sections.forEach(sectionId => {
+        const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+        if (sectionEditor) {
+          const inputs = sectionEditor.querySelectorAll('input, textarea');
+          inputs.forEach(input => {
+            // 입력 이벤트 리스너 추가
+            input.addEventListener('input', debounce(() => {
+              autoSaveSection(sectionId);
+            }, 1000)); // 1초 후 자동 저장
+          });
+        }
+      });
+      
+      console.log('✅ 자동 저장 시스템 활성화됨');
+    }
+    
+    // 디바운스 함수 (연속 입력 시 마지막 입력만 처리)
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // 자동 저장 실행
+    function autoSaveSection(sectionId) {
+      try {
+        const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+        if (sectionEditor) {
+          const sectionData = {};
+          const inputs = sectionEditor.querySelectorAll('input, textarea');
+          
+          inputs.forEach(input => {
+            if (input.type !== 'file') {
+              sectionData[input.id] = input.value;
+            }
+          });
+          
+          localStorage.setItem(`admin_${sectionId}_autosave`, JSON.stringify(sectionData));
+          localStorage.setItem(`admin_${sectionId}_autosave_time`, Date.now().toString());
+          
+          console.log(`💾 ${sectionId} 자동 저장됨:`, sectionData);
+        }
+      } catch (error) {
+        console.error(`${sectionId} 자동 저장 실패:`, error);
+      }
+    }
+    
+    // 페이지 언로드 시 최종 저장
+    window.addEventListener('beforeunload', () => {
+      console.log('=== 페이지 종료 전 최종 저장 ===');
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      sections.forEach(sectionId => {
+        autoSaveSection(sectionId);
+      });
+    });
+    
+    // 저장 상태 표시
+    function showSaveStatus() {
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      sections.forEach(sectionId => {
+        const lastSave = localStorage.getItem(`admin_${sectionId}_autosave_time`);
+        if (lastSave) {
+          const saveTime = new Date(parseInt(lastSave));
+          console.log(`${sectionId} 마지막 저장: ${saveTime.toLocaleString()}`);
+        }
+      });
+    }
+    
+    // 초기화 시 데이터 복원 및 자동 저장 설정
+    setTimeout(() => {
+      restoreAllSavedData();
+      setupAutoSave();
+      showSaveStatus();
+    }, 2000);
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
