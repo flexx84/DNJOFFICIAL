@@ -2602,9 +2602,15 @@
            </p>
          </div>
          
-         <!-- 빠른 텍스트 편집 -->
+         <!-- 편집 도구 -->
          <div class="text-edit-section">
-           <h4 class="form-label">⚡ 빠른 편집</h4>
+           <h4 class="form-label">🔧 편집 도구</h4>
+           <div class="form-group">
+             <button class="btn btn-primary" onclick="enableTextSelection()">텍스트 선택 모드</button>
+             <button class="btn btn-secondary" onclick="loadAllTexts()">모든 텍스트 로드</button>
+             <button class="btn btn-success" onclick="saveAllTexts()">모든 텍스트 저장</button>
+             <button class="btn btn-danger" onclick="resetAllTexts()">모든 텍스트 초기화</button>
+           </div>
            <div class="form-group">
              <label class="form-label">선택한 텍스트</label>
              <div class="selected-text-display" id="adminSelectedText">
@@ -2618,8 +2624,23 @@
            </div>
          </div>
          
-         <!-- 섹션별 텍스트 편집 -->
+         <!-- 일괄 편집 -->
          <div class="text-edit-section">
+           <h4 class="form-label">📋 일괄 편집</h4>
+           <div class="form-group">
+             <p class="form-description">모든 텍스트를 한번에 편집할 수 있습니다.</p>
+             <div class="bulk-edit-container" id="adminBulkEditContainer">
+               <!-- 동적으로 생성될 텍스트 목록 -->
+             </div>
+             <div class="form-controls">
+               <button class="btn btn-primary" onclick="applyAdminBulkEdit()">✅ 모든 변경사항 적용</button>
+               <button class="btn btn-secondary" onclick="refreshAdminBulkEdit()">🔄 목록 새로고침</button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- 섹션별 텍스트 편집 (숨김) -->
+         <div class="text-edit-section" style="display: none;">
            <h4 class="form-label">🎯 섹션별 편집</h4>
            
            <!-- 섹션 1 -->
@@ -2685,21 +2706,6 @@
              <div class="form-group">
                <label class="form-label">설명</label>
                <textarea id="section04-description" class="form-textarea" placeholder="포트폴리오 설명"></textarea>
-             </div>
-           </div>
-         </div>
-         
-         <!-- 일괄 편집 -->
-         <div class="text-edit-section">
-           <h4 class="form-label">📋 일괄 편집</h4>
-           <div class="form-group">
-             <p class="form-description">모든 텍스트를 한번에 편집할 수 있습니다.</p>
-             <div class="bulk-edit-container" id="adminBulkEditContainer">
-               <!-- 동적으로 생성될 텍스트 목록 -->
-             </div>
-             <div class="form-controls">
-               <button class="btn btn-primary" onclick="applyAdminBulkEdit()">✅ 모든 변경사항 적용</button>
-               <button class="btn btn-secondary" onclick="refreshAdminBulkEdit()">🔄 목록 새로고침</button>
              </div>
            </div>
          </div>
@@ -7979,15 +7985,17 @@ function setCookie( name, value, expiredays )
       
       const reader = new FileReader();
       reader.onload = function(e) {
-        console.log('📖 파일 읽기 완료, 크기:', e.target.result.length, 'characters');
+        const imageDataUrl = e.target.result;
+        console.log('📖 파일 읽기 완료, 크기:', imageDataUrl.length, 'characters');
+        console.log('📖 Data URL 시작 부분:', imageDataUrl.substring(0, 100) + '...');
         
         // 미리보기 업데이트
         const preview = document.getElementById('preview-bg-image');
-        const previewContainer = preview.parentElement;
-        const noPreview = previewContainer.querySelector('.no-preview');
+        const previewContainer = preview ? preview.parentElement : null;
+        const noPreview = previewContainer ? previewContainer.querySelector('.no-preview') : null;
         
         if (preview && previewContainer) {
-          preview.src = e.target.result;
+          preview.src = imageDataUrl;
           preview.style.display = 'block';
           if (noPreview) noPreview.style.display = 'none';
           console.log('✅ 미리보기 업데이트됨');
@@ -8001,8 +8009,7 @@ function setCookie( name, value, expiredays )
           '.section01 .bg01',
           '.section01 .swiper-slide .bg01',
           '.section01 .swiper-slide.swiper-slide-active .bg01',
-          '.bg01',
-          '.section01 .bg01'
+          '.bg01'
         ];
         
         for (let selector of selectors) {
@@ -8015,7 +8022,7 @@ function setCookie( name, value, expiredays )
         
         if (bgElement) {
           // !important 스타일로 강제 적용
-          bgElement.style.setProperty('background-image', `url(${e.target.result})`, 'important');
+          bgElement.style.setProperty('background-image', `url(${imageDataUrl})`, 'important');
           bgElement.style.setProperty('background-size', 'cover', 'important');
           bgElement.style.setProperty('background-position', 'center', 'important');
           bgElement.style.setProperty('display', 'block', 'important');
@@ -8034,23 +8041,41 @@ function setCookie( name, value, expiredays )
           const bgElements = Array.from(allElements).filter(el => 
             el.className && el.className.includes('bg01')
           );
-          console.log('🔍 bg01 클래스를 가진 요소들:', bgElements);
+          console.log('🔍 bg01 클래스를 가진 요소들:', bgElements.length);
+          bgElements.forEach((el, index) => {
+            console.log(`${index + 1}. bg01 요소:`, {
+              tagName: el.tagName,
+              className: el.className,
+              id: el.id
+            });
+          });
         }
         
         // localStorage에 저장 - 여러 키로 저장하여 안전성 확보
-        const timestamp = Date.now().toString();
-        localStorage.setItem('bg_image_data', e.target.result);
-        localStorage.setItem('bg_image_backup', e.target.result);
-        localStorage.setItem('bg_image_last_update', timestamp);
-        localStorage.setItem('bg_image_filename', file.name);
-        localStorage.setItem('bg_image_filesize', file.size.toString());
-        
-        console.log('💾 localStorage 저장 완료:', {
-          dataSize: e.target.result.length,
-          filename: file.name,
-          filesize: file.size,
-          timestamp: timestamp
-        });
+        try {
+          const timestamp = Date.now().toString();
+          localStorage.setItem('bg_image_data', imageDataUrl);
+          localStorage.setItem('bg_image_backup', imageDataUrl);
+          localStorage.setItem('bg_image_last_update', timestamp);
+          localStorage.setItem('bg_image_filename', file.name);
+          localStorage.setItem('bg_image_filesize', file.size.toString());
+          
+          console.log('💾 localStorage 저장 완료:', {
+            dataSize: imageDataUrl.length,
+            filename: file.name,
+            filesize: file.size,
+            timestamp: timestamp
+          });
+          
+          // 저장 확인
+          const savedData = localStorage.getItem('bg_image_data');
+          console.log('💾 저장 확인 - bg_image_data 존재:', !!savedData);
+          console.log('💾 저장 확인 - 데이터 크기:', savedData ? savedData.length : 0);
+          
+        } catch (error) {
+          console.error('❌ localStorage 저장 실패:', error);
+          showErrorMessage('저장 중 오류가 발생했습니다: ' + error.message);
+        }
         
         showSuccessMessage('배경 이미지가 업로드되고 적용되었습니다!');
         console.log('✅ 배경 이미지 업로드 및 적용 완료');
