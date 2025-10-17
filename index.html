@@ -2484,7 +2484,17 @@
          <!-- 메인 배경 비디오 관리 -->
          <div class="image-section">
            <h4 class="image-section-title">🎬 메인 배경 비디오</h4>
-           <div class="image-item">
+           
+           <!-- 비디오 사용 여부 체크박스 -->
+           <div class="form-group" style="margin-bottom: 20px;">
+             <label class="form-label" style="display: flex; align-items: center; gap: 10px;">
+               <input type="checkbox" id="video-enabled" checked onchange="toggleVideoUsage()" style="width: 18px; height: 18px;">
+               <span>비디오 사용</span>
+             </label>
+             <p class="form-hint" style="margin-top: 5px; color: #888; font-size: 12px;">체크 해제 시 배경 이미지를 사용합니다</p>
+           </div>
+           
+           <div class="image-item" id="video-controls">
              <div class="image-info">
                <div class="image-preview">
                  <video id="video-preview" width="200" height="120" controls>
@@ -2503,6 +2513,28 @@
                <button class="btn btn-primary" onclick="document.getElementById('video-upload').click()">🔄 교체</button>
                <button class="btn btn-danger" onclick="deleteImage('video')">🗑️ 삭제</button>
                <button class="btn btn-secondary" onclick="resetImage('video')">↩️ 초기화</button>
+             </div>
+           </div>
+           
+           <!-- 배경 이미지 대안 관리 (비디오 사용 안할 때) -->
+           <div class="image-item" id="background-image-controls" style="display: none;">
+             <h5 class="image-section-title">🖼️ 배경 이미지 (비디오 대신 사용)</h5>
+             <div class="image-info">
+               <div class="image-preview">
+                 <img id="preview-bg-image" style="max-width: 200px; max-height: 120px; display: none;">
+                 <div class="no-preview">배경 이미지 미리보기</div>
+               </div>
+               <div class="image-details">
+                 <p><strong>파일 경로:</strong> <span id="bg-image-path">common/img/main/sec01_bg01.jpg</span></p>
+                 <p><strong>용도:</strong> 메인 섹션 배경 (비디오 대안)</p>
+                 <p><strong>위치:</strong> 섹션 1 (.bg01 요소)</p>
+               </div>
+             </div>
+             <div class="image-controls">
+               <input type="file" id="bg-image-upload" accept="image/*" style="display: none;" onchange="handleBackgroundImageUpload(this)">
+               <button class="btn btn-primary" onclick="document.getElementById('bg-image-upload').click()">🔄 교체</button>
+               <button class="btn btn-danger" onclick="deleteImage('bg-image')">🗑️ 삭제</button>
+               <button class="btn btn-secondary" onclick="resetImage('bg-image')">↩️ 초기화</button>
              </div>
            </div>
          </div>
@@ -7565,6 +7597,10 @@ function setCookie( name, value, expiredays )
         console.log('4. 저장된 섹션 데이터 복원 중...');
         restoreAllSectionData();
         
+        // 5. 비디오 설정 복원
+        console.log('5. 비디오 설정 복원 중...');
+        restoreVideoSettings();
+        
         console.log('✅ 모든 저장된 데이터 복원 완료');
         
         // 복원 완료 메시지 표시
@@ -7624,6 +7660,18 @@ function setCookie( name, value, expiredays )
               video.load();
               console.log('✅ 비디오 복원됨');
             }
+          }
+        }
+        
+        // 배경 이미지 복원
+        const bgImageData = localStorage.getItem('bg_image_data');
+        if (bgImageData) {
+          const bgElement = document.querySelector('.section01 .bg01');
+          if (bgElement) {
+            bgElement.style.backgroundImage = `url(${bgImageData})`;
+            bgElement.style.backgroundSize = 'cover';
+            bgElement.style.backgroundPosition = 'center';
+            console.log('✅ 배경 이미지 복원됨');
           }
         }
         
@@ -7803,6 +7851,143 @@ function setCookie( name, value, expiredays )
         restoreAllSavedData();
       } else {
         console.log('❌ restoreAllSavedData 함수를 찾을 수 없음');
+      }
+    };
+
+    // 비디오 사용 여부 토글 함수
+    window.toggleVideoUsage = function() {
+      console.log('=== 비디오 사용 여부 토글 ===');
+      
+      const videoEnabled = document.getElementById('video-enabled').checked;
+      const videoControls = document.getElementById('video-controls');
+      const backgroundImageControls = document.getElementById('background-image-controls');
+      
+      console.log(`비디오 사용: ${videoEnabled}`);
+      
+      if (videoEnabled) {
+        // 비디오 사용
+        videoControls.style.display = 'block';
+        backgroundImageControls.style.display = 'none';
+        
+        // 실제 비디오 요소 보이기
+        const videoElement = document.querySelector('.section01 .bg video');
+        if (videoElement) {
+          videoElement.style.display = 'block';
+          console.log('✅ 비디오 표시됨');
+        }
+        
+        // 배경 이미지 숨기기
+        const bgElement = document.querySelector('.section01 .bg01');
+        if (bgElement) {
+          bgElement.style.display = 'none';
+          console.log('✅ 배경 이미지 숨김');
+        }
+        
+      } else {
+        // 비디오 사용 안함 - 배경 이미지 사용
+        videoControls.style.display = 'none';
+        backgroundImageControls.style.display = 'block';
+        
+        // 실제 비디오 요소 숨기기
+        const videoElement = document.querySelector('.section01 .bg video');
+        if (videoElement) {
+          videoElement.style.display = 'none';
+          console.log('✅ 비디오 숨김');
+        }
+        
+        // 배경 이미지 보이기
+        const bgElement = document.querySelector('.section01 .bg01');
+        if (bgElement) {
+          bgElement.style.display = 'block';
+          console.log('✅ 배경 이미지 표시됨');
+        }
+        
+        // 배경 이미지 미리보기 로드
+        loadBackgroundImagePreview();
+      }
+      
+      // 설정 저장
+      localStorage.setItem('video_enabled', videoEnabled.toString());
+      showSuccessMessage(`비디오 사용이 ${videoEnabled ? '활성화' : '비활성화'}되었습니다!`);
+    };
+
+    // 배경 이미지 업로드 처리 함수
+    window.handleBackgroundImageUpload = function(input) {
+      console.log('=== 배경 이미지 업로드 처리 ===');
+      
+      const file = input.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // 미리보기 업데이트
+        const preview = document.getElementById('preview-bg-image');
+        const previewContainer = preview.parentElement;
+        const noPreview = previewContainer.querySelector('.no-preview');
+        
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        if (noPreview) noPreview.style.display = 'none';
+        
+        // 실제 배경 이미지 적용
+        const bgElement = document.querySelector('.section01 .bg01');
+        if (bgElement) {
+          bgElement.style.backgroundImage = `url(${e.target.result})`;
+          bgElement.style.backgroundSize = 'cover';
+          bgElement.style.backgroundPosition = 'center';
+          console.log('✅ 배경 이미지 적용됨');
+        }
+        
+        // localStorage에 저장
+        localStorage.setItem('bg_image_data', e.target.result);
+        localStorage.setItem('bg_image_last_update', Date.now().toString());
+        
+        showSuccessMessage('배경 이미지가 업로드되고 적용되었습니다!');
+        console.log('✅ 배경 이미지 업로드 및 적용 완료');
+      };
+      
+      reader.readAsDataURL(file);
+    };
+
+    // 배경 이미지 미리보기 로드 함수
+    window.loadBackgroundImagePreview = function() {
+      console.log('=== 배경 이미지 미리보기 로드 ===');
+      
+      const bgImageData = localStorage.getItem('bg_image_data');
+      if (bgImageData) {
+        const preview = document.getElementById('preview-bg-image');
+        const previewContainer = preview.parentElement;
+        const noPreview = previewContainer.querySelector('.no-preview');
+        
+        preview.src = bgImageData;
+        preview.style.display = 'block';
+        if (noPreview) noPreview.style.display = 'none';
+        
+        console.log('✅ 배경 이미지 미리보기 로드됨');
+      } else {
+        // 기본 이미지 로드
+        const preview = document.getElementById('preview-bg-image');
+        const previewContainer = preview.parentElement;
+        const noPreview = previewContainer.querySelector('.no-preview');
+        
+        preview.src = 'common/img/main/sec01_bg01.jpg';
+        preview.style.display = 'block';
+        if (noPreview) noPreview.style.display = 'none';
+        
+        console.log('✅ 기본 배경 이미지 미리보기 로드됨');
+      }
+    };
+
+    // 비디오 설정 복원 함수
+    window.restoreVideoSettings = function() {
+      console.log('=== 비디오 설정 복원 ===');
+      
+      const videoEnabled = localStorage.getItem('video_enabled');
+      if (videoEnabled !== null) {
+        const checkbox = document.getElementById('video-enabled');
+        checkbox.checked = videoEnabled === 'true';
+        toggleVideoUsage(); // UI 업데이트
+        console.log(`✅ 비디오 설정 복원됨: ${videoEnabled}`);
       }
     };
 
