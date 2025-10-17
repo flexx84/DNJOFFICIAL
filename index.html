@@ -1313,12 +1313,12 @@
            
            <div class="form-group">
              <label class="form-label">지도 키 (Daum Map)</label>
-             <input type="text" class="form-input" id="map-key" value="2dfn8" placeholder="지도 키를 입력하세요">
+             <input type="text" class="form-input" id="map-key" value="ef2a0a9c4f2999b0ced34028c9ec8873" placeholder="지도 키를 입력하세요">
            </div>
            
            <div class="form-group">
              <label class="form-label">지도 타임스탬프</label>
-             <input type="text" class="form-input" id="map-timestamp" value="1673836719953" placeholder="타임스탬프를 입력하세요">
+             <input type="text" class="form-input" id="map-timestamp" value="1735824000000" placeholder="타임스탬프를 입력하세요">
            </div>
            
            <div class="form-group">
@@ -2394,15 +2394,15 @@ function setCookie( name, value, expiredays )
       </div>
       <div class="rightArea animated fadeInUpShort delay-500">
        <div class="bdLine">
-        <div class="root_daum_roughmap root_daum_roughmap_landing" id="daumRoughmapContainer1673836719953" style="width:100%;">
+        <div class="root_daum_roughmap root_daum_roughmap_landing" id="daumRoughmapContainer1735824000000" style="width:100%;">
         </div>
         <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js">
         </script>
         <!-- 3. 실행 스크립트 -->
         <script charset="UTF-8">
          new daum.roughmap.Lander({
-                                        "timestamp": "1673836719953",
-                                        "key": "2dfn8",
+                                        "timestamp": "1735824000000",
+                                        "key": "ef2a0a9c4f2999b0ced34028c9ec8873",
                                     }).render();
         </script>
        </div>
@@ -2438,7 +2438,8 @@ function setCookie( name, value, expiredays )
         Address
        </span>
        <p>
-        서울특별시 서초구 신반포로322 언주빌딩 3층
+        부산광역시 부산진구 동평로 405번길 78 2층<br/>
+        디앤제이그룹
        </p>
       </li>
       <li>
@@ -3085,6 +3086,151 @@ function setCookie( name, value, expiredays )
       }
     };
     
+    // ===== 관리 모드 기능 함수들 =====
+    
+    // 섹션 변경 적용 함수
+    window.applyChanges = function(sectionId) {
+      console.log(`=== 섹션 ${sectionId} 변경 적용 시작 ===`);
+      
+      try {
+        // 섹션별로 처리
+        switch(sectionId) {
+          case 'section01':
+            applySection01Changes();
+            break;
+          case 'section02':
+            applySection02Changes();
+            break;
+          case 'section03':
+            applySection03Changes();
+            break;
+          case 'section04':
+            applySection04Changes();
+            break;
+          default:
+            console.warn('알 수 없는 섹션 ID:', sectionId);
+        }
+        
+        console.log(`✅ 섹션 ${sectionId} 변경 적용 완료`);
+        alert(`${sectionId} 섹션이 업데이트되었습니다!`);
+        
+      } catch (error) {
+        console.error(`❌ 섹션 ${sectionId} 변경 적용 실패:`, error);
+        alert('변경 적용 중 오류가 발생했습니다.');
+      }
+    };
+    
+    // 섹션 초기화 함수
+    window.resetSection = function(sectionId) {
+      console.log(`=== 섹션 ${sectionId} 초기화 ===`);
+      
+      const sectionEditor = document.querySelector(`[data-section="${sectionId}"]`);
+      if (sectionEditor) {
+        const inputs = sectionEditor.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+          input.value = '';
+        });
+        
+        const preview = document.getElementById(`${sectionId}-preview`);
+        if (preview) {
+          preview.innerHTML = '';
+        }
+        
+        console.log(`✅ 섹션 ${sectionId} 초기화 완료`);
+        alert(`${sectionId} 섹션이 초기화되었습니다.`);
+      }
+    };
+    
+    // 섹션 1 (메인 슬라이더) 변경 적용
+    function applySection01Changes() {
+      const title = document.getElementById('section01-title')?.value;
+      const subtitle = document.getElementById('section01-subtitle')?.value;
+      const description = document.getElementById('section01-description')?.value;
+      const bgImage = document.getElementById('section01-bg-image')?.files[0];
+      
+      console.log('섹션 1 변경사항:', { title, subtitle, description, bgImage });
+      
+      // 실제 웹사이트 요소에 적용
+      const mainTitle = document.querySelector('.section01 h3');
+      if (mainTitle && title) {
+        mainTitle.textContent = title;
+      }
+      
+      const subTitle = document.querySelector('.section01 .sview01');
+      if (subTitle && subtitle) {
+        subTitle.textContent = subtitle;
+      }
+      
+      // 배경 이미지 처리
+      if (bgImage) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const bgElement = document.querySelector('.section01 .bg01');
+          if (bgElement) {
+            bgElement.style.backgroundImage = `url(${e.target.result})`;
+            bgElement.style.backgroundSize = 'cover';
+            bgElement.style.backgroundPosition = 'center';
+          }
+        };
+        reader.readAsDataURL(bgImage);
+      }
+      
+      // 로컬 스토리지에 저장
+      localStorage.setItem('section01_title', title || '');
+      localStorage.setItem('section01_subtitle', subtitle || '');
+      localStorage.setItem('section01_description', description || '');
+    }
+    
+    // 섹션 2 (회사 소개) 변경 적용
+    function applySection02Changes() {
+      const title = document.getElementById('section02-title')?.value;
+      const subtitle = document.getElementById('section02-subtitle')?.value;
+      const description = document.getElementById('section02-description')?.value;
+      
+      console.log('섹션 2 변경사항:', { title, subtitle, description });
+      
+      // 실제 웹사이트 요소에 적용
+      const mainTitle = document.querySelector('.section02 .mTit');
+      if (mainTitle && title) {
+        mainTitle.textContent = title;
+      }
+      
+      // 로컬 스토리지에 저장
+      localStorage.setItem('section02_title', title || '');
+      localStorage.setItem('section02_subtitle', subtitle || '');
+      localStorage.setItem('section02_description', description || '');
+    }
+    
+    // 섹션 3 (서비스) 변경 적용
+    function applySection03Changes() {
+      const title = document.getElementById('section03-title')?.value;
+      const service1Title = document.getElementById('section03-service1-title')?.value;
+      const service1Desc = document.getElementById('section03-service1-desc')?.value;
+      
+      console.log('섹션 3 변경사항:', { title, service1Title, service1Desc });
+      
+      // 로컬 스토리지에 저장
+      localStorage.setItem('section03_title', title || '');
+      localStorage.setItem('section03_service1_title', service1Title || '');
+      localStorage.setItem('section03_service1_desc', service1Desc || '');
+    }
+    
+    // 섹션 4 (포트폴리오) 변경 적용
+    function applySection04Changes() {
+      const title = document.getElementById('section04-title')?.value;
+      
+      console.log('섹션 4 변경사항:', { title });
+      
+      // 실제 웹사이트 요소에 적용
+      const mainTitle = document.querySelector('.section04 .mTit');
+      if (mainTitle && title) {
+        mainTitle.textContent = title;
+      }
+      
+      // 로컬 스토리지에 저장
+      localStorage.setItem('section04_title', title || '');
+    }
+    
     // ===== 종료 =====
     
     
@@ -3177,7 +3323,7 @@ function setCookie( name, value, expiredays )
       console.log('지도 설정:', { mapKey, mapTimestamp, mapWidth, mapHeight, mapStyle });
       
       // 지도 컨테이너 찾기
-      const mapContainer = document.getElementById('daumRoughmapContainer1673836719953');
+      const mapContainer = document.getElementById('daumRoughmapContainer1735824000000');
       if (mapContainer) {
         // 지도 크기 설정
         mapContainer.style.width = mapWidth + '%';
@@ -3223,14 +3369,14 @@ function setCookie( name, value, expiredays )
     function resetMapSettings() {
       console.log('지도 설정 초기화');
       
-      document.getElementById('map-key').value = '2dfn8';
-      document.getElementById('map-timestamp').value = '1673836719953';
+      document.getElementById('map-key').value = 'ef2a0a9c4f2999b0ced34028c9ec8873';
+      document.getElementById('map-timestamp').value = '1735824000000';
       document.getElementById('map-width').value = '100';
       document.getElementById('map-height').value = '400';
       document.getElementById('map-style').value = 'default';
       
       // 지도 컨테이너 크기 초기화
-      const mapContainer = document.getElementById('daumRoughmapContainer1673836719953');
+      const mapContainer = document.getElementById('daumRoughmapContainer1735824000000');
       if (mapContainer) {
         mapContainer.style.width = '100%';
         mapContainer.style.height = '400px';
