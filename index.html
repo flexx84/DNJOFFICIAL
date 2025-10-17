@@ -6863,45 +6863,64 @@ function setCookie( name, value, expiredays )
       
       let savedCount = 0;
       
-      // 섹션별 텍스트 저장
-      const sectionSelectors = {
-        'section01': {
-          'main-title': '.section01 h3',
-          'sub-title': '.section01 .sview01',
-          'description': '.section01 .sview02'
-        },
-        'section02': {
-          'title': '.section02 .mTit',
-          'subtitle': '.section02 h5',
-          'description': '.section02 p'
-        },
-        'section03': {
-          'title': '.section03 .mTit',
-          'service1': '.section03 .txtBox h5:first-child',
-          'service2': '.section03 .txtBox h2:first-child'
-        },
-        'section04': {
-          'title': '.section04 .mTit',
-          'description': '.section04 .txtBox h3:first-child'
-        }
-      };
-      
-      Object.keys(sectionSelectors).forEach(sectionId => {
-        const selectors = sectionSelectors[sectionId];
-        Object.keys(selectors).forEach(fieldId => {
-          const element = document.querySelector(selectors[fieldId]);
-          const input = document.getElementById(`${sectionId}-${fieldId}`);
-          
-          if (element && input && input.value.trim()) {
-            element.textContent = input.value.trim();
-            
-            // 로컬 스토리지에 저장
-            const elementId = generateElementId(element);
-            localStorage.setItem(`text_edit_${elementId}`, input.value.trim());
-            
+      // 1. 섹션별 텍스트 저장 (개선된 방식)
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      sections.forEach(sectionId => {
+        const section = document.querySelector(`.${sectionId}`);
+        if (section) {
+          // 제목 저장
+          const titleElement = section.querySelector('h1, h2, h3');
+          if (titleElement) {
+            const titleText = titleElement.textContent.trim();
+            localStorage.setItem(`text_${sectionId}_title`, titleText);
             savedCount++;
+            console.log(`✅ 저장됨: text_${sectionId}_title = "${titleText}"`);
           }
-        });
+          
+          // 부제목 저장
+          const subtitleElement = section.querySelector('h4, h5, h6, .subtitle');
+          if (subtitleElement) {
+            const subtitleText = subtitleElement.textContent.trim();
+            localStorage.setItem(`text_${sectionId}_subtitle`, subtitleText);
+            savedCount++;
+            console.log(`✅ 저장됨: text_${sectionId}_subtitle = "${subtitleText}"`);
+          }
+          
+          // 설명 저장
+          const descriptionElement = section.querySelector('p, .description');
+          if (descriptionElement) {
+            const descriptionText = descriptionElement.textContent.trim();
+            localStorage.setItem(`text_${sectionId}_description`, descriptionText);
+            savedCount++;
+            console.log(`✅ 저장됨: text_${sectionId}_description = "${descriptionText}"`);
+          }
+        }
+      });
+      
+      // 2. 편집 가능한 텍스트 요소들 저장
+      const editableElements = document.querySelectorAll('.editable-text, .text-editable');
+      editableElements.forEach(element => {
+        const elementId = generateElementId(element);
+        const text = element.textContent.trim();
+        localStorage.setItem(`text_edit_${elementId}`, text);
+        savedCount++;
+        console.log(`✅ 저장됨: text_edit_${elementId} = "${text}"`);
+      });
+      
+      // 3. 섹션 데이터 통합 저장
+      sections.forEach(sectionId => {
+        const section = document.querySelector(`.${sectionId}`);
+        if (section) {
+          const sectionData = {
+            title: section.querySelector('h1, h2, h3')?.textContent.trim() || '',
+            subtitle: section.querySelector('h4, h5, h6, .subtitle')?.textContent.trim() || '',
+            description: section.querySelector('p, .description')?.textContent.trim() || '',
+            backgroundImage: section.style.backgroundImage || ''
+          };
+          
+          localStorage.setItem(`section_data_${sectionId}`, JSON.stringify(sectionData));
+          console.log(`✅ 섹션 데이터 저장됨: section_data_${sectionId}`);
+        }
       });
       
       showSuccessMessage(`${savedCount}개의 텍스트가 저장되었습니다!`);
@@ -7713,6 +7732,39 @@ function setCookie( name, value, expiredays )
       } catch (error) {
         console.error(`❌ ${sectionId} 스타일 적용 중 오류:`, error);
       }
+    };
+
+    // 요소에서 섹션 ID 추출하는 헬퍼 함수
+    window.getSectionIdFromElement = function(element) {
+      if (!element) return null;
+      
+      // 부모 요소들에서 섹션 클래스 찾기
+      let current = element;
+      while (current && current !== document.body) {
+        const classList = current.classList;
+        for (let className of classList) {
+          if (className.startsWith('section') && /section\d{2}/.test(className)) {
+            return className;
+          }
+        }
+        current = current.parentElement;
+      }
+      return null;
+    };
+
+    // 요소에서 텍스트 타입 추출하는 헬퍼 함수
+    window.getTextTypeFromElement = function(element) {
+      if (!element) return null;
+      
+      const tagName = element.tagName.toLowerCase();
+      if (['h1', 'h2', 'h3'].includes(tagName)) {
+        return 'title';
+      } else if (['h4', 'h5', 'h6'].includes(tagName)) {
+        return 'subtitle';
+      } else if (tagName === 'p' || element.classList.contains('description')) {
+        return 'description';
+      }
+      return null;
     };
 
     // localStorage 상태 확인 및 디버깅 함수
