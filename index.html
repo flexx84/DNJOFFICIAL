@@ -2917,33 +2917,100 @@ function setCookie( name, value, expiredays )
     // DOM 요소 재검색 함수 (글로벌)
     window.forceFindElements = forceFindElements;
     
-    // 긴급 수정 함수 - 즉시 실행 가능
+    // 강화된 긴급 수정 함수 - 여러 시점에서 요소 검색
     window.emergencyFix = function() {
       console.log('=== 긴급 수정 시작 ===');
+      console.log('현재 DOM 상태:', document.readyState);
+      console.log('전체 DOM 요소 수:', document.querySelectorAll('*').length);
       
-      // 기존 HTML 요소만 찾음 (새로 생성하지 않음)
-      AdminSystem.adminPanel = document.getElementById('adminMode') || 
-                                document.querySelector('.admin-mode') ||
-                                document.querySelector('div[id="adminMode"]');
+      // 모든 가능한 방법으로 요소 찾기
+      const searchMethods = [
+        () => document.getElementById('adminMode'),
+        () => document.querySelector('.admin-mode'),
+        () => document.querySelector('[id="adminMode"]'),
+        () => document.querySelector('div#adminMode'),
+        () => document.querySelector('div.admin-mode'),
+        () => document.querySelector('[class*="admin-mode"]'),
+        () => document.querySelector('div[id*="adminMode"]'),
+        () => document.querySelector('div[class*="admin-mode"]')
+      ];
       
-      AdminSystem.adminIndicator = document.getElementById('adminIndicator') || 
-                                    document.querySelector('.admin-indicator') ||
-                                    document.querySelector('div[id="adminIndicator"]');
+      const indicatorMethods = [
+        () => document.getElementById('adminIndicator'),
+        () => document.querySelector('.admin-indicator'),
+        () => document.querySelector('[id="adminIndicator"]'),
+        () => document.querySelector('div#adminIndicator'),
+        () => document.querySelector('div.admin-indicator'),
+        () => document.querySelector('[class*="admin-indicator"]'),
+        () => document.querySelector('div[id*="adminIndicator"]'),
+        () => document.querySelector('div[class*="admin-indicator"]')
+      ];
+      
+      // 패널 찾기
+      for (let i = 0; i < searchMethods.length; i++) {
+        try {
+          const element = searchMethods[i]();
+          if (element) {
+            AdminSystem.adminPanel = element;
+            console.log(`✅ 패널 찾음 (방법 ${i+1}):`, element);
+            break;
+          }
+        } catch (e) {
+          console.log(`❌ 패널 검색 방법 ${i+1} 실패:`, e.message);
+        }
+      }
+      
+      // 인디케이터 찾기
+      for (let i = 0; i < indicatorMethods.length; i++) {
+        try {
+          const element = indicatorMethods[i]();
+          if (element) {
+            AdminSystem.adminIndicator = element;
+            console.log(`✅ 인디케이터 찾음 (방법 ${i+1}):`, element);
+            break;
+          }
+        } catch (e) {
+          console.log(`❌ 인디케이터 검색 방법 ${i+1} 실패:`, e.message);
+        }
+      }
+      
+      // 모든 div 요소 확인 (디버깅용)
+      const allDivs = document.querySelectorAll('div');
+      console.log('전체 div 요소 수:', allDivs.length);
+      
+      const adminDivs = Array.from(allDivs).filter(div => 
+        div.id?.includes('admin') || div.className?.includes('admin')
+      );
+      console.log('admin 관련 div 요소들:', adminDivs);
       
       if (AdminSystem.adminPanel) {
         console.log('✅ 기존 패널 연결됨:', AdminSystem.adminPanel);
+        console.log('패널 태그:', AdminSystem.adminPanel.tagName);
+        console.log('패널 ID:', AdminSystem.adminPanel.id);
+        console.log('패널 클래스:', AdminSystem.adminPanel.className);
         // 패널을 초기에 숨김
         AdminSystem.adminPanel.style.setProperty('display', 'none', 'important');
       } else {
-        console.error('❌ 기존 패널을 찾을 수 없습니다. HTML에서 #adminMode 요소를 확인하세요.');
+        console.error('❌ 기존 패널을 찾을 수 없습니다.');
+        console.log('HTML에서 admin 관련 요소들:');
+        console.log('- #adminMode:', document.getElementById('adminMode'));
+        console.log('- .admin-mode:', document.querySelector('.admin-mode'));
+        console.log('- [id="adminMode"]:', document.querySelector('[id="adminMode"]'));
       }
       
       if (AdminSystem.adminIndicator) {
         console.log('✅ 기존 인디케이터 연결됨:', AdminSystem.adminIndicator);
+        console.log('인디케이터 태그:', AdminSystem.adminIndicator.tagName);
+        console.log('인디케이터 ID:', AdminSystem.adminIndicator.id);
+        console.log('인디케이터 클래스:', AdminSystem.adminIndicator.className);
         // 인디케이터를 초기에 숨김
         AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
       } else {
-        console.error('❌ 기존 인디케이터를 찾을 수 없습니다. HTML에서 #adminIndicator 요소를 확인하세요.');
+        console.error('❌ 기존 인디케이터를 찾을 수 없습니다.');
+        console.log('HTML에서 indicator 관련 요소들:');
+        console.log('- #adminIndicator:', document.getElementById('adminIndicator'));
+        console.log('- .admin-indicator:', document.querySelector('.admin-indicator'));
+        console.log('- [id="adminIndicator"]:', document.querySelector('[id="adminIndicator"]'));
       }
       
       // 상태 확인
@@ -3009,11 +3076,39 @@ function setCookie( name, value, expiredays )
     // ===== 종료 =====
     
     
-    // 페이지 로드 후 즉시 긴급 수정 실행 (기존 HTML 요소 연결)
-    setTimeout(() => {
-      console.log('=== 자동 긴급 수정 실행 ===');
-      window.emergencyFix();
-    }, 5000);
+    // 여러 시점에서 요소 검색 실행
+    function tryInitializeAdminSystem() {
+      console.log('=== 관리 시스템 초기화 시도 ===');
+      
+      if (window.emergencyFix()) {
+        console.log('✅ 관리 시스템 초기화 성공!');
+        return true;
+      } else {
+        console.log('❌ 관리 시스템 초기화 실패, 재시도 예정...');
+        return false;
+      }
+    }
+    
+    // 즉시 시도
+    tryInitializeAdminSystem();
+    
+    // DOMContentLoaded 시점에서 시도
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('=== DOMContentLoaded 이벤트 발생 ===');
+      setTimeout(() => tryInitializeAdminSystem(), 100);
+    });
+    
+    // window.onload 시점에서 시도
+    window.addEventListener('load', () => {
+      console.log('=== window.onload 이벤트 발생 ===');
+      setTimeout(() => tryInitializeAdminSystem(), 100);
+    });
+    
+    // 여러 시점에서 재시도
+    setTimeout(() => tryInitializeAdminSystem(), 1000);
+    setTimeout(() => tryInitializeAdminSystem(), 3000);
+    setTimeout(() => tryInitializeAdminSystem(), 5000);
+    setTimeout(() => tryInitializeAdminSystem(), 10000);
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
