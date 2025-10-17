@@ -1274,12 +1274,425 @@
       max-height: 150px;
       border-radius: 5px;
     }
+    
+    /* 텍스트 편집 팝업 스타일 */
+    .text-edit-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+    }
+    
+    .text-edit-content {
+      background: #1a1a1a;
+      border: 2px solid #ff000b;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(255, 0, 11, 0.3);
+    }
+    
+    .text-edit-header {
+      background: linear-gradient(135deg, #ff000b, #cc0009);
+      color: white;
+      padding: 20px;
+      border-radius: 13px 13px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .text-edit-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .text-edit-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+    
+    .text-edit-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .text-edit-body {
+      padding: 20px;
+    }
+    
+    .text-edit-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #333;
+    }
+    
+    .text-edit-tab {
+      background: #333;
+      color: #ccc;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .text-edit-tab.active {
+      background: #ff000b;
+      color: white;
+    }
+    
+    .text-edit-tab:hover {
+      background: #555;
+      color: white;
+    }
+    
+    .text-edit-tab-content {
+      display: none;
+    }
+    
+    .text-edit-tab-content.active {
+      display: block;
+    }
+    
+    .text-edit-section {
+      margin-bottom: 25px;
+    }
+    
+    .text-edit-section h3 {
+      color: #ff000b;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    
+    .text-edit-hint {
+      color: #ccc;
+      font-size: 14px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #2a2a2a;
+      border-radius: 5px;
+      border-left: 4px solid #ff000b;
+    }
+    
+    .selected-text-info {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px dashed #555;
+      margin-bottom: 15px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .no-selection {
+      color: #888;
+      font-style: italic;
+    }
+    
+    .selected-text {
+      color: #ff000b;
+      font-weight: bold;
+      background: rgba(255, 0, 11, 0.1);
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+    
+    .text-edit-textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #555;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .text-edit-textarea:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 10px rgba(255, 0, 11, 0.3);
+    }
+    
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    
+    .form-row label {
+      color: #ccc;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    .form-row input,
+    .form-row select {
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .form-row input:focus,
+    .form-row select:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
+    
+    .text-edit-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .text-edit-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    
+    .text-edit-btn.primary {
+      background: #ff000b;
+      color: white;
+    }
+    
+    .text-edit-btn.primary:hover {
+      background: #cc0009;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 11, 0.4);
+    }
+    
+    .text-edit-btn.secondary {
+      background: #555;
+      color: white;
+    }
+    
+    .text-edit-btn.secondary:hover {
+      background: #777;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(85, 85, 85, 0.4);
+    }
+    
+    .bulk-edit-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #555;
+      border-radius: 8px;
+      background: #2a2a2a;
+    }
+    
+    .bulk-edit-item {
+      padding: 15px;
+      border-bottom: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .bulk-edit-item:last-child {
+      border-bottom: none;
+    }
+    
+    .bulk-edit-info {
+      color: #ccc;
+      font-size: 12px;
+    }
+    
+    .bulk-edit-textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    /* 텍스트 편집 가능한 요소 스타일 */
+    .text-editable {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    
+    .text-editable:hover {
+      background: rgba(255, 0, 11, 0.1) !important;
+      border: 1px dashed #ff000b !important;
+      color: #ff000b !important;
+    }
+    
+    .text-selected {
+      background: rgba(255, 0, 11, 0.2) !important;
+      border: 2px solid #ff000b !important;
+      color: #ff000b !important;
+      box-shadow: 0 0 10px rgba(255, 0, 11, 0.5) !important;
+    }
+    
+    .text-editable::after {
+      content: "✏️";
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: #ff000b;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .text-editable:hover::after {
+      opacity: 1;
+    }
+    
+    /* 관리 모드에서만 활성화 */
+    body:not(.admin-mode-active) .text-editable {
+      cursor: default;
+    }
+    
+    body:not(.admin-mode-active) .text-editable:hover {
+      background: transparent !important;
+      border: none !important;
+      color: inherit !important;
+    }
+    
+    body:not(.admin-mode-active) .text-editable::after {
+      display: none;
+    }
   </style>
  </head>
 <body>
  <!-- 관리 모드 인디케이터 -->
- <div class="admin-indicator" id="adminIndicator">관리 모드 활성화</div>
- 
+ <div class="admin-indicator" id="adminIndicator" onclick="openTextEditPopup()">관리 모드 활성화</div>
+
+ <!-- 텍스트 편집 팝업 -->
+ <div class="text-edit-popup" id="textEditPopup">
+   <div class="text-edit-content">
+     <div class="text-edit-header">
+       <h2 class="text-edit-title">📝 텍스트 편집</h2>
+       <button class="text-edit-close" onclick="closeTextEditPopup()">×</button>
+     </div>
+     
+     <div class="text-edit-body">
+       <div class="text-edit-tabs">
+         <button class="text-edit-tab active" onclick="switchTextEditTab('quick')">⚡ 빠른 편집</button>
+         <button class="text-edit-tab" onclick="switchTextEditTab('advanced')">🔧 고급 편집</button>
+         <button class="text-edit-tab" onclick="switchTextEditTab('bulk')">📋 일괄 편집</button>
+       </div>
+       
+       <!-- 빠른 편집 탭 -->
+       <div id="quick-edit-tab" class="text-edit-tab-content active">
+         <div class="text-edit-section">
+           <h3>🎯 선택한 텍스트 편집</h3>
+           <p class="text-edit-hint">웹사이트에서 편집하고 싶은 텍스트를 클릭하세요.</p>
+           <div class="selected-text-info" id="selectedTextInfo">
+             <span class="no-selection">텍스트를 선택해주세요</span>
+           </div>
+           <div class="text-edit-form" id="quickEditForm" style="display: none;">
+             <textarea id="quickEditTextarea" class="text-edit-textarea" placeholder="새로운 텍스트를 입력하세요"></textarea>
+             <div class="text-edit-buttons">
+               <button class="text-edit-btn primary" onclick="applyQuickEdit()">✅ 적용</button>
+               <button class="text-edit-btn secondary" onclick="cancelQuickEdit()">❌ 취소</button>
+             </div>
+           </div>
+         </div>
+       </div>
+       
+       <!-- 고급 편집 탭 -->
+       <div id="advanced-edit-tab" class="text-edit-tab-content">
+         <div class="text-edit-section">
+           <h3>🎨 스타일과 함께 편집</h3>
+           <div class="advanced-edit-form">
+             <div class="form-row">
+               <label>텍스트 내용:</label>
+               <textarea id="advancedEditTextarea" class="text-edit-textarea" placeholder="텍스트를 입력하세요"></textarea>
+             </div>
+             <div class="form-row">
+               <label>텍스트 색상:</label>
+               <input type="color" id="advancedTextColor" value="#ffffff">
+             </div>
+             <div class="form-row">
+               <label>폰트 크기:</label>
+               <select id="advancedFontSize">
+                 <option value="small">작게</option>
+                 <option value="medium" selected>보통</option>
+                 <option value="large">크게</option>
+                 <option value="xlarge">매우 크게</option>
+               </select>
+             </div>
+             <div class="form-row">
+               <label>정렬:</label>
+               <select id="advancedTextAlign">
+                 <option value="left">왼쪽</option>
+                 <option value="center" selected>가운데</option>
+                 <option value="right">오른쪽</option>
+               </select>
+             </div>
+             <div class="text-edit-buttons">
+               <button class="text-edit-btn primary" onclick="applyAdvancedEdit()">✅ 적용</button>
+               <button class="text-edit-btn secondary" onclick="resetAdvancedEdit()">🔄 초기화</button>
+             </div>
+           </div>
+         </div>
+       </div>
+       
+       <!-- 일괄 편집 탭 -->
+       <div id="bulk-edit-tab" class="text-edit-tab-content">
+         <div class="text-edit-section">
+           <h3>📋 여러 텍스트 한번에 편집</h3>
+           <div class="bulk-edit-list" id="bulkEditList">
+             <!-- 동적으로 생성될 텍스트 목록 -->
+           </div>
+           <div class="text-edit-buttons">
+             <button class="text-edit-btn primary" onclick="applyBulkEdit()">✅ 모든 변경사항 적용</button>
+             <button class="text-edit-btn secondary" onclick="refreshBulkList()">🔄 목록 새로고침</button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+
  <!-- 섹션별 팝업 에디터 -->
  <div class="section-popup-editor" id="sectionPopupEditor">
    <div class="section-popup-content">
@@ -2994,7 +3407,9 @@ function setCookie( name, value, expiredays )
       menuClickTimer: null,
       adminPanel: null,
       adminIndicator: null,
-      adminButton: null
+      adminButton: null,
+      buttonToggleCount: 0,  // 버튼 토글 카운터 추가
+      buttonToggleTimer: null  // 버튼 토글 타이머 추가
     };
     
     // 관리 모드 시스템 초기화
@@ -3074,26 +3489,61 @@ function setCookie( name, value, expiredays )
         font-weight: bold !important;
         box-shadow: 0 4px 20px rgba(255,0,0,0.8) !important;
         border: 3px solid white !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
         transition: all 0.3s ease !important;
       `;
       
-      // 클릭 이벤트 등록
+      // 클릭 이벤트 등록 (5회 클릭으로 토글)
       AdminSystem.adminButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('=== 관리 모드 버튼 클릭됨 ===');
-        toggleAdminMode();
+        handleAdminButtonClick();
       });
       
-      // DOM에 추가 (표시 상태)
+      // DOM에 추가 (숨김 상태)
       document.body.appendChild(AdminSystem.adminButton);
-      AdminSystem.buttonVisible = true;
-      console.log('관리 모드 버튼 생성 완료 (표시 상태)');
+      AdminSystem.buttonVisible = false;
+      console.log('관리 모드 버튼 생성 완료 (숨김 상태)');
       
       return true;
+    }
+    
+    // 관리모드 버튼 클릭 핸들러 (5회 클릭으로 토글)
+    function handleAdminButtonClick() {
+      console.log(`=== 관리모드 버튼 클릭: ${AdminSystem.buttonToggleCount + 1}/5 ===`);
+      
+      AdminSystem.buttonToggleCount++;
+      
+      // 기존 타이머 클리어
+      if (AdminSystem.buttonToggleTimer) {
+        clearTimeout(AdminSystem.buttonToggleTimer);
+      }
+      
+      // 5회 클릭 달성 시
+      if (AdminSystem.buttonToggleCount >= 5) {
+        console.log('🎉 관리모드 버튼 5번 클릭 달성!');
+        
+        if (AdminSystem.buttonVisible) {
+          // 버튼이 보이는 상태면 숨김
+          hideAdminButton();
+          console.log('✅ 관리모드 버튼 숨김됨');
+        } else {
+          // 버튼이 숨겨진 상태면 표시
+          showAdminButton();
+          console.log('✅ 관리모드 버튼 표시됨');
+        }
+        
+        AdminSystem.buttonToggleCount = 0;
+      } else {
+        console.log(`남은 클릭: ${5 - AdminSystem.buttonToggleCount}번`);
+        // 2초 후 카운터 리셋
+        AdminSystem.buttonToggleTimer = setTimeout(() => {
+          console.log('⏰ 관리모드 버튼 카운터 리셋 (2초 경과)');
+          AdminSystem.buttonToggleCount = 0;
+        }, 2000);
+      }
     }
     
     // 관리 모드 토글
@@ -4223,9 +4673,6 @@ function setCookie( name, value, expiredays )
       showSaveStatus();
       initializeImageManager();
       restoreEditedTexts();
-      
-      // 관리모드 버튼 강제 표시 (디버깅용)
-      forceShowAdminButton();
     }, 2000);
     
     // ===== 이미지 관리 시스템 =====
@@ -5142,7 +5589,354 @@ function setCookie( name, value, expiredays )
           opacityValue.textContent = value + '%';
         });
       }
+      
+      // 텍스트 편집 시스템 초기화
+      initializeTextEditSystem();
     });
+    
+    // ===== 텍스트 편집 팝업 시스템 =====
+    
+    let selectedTextElement = null;
+    let textEditPopup = null;
+    
+    // 텍스트 편집 시스템 초기화
+    function initializeTextEditSystem() {
+      console.log('=== 텍스트 편집 시스템 초기화 ===');
+      
+      textEditPopup = document.getElementById('textEditPopup');
+      
+      // 기존 텍스트 요소들을 클릭 가능하게 만들기
+      setupTextClickListeners();
+      
+      // 일괄 편집 목록 초기화
+      refreshBulkList();
+      
+      console.log('✅ 텍스트 편집 시스템 초기화 완료');
+    }
+    
+    // 텍스트 클릭 리스너 설정
+    function setupTextClickListeners() {
+      const textSelectors = [
+        // 섹션 1 (메인)
+        '.section01 h3',
+        '.section01 .sview01',
+        '.section01 .sview02',
+        '.section01 .txtArea h3',
+        '.section01 .txtArea span',
+        
+        // 섹션 2 (회사 소개)
+        '.section02 .mTit',
+        '.section02 h5',
+        '.section02 p',
+        '.section02 h4',
+        '.section02 ul li p',
+        
+        // 섹션 3 (서비스)
+        '.section03 .mTit',
+        '.section03 .txtBox h5',
+        '.section03 .txtBox h2',
+        
+        // 섹션 4 (포트폴리오)
+        '.section04 .mTit',
+        '.section04 .txtBox h3',
+        '.section04 .txtBox p',
+        
+        // 기타 텍스트
+        '.footerArt p',
+        '.footerArt h6'
+      ];
+      
+      textSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+          if (element && element.textContent.trim()) {
+            element.classList.add('text-editable');
+            element.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              selectTextElement(this);
+            });
+          }
+        });
+      });
+    }
+    
+    // 텍스트 요소 선택
+    function selectTextElement(element) {
+      console.log('=== 텍스트 요소 선택 ===');
+      
+      // 이전 선택 해제
+      if (selectedTextElement) {
+        selectedTextElement.classList.remove('text-selected');
+      }
+      
+      // 새 요소 선택
+      selectedTextElement = element;
+      selectedTextElement.classList.add('text-selected');
+      
+      // 선택된 텍스트 정보 업데이트
+      updateSelectedTextInfo();
+      
+      console.log('✅ 텍스트 요소 선택됨:', element.textContent.trim());
+    }
+    
+    // 선택된 텍스트 정보 업데이트
+    function updateSelectedTextInfo() {
+      const infoElement = document.getElementById('selectedTextInfo');
+      const formElement = document.getElementById('quickEditForm');
+      
+      if (selectedTextElement && infoElement) {
+        const text = selectedTextElement.textContent.trim();
+        infoElement.innerHTML = `
+          <div class="selected-text">"${text}"</div>
+          <div style="margin-top: 5px; color: #888; font-size: 12px;">
+            태그: ${selectedTextElement.tagName.toLowerCase()}
+          </div>
+        `;
+        formElement.style.display = 'block';
+        
+        // 텍스트 영역에 현재 텍스트 설정
+        const textarea = document.getElementById('quickEditTextarea');
+        if (textarea) {
+          textarea.value = text;
+        }
+      }
+    }
+    
+    // 텍스트 편집 팝업 열기
+    window.openTextEditPopup = function() {
+      console.log('=== 텍스트 편집 팝업 열기 ===');
+      
+      if (textEditPopup) {
+        textEditPopup.style.display = 'flex';
+        
+        // 빠른 편집 탭 활성화
+        switchTextEditTab('quick');
+        
+        console.log('✅ 텍스트 편집 팝업 열림');
+      }
+    };
+    
+    // 텍스트 편집 팝업 닫기
+    window.closeTextEditPopup = function() {
+      console.log('=== 텍스트 편집 팝업 닫기 ===');
+      
+      if (textEditPopup) {
+        textEditPopup.style.display = 'none';
+        
+        // 선택 해제
+        if (selectedTextElement) {
+          selectedTextElement.classList.remove('text-selected');
+          selectedTextElement = null;
+        }
+        
+        console.log('✅ 텍스트 편집 팝업 닫힘');
+      }
+    };
+    
+    // 텍스트 편집 탭 전환
+    window.switchTextEditTab = function(tabName) {
+      console.log(`=== 텍스트 편집 탭 전환: ${tabName} ===`);
+      
+      // 모든 탭 비활성화
+      const tabs = document.querySelectorAll('.text-edit-tab');
+      const tabContents = document.querySelectorAll('.text-edit-tab-content');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // 선택된 탭 활성화
+      const selectedTab = document.querySelector(`[onclick="switchTextEditTab('${tabName}')"]`);
+      const selectedContent = document.getElementById(`${tabName}-edit-tab`);
+      
+      if (selectedTab) selectedTab.classList.add('active');
+      if (selectedContent) selectedContent.classList.add('active');
+      
+      // 탭별 특별 처리
+      if (tabName === 'bulk') {
+        refreshBulkList();
+      }
+      
+      console.log(`✅ 텍스트 편집 탭 전환 완료: ${tabName}`);
+    };
+    
+    // 빠른 편집 적용
+    window.applyQuickEdit = function() {
+      console.log('=== 빠른 편집 적용 ===');
+      
+      if (!selectedTextElement) {
+        showErrorMessage('편집할 텍스트를 선택해주세요.');
+        return;
+      }
+      
+      const textarea = document.getElementById('quickEditTextarea');
+      const newText = textarea.value.trim();
+      
+      if (!newText) {
+        showErrorMessage('텍스트를 입력해주세요.');
+        return;
+      }
+      
+      // 텍스트 적용
+      selectedTextElement.textContent = newText;
+      
+      // 로컬 스토리지에 저장
+      const elementId = generateElementId(selectedTextElement);
+      localStorage.setItem(`text_edit_${elementId}`, newText);
+      
+      showSuccessMessage('텍스트가 성공적으로 수정되었습니다!');
+      console.log('✅ 빠른 편집 적용 완료');
+    };
+    
+    // 빠른 편집 취소
+    window.cancelQuickEdit = function() {
+      console.log('=== 빠른 편집 취소 ===');
+      
+      if (selectedTextElement) {
+        selectedTextElement.classList.remove('text-selected');
+        selectedTextElement = null;
+      }
+      
+      const formElement = document.getElementById('quickEditForm');
+      if (formElement) {
+        formElement.style.display = 'none';
+      }
+      
+      const infoElement = document.getElementById('selectedTextInfo');
+      if (infoElement) {
+        infoElement.innerHTML = '<span class="no-selection">텍스트를 선택해주세요</span>';
+      }
+      
+      console.log('✅ 빠른 편집 취소됨');
+    };
+    
+    // 고급 편집 적용
+    window.applyAdvancedEdit = function() {
+      console.log('=== 고급 편집 적용 ===');
+      
+      if (!selectedTextElement) {
+        showErrorMessage('편집할 텍스트를 선택해주세요.');
+        return;
+      }
+      
+      const textarea = document.getElementById('advancedEditTextarea');
+      const textColor = document.getElementById('advancedTextColor').value;
+      const fontSize = document.getElementById('advancedFontSize').value;
+      const textAlign = document.getElementById('advancedTextAlign').value;
+      
+      const newText = textarea.value.trim();
+      if (!newText) {
+        showErrorMessage('텍스트를 입력해주세요.');
+        return;
+      }
+      
+      // 텍스트 및 스타일 적용
+      selectedTextElement.textContent = newText;
+      selectedTextElement.style.color = textColor;
+      selectedTextElement.style.textAlign = textAlign;
+      
+      // 폰트 크기 적용
+      const fontSizeMap = {
+        'small': '0.8em',
+        'medium': '1em',
+        'large': '1.2em',
+        'xlarge': '1.5em'
+      };
+      selectedTextElement.style.fontSize = fontSizeMap[fontSize] || '1em';
+      
+      // 로컬 스토리지에 저장
+      const elementId = generateElementId(selectedTextElement);
+      const editData = {
+        text: newText,
+        color: textColor,
+        fontSize: fontSize,
+        textAlign: textAlign
+      };
+      localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(editData));
+      
+      showSuccessMessage('고급 편집이 성공적으로 적용되었습니다!');
+      console.log('✅ 고급 편집 적용 완료');
+    };
+    
+    // 고급 편집 초기화
+    window.resetAdvancedEdit = function() {
+      console.log('=== 고급 편집 초기화 ===');
+      
+      document.getElementById('advancedEditTextarea').value = '';
+      document.getElementById('advancedTextColor').value = '#ffffff';
+      document.getElementById('advancedFontSize').value = 'medium';
+      document.getElementById('advancedTextAlign').value = 'center';
+      
+      console.log('✅ 고급 편집 초기화됨');
+    };
+    
+    // 일괄 편집 목록 새로고침
+    window.refreshBulkList = function() {
+      console.log('=== 일괄 편집 목록 새로고침 ===');
+      
+      const listElement = document.getElementById('bulkEditList');
+      if (!listElement) return;
+      
+      listElement.innerHTML = '';
+      
+      const textSelectors = [
+        '.section01 h3', '.section01 .sview01', '.section01 .sview02',
+        '.section02 .mTit', '.section02 h5', '.section02 p',
+        '.section03 .mTit', '.section03 .txtBox h5', '.section03 .txtBox h2',
+        '.section04 .mTit', '.section04 .txtBox h3', '.section04 .txtBox p'
+      ];
+      
+      textSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((element, index) => {
+          if (element && element.textContent.trim()) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'bulk-edit-item';
+            itemElement.innerHTML = `
+              <div class="bulk-edit-info">
+                ${selector} - ${element.tagName.toLowerCase()} (${index + 1})
+              </div>
+              <textarea class="bulk-edit-textarea" data-selector="${selector}" data-index="${index}">
+                ${element.textContent.trim()}
+              </textarea>
+            `;
+            listElement.appendChild(itemElement);
+          }
+        });
+      });
+      
+      console.log('✅ 일괄 편집 목록 새로고침 완료');
+    };
+    
+    // 일괄 편집 적용
+    window.applyBulkEdit = function() {
+      console.log('=== 일괄 편집 적용 ===');
+      
+      const textareas = document.querySelectorAll('.bulk-edit-textarea');
+      let appliedCount = 0;
+      
+      textareas.forEach(textarea => {
+        const selector = textarea.getAttribute('data-selector');
+        const index = parseInt(textarea.getAttribute('data-index'));
+        const newText = textarea.value.trim();
+        
+        if (newText) {
+          const elements = document.querySelectorAll(selector);
+          if (elements[index]) {
+            elements[index].textContent = newText;
+            
+            // 로컬 스토리지에 저장
+            const elementId = generateElementId(elements[index]);
+            localStorage.setItem(`text_edit_${elementId}`, newText);
+            
+            appliedCount++;
+          }
+        }
+      });
+      
+      showSuccessMessage(`${appliedCount}개의 텍스트가 성공적으로 수정되었습니다!`);
+      console.log(`✅ 일괄 편집 적용 완료: ${appliedCount}개`);
+    };
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
