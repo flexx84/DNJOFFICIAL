@@ -2534,11 +2534,23 @@ function setCookie( name, value, expiredays )
       AdminSystem.adminPanel.style.setProperty('display', 'none', 'important');
       AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
       
-      // 기존 관리 모드 버튼들 모두 제거
-      const existingButtons = document.querySelectorAll('[id*="admin"], [id*="Admin"], [id*="button"]');
+      // 기존 관리 모드 버튼들만 제거 (중요한 admin 요소는 보호)
+      const existingButtons = document.querySelectorAll('[id*="adminButton"], [id*="AdminButton"], [id*="finalAdmin"]');
       existingButtons.forEach(btn => {
-        if (btn.id && (btn.id.includes('admin') || btn.id.includes('Admin') || btn.id.includes('button'))) {
+        if (btn.id && (btn.id.includes('adminButton') || btn.id.includes('AdminButton') || btn.id.includes('finalAdmin'))) {
+          console.log('기존 관리 모드 버튼 제거:', btn.id);
           btn.remove();
+        }
+      });
+      
+      // 중요한 admin 요소들 보호 확인
+      const importantAdminElements = ['adminMode', 'adminIndicator', 'sectionPopupEditor'];
+      importantAdminElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (!element) {
+          console.warn(`⚠️ 중요한 admin 요소가 누락됨: #${id}`);
+        } else {
+          console.log(`✅ 중요한 admin 요소 보호됨: #${id}`);
         }
       });
       
@@ -3076,9 +3088,51 @@ function setCookie( name, value, expiredays )
     // ===== 종료 =====
     
     
+    // admin 요소 보호 메커니즘
+    function protectAdminElements() {
+      const adminElements = ['adminMode', 'adminIndicator', 'sectionPopupEditor'];
+      
+      adminElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          // 요소에 보호 마크 추가
+          element.setAttribute('data-protected', 'true');
+          element.setAttribute('data-admin-element', 'true');
+          
+          // 요소 제거 방지를 위한 MutationObserver 설정
+          if (window.MutationObserver) {
+            const observer = new MutationObserver((mutations) => {
+              mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                  mutation.removedNodes.forEach((node) => {
+                    if (node.id === id || (node.nodeType === 1 && node.id === id)) {
+                      console.warn(`🚨 보호된 admin 요소가 제거 시도됨: #${id}`);
+                      // 요소를 다시 추가
+                      if (node.parentNode) {
+                        node.parentNode.appendChild(node);
+                        console.log(`✅ 보호된 admin 요소 복구됨: #${id}`);
+                      }
+                    }
+                  });
+                }
+              });
+            });
+            
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+          }
+        }
+      });
+    }
+
     // 여러 시점에서 요소 검색 실행
     function tryInitializeAdminSystem() {
       console.log('=== 관리 시스템 초기화 시도 ===');
+      
+      // admin 요소들 보호
+      protectAdminElements();
       
       if (window.emergencyFix()) {
         console.log('✅ 관리 시스템 초기화 성공!');
