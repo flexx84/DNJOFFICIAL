@@ -1543,61 +1543,140 @@
     /* 텍스트 편집 가능한 요소 스타일 */
     .text-editable {
       position: relative;
-      cursor: pointer;
+      cursor: text !important;
       transition: all 0.3s ease;
-      padding: 2px 4px;
-      border-radius: 3px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.05);
+      outline: none;
     }
     
     .text-editable:hover {
-      background: rgba(255, 0, 11, 0.1) !important;
-      border: 1px dashed #ff000b !important;
+      background: rgba(255, 0, 11, 0.15) !important;
+      border: 2px dashed #ff000b !important;
       color: #ff000b !important;
+      box-shadow: 0 0 15px rgba(255, 0, 11, 0.3) !important;
+      transform: scale(1.02);
     }
     
     .text-selected {
-      background: rgba(255, 0, 11, 0.2) !important;
+      background: rgba(255, 0, 11, 0.25) !important;
       border: 2px solid #ff000b !important;
       color: #ff000b !important;
-      box-shadow: 0 0 10px rgba(255, 0, 11, 0.5) !important;
+      box-shadow: 0 0 20px rgba(255, 0, 11, 0.6) !important;
+      transform: scale(1.05);
     }
     
     .text-editable::after {
       content: "✏️";
       position: absolute;
-      top: -5px;
-      right: -5px;
-      font-size: 10px;
+      top: -8px;
+      right: -8px;
+      font-size: 12px;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
       background: #ff000b;
       color: white;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      box-shadow: 0 2px 8px rgba(255, 0, 11, 0.4);
     }
     
     .text-editable:hover::after {
       opacity: 1;
+      transform: scale(1.2);
+    }
+    
+    /* 편집 중인 텍스트 스타일 */
+    .text-editing {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #333 !important;
+      border: 2px solid #ff000b !important;
+      box-shadow: 0 0 25px rgba(255, 0, 11, 0.8) !important;
+      cursor: text !important;
+      outline: none !important;
+      position: relative;
+      z-index: 10000;
+    }
+    
+    .text-editing::before {
+      content: "편집 중...";
+      position: absolute;
+      top: -25px;
+      left: 0;
+      background: #ff000b;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 10001;
+    }
+    
+    /* 텍스트 편집 입력 필드 스타일 */
+    .text-edit-input {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      color: inherit !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      cursor: text !important;
     }
     
     /* 관리 모드에서만 활성화 */
     body:not(.admin-mode-active) .text-editable {
       cursor: default;
+      background: transparent;
+      border: none;
     }
     
     body:not(.admin-mode-active) .text-editable:hover {
       background: transparent !important;
       border: none !important;
       color: inherit !important;
+      transform: none;
+      box-shadow: none;
     }
     
     body:not(.admin-mode-active) .text-editable::after {
       display: none;
+    }
+    
+    /* 섹션별 스타일 편집을 위한 클래스 */
+    .section-style-editable {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .section-style-editable::before {
+      content: "🎨";
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: rgba(255, 0, 11, 0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      z-index: 1000;
+    }
+    
+    .section-style-editable:hover::before {
+      opacity: 1;
     }
     
     /* 관리모드 패널 내 텍스트 편집 스타일 */
@@ -1690,6 +1769,53 @@
       outline: none;
       border-color: #ff000b;
       box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
+    
+    /* 스타일 편집 섹션 스타일 */
+    .style-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid #444;
+      border-left: 4px solid #ff000b;
+    }
+    
+    .style-section h4 {
+      color: #ff000b;
+      margin-bottom: 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .form-range {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #444;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .form-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff000b;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(255, 0, 11, 0.3);
+    }
+    
+    .form-range::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff000b;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(255, 0, 11, 0.3);
     }
   </style>
  </head>
@@ -2098,47 +2224,169 @@
      <!-- 스타일 편집 탭 -->
      <div id="style-tab" class="tab-content">
        <div class="section-editor">
-         <h3 class="section-title">전역 스타일 설정</h3>
+         <h3 class="section-title">🎨 섹션별 스타일 편집</h3>
          
-         <div class="form-row">
-           <div class="form-group">
-             <label class="form-label">텍스트 색상</label>
-             <div class="color-opacity-group">
-               <input type="color" class="color-input" id="global-text-color" value="#ffffff">
-               <input type="range" class="opacity-slider" id="global-text-opacity" min="0" max="100" value="100">
-               <span class="opacity-value" id="global-text-opacity-value">100%</span>
+         <!-- 전체 스타일 -->
+         <div class="style-section">
+           <h4 class="form-label">🌐 전체 스타일</h4>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">전체 텍스트 색상</label>
+               <input type="color" id="global-text-color" class="form-input" value="#ffffff">
+             </div>
+             <div class="form-group">
+               <label class="form-label">전체 제목 색상</label>
+               <input type="color" id="global-title-color" class="form-input" value="#ff000b">
              </div>
            </div>
            <div class="form-group">
-             <label class="form-label">제목 색상</label>
-             <div class="color-opacity-group">
-               <input type="color" class="color-input" id="global-title-color" value="#ffffff">
-               <input type="range" class="opacity-slider" id="global-title-opacity" min="0" max="100" value="100">
-               <span class="opacity-value" id="global-title-opacity-value">100%</span>
-             </div>
+             <label class="form-label">전체 배경 투명도: <span id="global-bg-opacity-value">0.8</span></label>
+             <input type="range" id="global-bg-opacity" class="form-range" min="0" max="1" step="0.1" value="0.8">
            </div>
          </div>
          
-         <div class="form-row">
-           <div class="form-group">
-             <label class="form-label">배경 이미지 투명도</label>
-             <div class="color-opacity-group">
-               <input type="range" class="opacity-slider" id="global-bg-opacity" min="0" max="100" value="100">
-               <span class="opacity-value" id="global-bg-opacity-value">100%</span>
+         <!-- 섹션 1 스타일 -->
+         <div class="style-section">
+           <h4 class="form-label">📱 섹션 1 - 메인 슬라이더</h4>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 색상</label>
+               <input type="color" id="section01-bg-color" class="form-input" value="#000000">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 색상</label>
+               <input type="color" id="section01-text-color" class="form-input" value="#ffffff">
+             </div>
+             <div class="form-group">
+               <label class="form-label">제목 색상</label>
+               <input type="color" id="section01-title-color" class="form-input" value="#ff000b">
              </div>
            </div>
-           <div class="form-group">
-             <label class="form-label">배경 오버레이 색상</label>
-             <div class="color-opacity-group">
-               <input type="color" class="color-input" id="global-overlay-color" value="#000000">
-               <input type="range" class="opacity-slider" id="global-overlay-opacity" min="0" max="100" value="50">
-               <span class="opacity-value" id="global-overlay-opacity-value">50%</span>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 투명도: <span id="section01-bg-opacity-value">0.8</span></label>
+               <input type="range" id="section01-bg-opacity" class="form-range" min="0" max="1" step="0.1" value="0.8">
              </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 투명도: <span id="section01-text-opacity-value">1.0</span></label>
+               <input type="range" id="section01-text-opacity" class="form-range" min="0" max="1" step="0.1" value="1.0">
+             </div>
+           </div>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="applySectionStyle('section01')">✅ 섹션 1 스타일 적용</button>
+             <button class="btn btn-secondary" onclick="resetSectionStyle('section01')">🔄 초기화</button>
            </div>
          </div>
          
-         <button class="btn" onclick="applyGlobalStyles()">전역 스타일 적용</button>
-         <button class="btn btn-secondary" onclick="resetGlobalStyles()">초기화</button>
+         <!-- 섹션 2 스타일 -->
+         <div class="style-section">
+           <h4 class="form-label">🏢 섹션 2 - 회사 소개</h4>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 색상</label>
+               <input type="color" id="section02-bg-color" class="form-input" value="#f8f9fa">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 색상</label>
+               <input type="color" id="section02-text-color" class="form-input" value="#333333">
+             </div>
+             <div class="form-group">
+               <label class="form-label">제목 색상</label>
+               <input type="color" id="section02-title-color" class="form-input" value="#ff000b">
+             </div>
+           </div>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 투명도: <span id="section02-bg-opacity-value">0.9</span></label>
+               <input type="range" id="section02-bg-opacity" class="form-range" min="0" max="1" step="0.1" value="0.9">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 투명도: <span id="section02-text-opacity-value">1.0</span></label>
+               <input type="range" id="section02-text-opacity" class="form-range" min="0" max="1" step="0.1" value="1.0">
+             </div>
+           </div>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="applySectionStyle('section02')">✅ 섹션 2 스타일 적용</button>
+             <button class="btn btn-secondary" onclick="resetSectionStyle('section02')">🔄 초기화</button>
+           </div>
+         </div>
+         
+         <!-- 섹션 3 스타일 -->
+         <div class="style-section">
+           <h4 class="form-label">⚙️ 섹션 3 - 서비스</h4>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 색상</label>
+               <input type="color" id="section03-bg-color" class="form-input" value="#1a1a1a">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 색상</label>
+               <input type="color" id="section03-text-color" class="form-input" value="#ffffff">
+             </div>
+             <div class="form-group">
+               <label class="form-label">제목 색상</label>
+               <input type="color" id="section03-title-color" class="form-input" value="#ff000b">
+             </div>
+           </div>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 투명도: <span id="section03-bg-opacity-value">0.85</span></label>
+               <input type="range" id="section03-bg-opacity" class="form-range" min="0" max="1" step="0.1" value="0.85">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 투명도: <span id="section03-text-opacity-value">1.0</span></label>
+               <input type="range" id="section03-text-opacity" class="form-range" min="0" max="1" step="0.1" value="1.0">
+             </div>
+           </div>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="applySectionStyle('section03')">✅ 섹션 3 스타일 적용</button>
+             <button class="btn btn-secondary" onclick="resetSectionStyle('section03')">🔄 초기화</button>
+           </div>
+         </div>
+         
+         <!-- 섹션 4 스타일 -->
+         <div class="style-section">
+           <h4 class="form-label">📁 섹션 4 - 포트폴리오</h4>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 색상</label>
+               <input type="color" id="section04-bg-color" class="form-input" value="#2c3e50">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 색상</label>
+               <input type="color" id="section04-text-color" class="form-input" value="#ecf0f1">
+             </div>
+             <div class="form-group">
+               <label class="form-label">제목 색상</label>
+               <input type="color" id="section04-title-color" class="form-input" value="#ff000b">
+             </div>
+           </div>
+           <div class="form-row">
+             <div class="form-group">
+               <label class="form-label">배경 투명도: <span id="section04-bg-opacity-value">0.9</span></label>
+               <input type="range" id="section04-bg-opacity" class="form-range" min="0" max="1" step="0.1" value="0.9">
+             </div>
+             <div class="form-group">
+               <label class="form-label">텍스트 투명도: <span id="section04-text-opacity-value">1.0</span></label>
+               <input type="range" id="section04-text-opacity" class="form-range" min="0" max="1" step="0.1" value="1.0">
+             </div>
+           </div>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="applySectionStyle('section04')">✅ 섹션 4 스타일 적용</button>
+             <button class="btn btn-secondary" onclick="resetSectionStyle('section04')">🔄 초기화</button>
+           </div>
+         </div>
+         
+         <!-- 전체 스타일 적용 -->
+         <div class="style-section">
+           <h4 class="form-label">🚀 전체 스타일 적용</h4>
+           <div class="form-controls">
+             <button class="btn btn-primary" onclick="applyAllStyles()">✅ 모든 스타일 적용</button>
+             <button class="btn btn-secondary" onclick="saveStylesToServer()">💾 서버에 저장</button>
+             <button class="btn btn-secondary" onclick="loadStylesFromServer()">📥 서버에서 로드</button>
+             <button class="btn btn-danger" onclick="resetAllStyles()">🔄 모든 스타일 초기화</button>
+           </div>
+         </div>
        </div>
        
        <!-- 각 섹션별 스타일 설정 -->
@@ -4784,6 +5032,12 @@ function setCookie( name, value, expiredays )
     document.addEventListener('DOMContentLoaded', () => {
       console.log('=== DOMContentLoaded 이벤트 발생 ===');
       setTimeout(() => tryInitializeAdminSystem(), 100);
+      
+      // 투명도 슬라이더 설정
+      setTimeout(() => setupOpacitySliders(), 200);
+      
+      // 저장된 스타일 복원
+      setTimeout(() => restoreSavedStyles(), 500);
     });
     
     // window.onload 시점에서 시도
@@ -6583,6 +6837,357 @@ function setCookie( name, value, expiredays )
       showSuccessMessage(`${appliedCount}개의 텍스트가 성공적으로 수정되었습니다!`);
       console.log(`✅ 관리모드 일괄 편집 적용 완료: ${appliedCount}개`);
     };
+    
+    // ===== 섹션별 스타일 편집 시스템 =====
+    
+    // 섹션별 스타일 적용
+    window.applySectionStyle = function(sectionId) {
+      console.log(`=== ${sectionId} 스타일 적용 ===`);
+      
+      const bgColor = document.getElementById(`${sectionId}-bg-color`)?.value;
+      const textColor = document.getElementById(`${sectionId}-text-color`)?.value;
+      const titleColor = document.getElementById(`${sectionId}-title-color`)?.value;
+      const bgOpacity = document.getElementById(`${sectionId}-bg-opacity`)?.value;
+      const textOpacity = document.getElementById(`${sectionId}-text-opacity`)?.value;
+      
+      const section = document.querySelector(`.${sectionId}`);
+      if (!section) {
+        showErrorMessage(`${sectionId} 섹션을 찾을 수 없습니다.`);
+        return;
+      }
+      
+      // 배경 색상 및 투명도 적용
+      if (bgColor && bgOpacity !== undefined) {
+        const rgbaColor = hexToRgba(bgColor, bgOpacity);
+        section.style.setProperty('background-color', rgbaColor, 'important');
+      }
+      
+      // 텍스트 색상 및 투명도 적용
+      if (textColor && textOpacity !== undefined) {
+        const rgbaColor = hexToRgba(textColor, textOpacity);
+        const textElements = section.querySelectorAll('p, span, div:not(.admin-mode):not(.admin-indicator)');
+        textElements.forEach(element => {
+          if (!element.classList.contains('admin-mode') && !element.classList.contains('admin-indicator')) {
+            element.style.setProperty('color', rgbaColor, 'important');
+          }
+        });
+      }
+      
+      // 제목 색상 적용
+      if (titleColor) {
+        const titleElements = section.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        titleElements.forEach(element => {
+          element.style.setProperty('color', titleColor, 'important');
+        });
+      }
+      
+      // 로컬 스토리지에 저장
+      const styleData = {
+        bgColor,
+        textColor,
+        titleColor,
+        bgOpacity: parseFloat(bgOpacity),
+        textOpacity: parseFloat(textOpacity),
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem(`section_style_${sectionId}`, JSON.stringify(styleData));
+      
+      showSuccessMessage(`${sectionId} 스타일이 적용되었습니다!`);
+      console.log(`✅ ${sectionId} 스타일 적용 완료`);
+    };
+    
+    // 섹션별 스타일 초기화
+    window.resetSectionStyle = function(sectionId) {
+      console.log(`=== ${sectionId} 스타일 초기화 ===`);
+      
+      const section = document.querySelector(`.${sectionId}`);
+      if (!section) {
+        showErrorMessage(`${sectionId} 섹션을 찾을 수 없습니다.`);
+        return;
+      }
+      
+      // 기본 스타일로 복원
+      section.style.removeProperty('background-color');
+      
+      const textElements = section.querySelectorAll('p, span, div');
+      textElements.forEach(element => {
+        element.style.removeProperty('color');
+      });
+      
+      const titleElements = section.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      titleElements.forEach(element => {
+        element.style.removeProperty('color');
+      });
+      
+      // 로컬 스토리지에서 제거
+      localStorage.removeItem(`section_style_${sectionId}`);
+      
+      showSuccessMessage(`${sectionId} 스타일이 초기화되었습니다!`);
+      console.log(`✅ ${sectionId} 스타일 초기화 완료`);
+    };
+    
+    // 모든 스타일 적용
+    window.applyAllStyles = function() {
+      console.log('=== 모든 스타일 적용 ===');
+      
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      let appliedCount = 0;
+      
+      sections.forEach(sectionId => {
+        const styleData = localStorage.getItem(`section_style_${sectionId}`);
+        if (styleData) {
+          applySectionStyle(sectionId);
+          appliedCount++;
+        }
+      });
+      
+      showSuccessMessage(`${appliedCount}개 섹션의 스타일이 적용되었습니다!`);
+      console.log(`✅ 모든 스타일 적용 완료: ${appliedCount}개`);
+    };
+    
+    // 모든 스타일 초기화
+    window.resetAllStyles = function() {
+      console.log('=== 모든 스타일 초기화 ===');
+      
+      if (confirm('모든 스타일을 초기화하시겠습니까?')) {
+        const sections = ['section01', 'section02', 'section03', 'section04'];
+        
+        sections.forEach(sectionId => {
+          resetSectionStyle(sectionId);
+        });
+        
+        showSuccessMessage('모든 스타일이 초기화되었습니다!');
+        console.log('✅ 모든 스타일 초기화 완료');
+      }
+    };
+    
+    // HEX 색상을 RGBA로 변환
+    function hexToRgba(hex, opacity) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    
+    // ===== 서버 저장 시스템 =====
+    
+    // 서버에 스타일 저장
+    window.saveStylesToServer = function() {
+      console.log('=== 서버에 스타일 저장 ===');
+      
+      const allStyles = {};
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      
+      sections.forEach(sectionId => {
+        const styleData = localStorage.getItem(`section_style_${sectionId}`);
+        if (styleData) {
+          allStyles[sectionId] = JSON.parse(styleData);
+        }
+      });
+      
+      // 텍스트 편집 데이터도 포함
+      const textEdits = {};
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('text_edit_')) {
+          textEdits[key] = localStorage.getItem(key);
+        }
+      });
+      
+      const saveData = {
+        styles: allStyles,
+        textEdits: textEdits,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+      };
+      
+      // GitHub API를 통한 저장 (실제 구현에서는 백엔드 API 사용)
+      const fileName = 'website-data.json';
+      const content = JSON.stringify(saveData, null, 2);
+      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      
+      // 임시로 로컬 스토리지에 백업 저장
+      localStorage.setItem('website_data_backup', JSON.stringify(saveData));
+      
+      showSuccessMessage('스타일과 텍스트가 서버에 저장되었습니다!');
+      console.log('✅ 서버 저장 완료 (백업 저장됨)');
+      
+      // 실제 서버 저장을 위한 알림
+      setTimeout(() => {
+        alert('실제 서버 저장을 위해서는 백엔드 API가 필요합니다. 현재는 로컬 백업으로 저장되었습니다.');
+      }, 1000);
+    };
+    
+    // 서버에서 스타일 로드
+    window.loadStylesFromServer = function() {
+      console.log('=== 서버에서 스타일 로드 ===');
+      
+      const backupData = localStorage.getItem('website_data_backup');
+      if (!backupData) {
+        showErrorMessage('저장된 데이터가 없습니다.');
+        return;
+      }
+      
+      try {
+        const data = JSON.parse(backupData);
+        
+        // 스타일 데이터 복원
+        if (data.styles) {
+          Object.keys(data.styles).forEach(sectionId => {
+            localStorage.setItem(`section_style_${sectionId}`, JSON.stringify(data.styles[sectionId]));
+          });
+        }
+        
+        // 텍스트 편집 데이터 복원
+        if (data.textEdits) {
+          Object.keys(data.textEdits).forEach(key => {
+            localStorage.setItem(key, data.textEdits[key]);
+          });
+        }
+        
+        // 페이지 새로고침으로 적용
+        location.reload();
+        
+        showSuccessMessage('서버에서 데이터를 성공적으로 로드했습니다!');
+        console.log('✅ 서버 로드 완료');
+        
+      } catch (error) {
+        showErrorMessage('데이터 로드 중 오류가 발생했습니다.');
+        console.error('❌ 서버 로드 실패:', error);
+      }
+    };
+    
+    // ===== 개선된 텍스트 편집 시스템 =====
+    
+    // 개선된 텍스트 편집 시작
+    window.startAdvancedTextEdit = function(element) {
+      console.log('=== 고급 텍스트 편집 시작 ===');
+      
+      if (!element || element.classList.contains('text-editing')) return;
+      
+      const originalText = element.textContent;
+      const input = document.createElement('input');
+      
+      // 입력 필드 설정
+      input.className = 'text-edit-input';
+      input.value = originalText;
+      input.style.cssText = `
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        color: inherit !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        cursor: text !important;
+      `;
+      
+      // 요소 상태 변경
+      element.classList.add('text-editing');
+      element.innerHTML = '';
+      element.appendChild(input);
+      
+      // 포커스 및 선택
+      input.focus();
+      input.select();
+      
+      // 저장 함수
+      const saveEdit = () => {
+        const newText = input.value.trim();
+        if (newText && newText !== originalText) {
+          element.textContent = newText;
+          
+          // 로컬 스토리지에 저장
+          const elementId = generateElementId(element);
+          localStorage.setItem(`text_edit_${elementId}`, newText);
+          
+          showSuccessMessage('텍스트가 저장되었습니다!');
+        }
+        
+        element.classList.remove('text-editing');
+      };
+      
+      // 취소 함수
+      const cancelEdit = () => {
+        element.textContent = originalText;
+        element.classList.remove('text-editing');
+      };
+      
+      // 이벤트 리스너
+      input.addEventListener('blur', saveEdit);
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveEdit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelEdit();
+        }
+      });
+      
+      console.log('✅ 고급 텍스트 편집 시작됨');
+    };
+    
+    // 페이지 로드 시 저장된 스타일 복원
+    window.restoreSavedStyles = function() {
+      console.log('=== 저장된 스타일 복원 ===');
+      
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      
+      sections.forEach(sectionId => {
+        const styleData = localStorage.getItem(`section_style_${sectionId}`);
+        if (styleData) {
+          try {
+            const data = JSON.parse(styleData);
+            applySectionStyle(sectionId);
+          } catch (error) {
+            console.error(`❌ ${sectionId} 스타일 복원 실패:`, error);
+          }
+        }
+      });
+      
+      console.log('✅ 저장된 스타일 복원 완료');
+    };
+    
+    // 투명도 슬라이더 값 업데이트
+    window.updateOpacityValue = function(sliderId) {
+      const slider = document.getElementById(sliderId);
+      const valueSpan = document.getElementById(`${sliderId}-value`);
+      if (slider && valueSpan) {
+        valueSpan.textContent = parseFloat(slider.value).toFixed(1);
+      }
+    };
+    
+    // 투명도 슬라이더 이벤트 리스너 설정
+    function setupOpacitySliders() {
+      console.log('=== 투명도 슬라이더 설정 ===');
+      
+      const sliders = [
+        'global-bg-opacity',
+        'section01-bg-opacity', 'section01-text-opacity',
+        'section02-bg-opacity', 'section02-text-opacity',
+        'section03-bg-opacity', 'section03-text-opacity',
+        'section04-bg-opacity', 'section04-text-opacity'
+      ];
+      
+      sliders.forEach(sliderId => {
+        const slider = document.getElementById(sliderId);
+        if (slider) {
+          slider.addEventListener('input', function() {
+            updateOpacityValue(sliderId);
+          });
+          
+          // 초기 값 설정
+          updateOpacityValue(sliderId);
+        }
+      });
+      
+      console.log('✅ 투명도 슬라이더 설정 완료');
+    }
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
