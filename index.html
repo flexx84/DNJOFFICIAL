@@ -1603,6 +1603,9 @@
       outline: none !important;
       position: relative;
       z-index: 10000;
+      min-height: inherit !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
     }
     
     .text-editing::before {
@@ -1629,10 +1632,15 @@
       font-size: inherit !important;
       font-family: inherit !important;
       font-weight: inherit !important;
+      line-height: inherit !important;
       width: 100% !important;
-      padding: 0 !important;
+      height: 100% !important;
+      padding: 4px 8px !important;
       margin: 0 !important;
       cursor: text !important;
+      box-sizing: border-box !important;
+      min-height: 1.2em !important;
+      resize: none !important;
     }
     
     /* 관리 모드에서만 활성화 */
@@ -6850,27 +6858,51 @@ function setCookie( name, value, expiredays )
       const bgOpacity = document.getElementById(`${sectionId}-bg-opacity`)?.value;
       const textOpacity = document.getElementById(`${sectionId}-text-opacity`)?.value;
       
-      const section = document.querySelector(`.${sectionId}`);
+      console.log('스타일 값들:', { bgColor, textColor, titleColor, bgOpacity, textOpacity });
+      
+      // 실제 웹사이트 섹션 찾기
+      const sectionMappings = {
+        'section01': '.section01',
+        'section02': '.section02', 
+        'section03': '.section03',
+        'section04': '.section04'
+      };
+      
+      const selector = sectionMappings[sectionId];
+      let section = null;
+      
+      if (selector) {
+        section = document.querySelector(selector);
+        console.log(`섹션 선택자: ${selector}, 찾은 요소:`, section);
+      }
+      
       if (!section) {
+        console.error(`❌ ${sectionId} 섹션을 찾을 수 없습니다.`);
         showErrorMessage(`${sectionId} 섹션을 찾을 수 없습니다.`);
         return;
       }
+      
+      console.log(`✅ 섹션 찾음:`, section);
       
       // 배경 색상 및 투명도 적용
       if (bgColor && bgOpacity !== undefined) {
         const rgbaColor = hexToRgba(bgColor, bgOpacity);
         section.style.setProperty('background-color', rgbaColor, 'important');
+        console.log(`✅ 배경 색상 적용: ${rgbaColor}`);
       }
       
       // 텍스트 색상 및 투명도 적용
       if (textColor && textOpacity !== undefined) {
         const rgbaColor = hexToRgba(textColor, textOpacity);
-        const textElements = section.querySelectorAll('p, span, div:not(.admin-mode):not(.admin-indicator)');
+        const textElements = section.querySelectorAll('p, span, div:not(.admin-mode):not(.admin-indicator):not(.section-editor)');
         textElements.forEach(element => {
-          if (!element.classList.contains('admin-mode') && !element.classList.contains('admin-indicator')) {
+          if (!element.classList.contains('admin-mode') && 
+              !element.classList.contains('admin-indicator') &&
+              !element.classList.contains('section-editor')) {
             element.style.setProperty('color', rgbaColor, 'important');
           }
         });
+        console.log(`✅ 텍스트 색상 적용: ${rgbaColor}, 대상 요소 수: ${textElements.length}`);
       }
       
       // 제목 색상 적용
@@ -6879,6 +6911,7 @@ function setCookie( name, value, expiredays )
         titleElements.forEach(element => {
           element.style.setProperty('color', titleColor, 'important');
         });
+        console.log(`✅ 제목 색상 적용: ${titleColor}, 대상 요소 수: ${titleElements.length}`);
       }
       
       // 로컬 스토리지에 저장
@@ -6901,8 +6934,23 @@ function setCookie( name, value, expiredays )
     window.resetSectionStyle = function(sectionId) {
       console.log(`=== ${sectionId} 스타일 초기화 ===`);
       
-      const section = document.querySelector(`.${sectionId}`);
+      // 실제 웹사이트 섹션 찾기
+      const sectionMappings = {
+        'section01': '.section01',
+        'section02': '.section02', 
+        'section03': '.section03',
+        'section04': '.section04'
+      };
+      
+      const selector = sectionMappings[sectionId];
+      let section = null;
+      
+      if (selector) {
+        section = document.querySelector(selector);
+      }
+      
       if (!section) {
+        console.error(`❌ ${sectionId} 섹션을 찾을 수 없습니다.`);
         showErrorMessage(`${sectionId} 섹션을 찾을 수 없습니다.`);
         return;
       }
@@ -7188,6 +7236,35 @@ function setCookie( name, value, expiredays )
       
       console.log('✅ 투명도 슬라이더 설정 완료');
     }
+    
+    // 디버깅을 위한 전역 함수들
+    window.debugStyleEditing = function() {
+      console.log('=== 스타일 편집 디버깅 ===');
+      
+      const sections = ['section01', 'section02', 'section03', 'section04'];
+      
+      sections.forEach(sectionId => {
+        console.log(`\n--- ${sectionId} ---`);
+        const section = document.querySelector(`.${sectionId}`);
+        console.log('섹션 요소:', section);
+        
+        if (section) {
+          console.log('배경색:', window.getComputedStyle(section).backgroundColor);
+          console.log('색상:', window.getComputedStyle(section).color);
+          
+          const textElements = section.querySelectorAll('p, span, div');
+          console.log('텍스트 요소 수:', textElements.length);
+          
+          const titleElements = section.querySelectorAll('h1, h2, h3, h4, h5, h6');
+          console.log('제목 요소 수:', titleElements.length);
+        }
+      });
+    };
+    
+    window.testStyleApplication = function(sectionId = 'section01') {
+      console.log(`=== ${sectionId} 스타일 테스트 ===`);
+      applySectionStyle(sectionId);
+    };
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
