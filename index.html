@@ -5437,8 +5437,8 @@ function setCookie( name, value, expiredays )
     
     // ===== 텍스트 편집 시스템 =====
     
-    // 텍스트 편집 기능 초기화
-    function initializeTextEditing() {
+    // 텍스트 편집 기능 초기화 (전역 함수)
+    window.initializeTextEditing = function() {
       console.log('=== 텍스트 편집 기능 초기화 ===');
       
       // 각 섹션의 텍스트 요소들을 편집 가능하게 만들기
@@ -5486,10 +5486,10 @@ function setCookie( name, value, expiredays )
     
     // 텍스트 요소를 편집 가능하게 만들기
     function makeTextEditable(element) {
-      if (!element || element.classList.contains('editable-text')) return;
+      if (!element || element.classList.contains('text-editable')) return;
       
       // 편집 가능 클래스 추가
-      element.classList.add('editable-text');
+      element.classList.add('text-editable');
       
       // 편집 인디케이터 추가
       const indicator = document.createElement('div');
@@ -5512,8 +5512,8 @@ function setCookie( name, value, expiredays )
       });
     }
     
-    // 텍스트 편집 시작
-    function startTextEdit(element) {
+    // 텍스트 편집 시작 (전역 함수)
+    window.startTextEdit = function(element) {
       if (element.classList.contains('editing')) return;
       
       const originalText = element.textContent.trim();
@@ -7264,6 +7264,48 @@ function setCookie( name, value, expiredays )
     window.testStyleApplication = function(sectionId = 'section01') {
       console.log(`=== ${sectionId} 스타일 테스트 ===`);
       applySectionStyle(sectionId);
+    };
+    
+    // 디버깅을 위한 추가 함수들
+    window.debugAdminSystem = function() {
+      console.log('=== 관리모드 시스템 디버깅 ===');
+      console.log('AdminSystem 상태:', AdminSystem);
+      console.log('관리모드 활성화 여부:', AdminSystem.isActive);
+      console.log('관리모드 패널:', AdminSystem.adminPanel);
+      console.log('관리모드 인디케이터:', AdminSystem.adminIndicator);
+      console.log('관리모드 버튼:', AdminSystem.adminButton);
+      console.log('body 클래스:', document.body.className);
+      
+      // 탭 상태 확인
+      const tabs = document.querySelectorAll('.tab-content');
+      console.log('탭 콘텐츠들:', tabs);
+      tabs.forEach((tab, index) => {
+        console.log(`탭 ${index}:`, tab.id, '표시:', tab.style.display);
+      });
+      
+      // 텍스트 편집 가능 요소 확인
+      const editableTexts = document.querySelectorAll('.text-editable');
+      console.log('편집 가능한 텍스트 요소 수:', editableTexts.length);
+      
+      return {
+        adminSystem: AdminSystem,
+        bodyClasses: document.body.className,
+        tabs: Array.from(tabs).map(tab => ({ id: tab.id, display: tab.style.display })),
+        editableTexts: editableTexts.length
+      };
+    };
+    
+    window.forceEnableTextEditing = function() {
+      console.log('=== 텍스트 편집 강제 활성화 ===');
+      document.body.classList.add('admin-mode-active');
+      initializeTextEditing();
+      console.log('✅ 텍스트 편집 강제 활성화 완료');
+    };
+    
+    window.forceShowStyleTab = function() {
+      console.log('=== 스타일 탭 강제 표시 ===');
+      switchTab('style');
+      console.log('✅ 스타일 탭 강제 표시 완료');
     };
     
     // 맵 설정 관련 함수들
