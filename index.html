@@ -3074,9 +3074,9 @@ function setCookie( name, value, expiredays )
         font-weight: bold !important;
         box-shadow: 0 4px 20px rgba(255,0,0,0.8) !important;
         border: 3px solid white !important;
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         transition: all 0.3s ease !important;
       `;
       
@@ -3088,9 +3088,10 @@ function setCookie( name, value, expiredays )
         toggleAdminMode();
       });
       
-      // DOM에 추가 (숨김 상태)
+      // DOM에 추가 (표시 상태)
       document.body.appendChild(AdminSystem.adminButton);
-      console.log('관리 모드 버튼 생성 완료 (숨김 상태)');
+      AdminSystem.buttonVisible = true;
+      console.log('관리 모드 버튼 생성 완료 (표시 상태)');
       
       return true;
     }
@@ -3373,6 +3374,54 @@ function setCookie( name, value, expiredays )
     window.showAdminButton = showAdminButton;
     window.hideAdminButton = hideAdminButton;
     window.toggleAdminMode = toggleAdminMode;
+    
+    // 디버깅용 강제 관리모드 버튼 표시
+    window.forceShowAdminButton = function() {
+      console.log('=== 강제 관리모드 버튼 표시 ===');
+      
+      // 기존 버튼이 있다면 표시
+      if (AdminSystem.adminButton) {
+        AdminSystem.adminButton.style.setProperty('display', 'block', 'important');
+        AdminSystem.adminButton.style.setProperty('visibility', 'visible', 'important');
+        AdminSystem.adminButton.style.setProperty('opacity', '1', 'important');
+        AdminSystem.buttonVisible = true;
+        console.log('✅ 기존 관리모드 버튼 표시됨');
+        return;
+      }
+      
+      // 버튼이 없다면 새로 생성
+      AdminSystem.adminButton = document.createElement('div');
+      AdminSystem.adminButton.id = 'finalAdminButton';
+      AdminSystem.adminButton.innerHTML = '🔧 관리모드';
+      AdminSystem.adminButton.style.cssText = `
+        position: fixed !important;
+        top: 10px !important;
+        right: 10px !important;
+        background: #ff0000 !important;
+        color: white !important;
+        padding: 15px 20px !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        z-index: 9999999 !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 20px rgba(255,0,0,0.8) !important;
+        transition: all 0.3s ease !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      `;
+      
+      AdminSystem.adminButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleAdminMode();
+      });
+      
+      document.body.appendChild(AdminSystem.adminButton);
+      AdminSystem.buttonVisible = true;
+      console.log('✅ 새 관리모드 버튼 생성 및 표시됨');
+    };
     window.debugAdminSystem = function() {
       console.log('=== 관리 모드 시스템 디버그 ===');
       console.log('AdminSystem:', AdminSystem);
@@ -4174,6 +4223,9 @@ function setCookie( name, value, expiredays )
       showSaveStatus();
       initializeImageManager();
       restoreEditedTexts();
+      
+      // 관리모드 버튼 강제 표시 (디버깅용)
+      forceShowAdminButton();
     }, 2000);
     
     // ===== 이미지 관리 시스템 =====
