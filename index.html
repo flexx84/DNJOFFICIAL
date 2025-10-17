@@ -2740,49 +2740,60 @@ function setCookie( name, value, expiredays )
     // 강제 DOM 요소 재검색 함수
     function forceFindElements() {
       console.log('=== DOM 요소 강제 재검색 ===');
+      console.log('현재 document.readyState:', document.readyState);
       
       // 모든 가능한 방법으로 요소 찾기
       const panelMethods = [
         () => document.getElementById('adminMode'),
         () => document.querySelector('.admin-mode'),
         () => document.querySelector('[id="adminMode"]'),
-        () => document.querySelector('[class*="admin-mode"]')
+        () => document.querySelector('[class*="admin-mode"]'),
+        () => document.querySelector('div[id*="admin"]'),
+        () => document.querySelector('div[class*="admin"]')
       ];
       
       const indicatorMethods = [
         () => document.getElementById('adminIndicator'),
         () => document.querySelector('.admin-indicator'),
         () => document.querySelector('[id="adminIndicator"]'),
-        () => document.querySelector('[class*="admin-indicator"]')
+        () => document.querySelector('[class*="admin-indicator"]'),
+        () => document.querySelector('div[id*="indicator"]'),
+        () => document.querySelector('div[class*="indicator"]')
       ];
       
       // 패널 찾기
-      for (let method of panelMethods) {
+      for (let i = 0; i < panelMethods.length; i++) {
         try {
-          const element = method();
+          const element = panelMethods[i]();
           if (element) {
             AdminSystem.adminPanel = element;
-            console.log('✅ 관리 모드 패널 찾음:', element);
+            console.log(`✅ 관리 모드 패널 찾음 (방법 ${i+1}):`, element);
             break;
           }
         } catch (e) {
-          console.log('패널 검색 방법 실패:', e);
+          console.log(`패널 검색 방법 ${i+1} 실패:`, e);
         }
       }
       
       // 인디케이터 찾기
-      for (let method of indicatorMethods) {
+      for (let i = 0; i < indicatorMethods.length; i++) {
         try {
-          const element = method();
+          const element = indicatorMethods[i]();
           if (element) {
             AdminSystem.adminIndicator = element;
-            console.log('✅ 관리 모드 인디케이터 찾음:', element);
+            console.log(`✅ 관리 모드 인디케이터 찾음 (방법 ${i+1}):`, element);
             break;
           }
         } catch (e) {
-          console.log('인디케이터 검색 방법 실패:', e);
+          console.log(`인디케이터 검색 방법 ${i+1} 실패:`, e);
         }
       }
+      
+      // 추가 디버깅 정보
+      console.log('전체 DOM 요소 수:', document.querySelectorAll('*').length);
+      console.log('div 요소 수:', document.querySelectorAll('div').length);
+      console.log('id가 있는 요소들:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
+      console.log('class가 admin인 요소들:', Array.from(document.querySelectorAll('[class*="admin"]')).map(el => el.className));
       
       return AdminSystem.adminPanel && AdminSystem.adminIndicator;
     }
@@ -2825,8 +2836,17 @@ function setCookie( name, value, expiredays )
       mainInitialize();
     }
     
-    // 지연 초기화 (안전장치)
+    // 지연 초기화 (안전장치) - 여러 번 시도
+    setTimeout(mainInitialize, 500);
     setTimeout(mainInitialize, 1000);
+    setTimeout(mainInitialize, 2000);
+    setTimeout(mainInitialize, 3000);
+    
+    // window.onload 후에도 시도
+    window.addEventListener('load', function() {
+      console.log('=== window.onload 이벤트 발생 ===');
+      setTimeout(mainInitialize, 100);
+    });
     
     // 글로벌 함수 등록
     window.showAdminButton = showAdminButton;
@@ -2896,6 +2916,48 @@ function setCookie( name, value, expiredays )
     
     // DOM 요소 재검색 함수 (글로벌)
     window.forceFindElements = forceFindElements;
+    
+    // 긴급 수정 함수 - 즉시 실행 가능
+    window.emergencyFix = function() {
+      console.log('=== 긴급 수정 시작 ===');
+      
+      // 즉시 DOM 검색
+      forceFindElements();
+      
+      // 여전히 찾지 못했다면 강제로 요소 생성
+      if (!AdminSystem.adminPanel) {
+        console.log('패널을 찾지 못함. 강제 생성 시도...');
+        // 실제 패널을 찾아서 참조
+        const realPanel = document.querySelector('div[id="adminMode"]');
+        if (realPanel) {
+          AdminSystem.adminPanel = realPanel;
+          console.log('✅ 실제 패널 찾아서 참조 설정됨');
+        }
+      }
+      
+      if (!AdminSystem.adminIndicator) {
+        console.log('인디케이터를 찾지 못함. 강제 생성 시도...');
+        // 실제 인디케이터를 찾아서 참조
+        const realIndicator = document.querySelector('div[id="adminIndicator"]');
+        if (realIndicator) {
+          AdminSystem.adminIndicator = realIndicator;
+          console.log('✅ 실제 인디케이터 찾아서 참조 설정됨');
+        }
+      }
+      
+      // 상태 확인
+      console.log('최종 상태:');
+      console.log('패널:', AdminSystem.adminPanel);
+      console.log('인디케이터:', AdminSystem.adminIndicator);
+      
+      return AdminSystem.adminPanel && AdminSystem.adminIndicator;
+    };
+    
+    // 페이지 로드 후 즉시 긴급 수정 실행
+    setTimeout(() => {
+      console.log('=== 자동 긴급 수정 실행 ===');
+      window.emergencyFix();
+    }, 5000);
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
