@@ -2499,15 +2499,34 @@ function setCookie( name, value, expiredays )
     function initializeAdminSystem() {
       console.log('관리 모드 시스템 초기화 시작');
       
-      // 관리 모드 요소들 찾기
+      // 관리 모드 요소들 찾기 - 여러 방법으로 시도
       AdminSystem.adminPanel = document.getElementById('adminMode');
       AdminSystem.adminIndicator = document.getElementById('adminIndicator');
+      
+      // 요소를 찾지 못했다면 다른 방법으로 시도
+      if (!AdminSystem.adminPanel) {
+        AdminSystem.adminPanel = document.querySelector('.admin-mode');
+        console.log('CSS 선택자로 패널 찾기:', AdminSystem.adminPanel);
+      }
+      if (!AdminSystem.adminIndicator) {
+        AdminSystem.adminIndicator = document.querySelector('.admin-indicator');
+        console.log('CSS 선택자로 인디케이터 찾기:', AdminSystem.adminIndicator);
+      }
+      
+      // 모든 admin 관련 요소 찾기 (디버깅용)
+      const allAdminElements = document.querySelectorAll('[id*="admin"], [class*="admin"]');
+      console.log('모든 admin 관련 요소들:', allAdminElements);
       
       console.log('관리 모드 패널:', AdminSystem.adminPanel);
       console.log('관리 모드 인디케이터:', AdminSystem.adminIndicator);
       
       if (!AdminSystem.adminPanel || !AdminSystem.adminIndicator) {
         console.error('관리 모드 요소들을 찾을 수 없습니다!');
+        console.log('현재 DOM 상태:');
+        console.log('- adminMode ID:', document.getElementById('adminMode'));
+        console.log('- adminIndicator ID:', document.getElementById('adminIndicator'));
+        console.log('- .admin-mode 클래스:', document.querySelector('.admin-mode'));
+        console.log('- .admin-indicator 클래스:', document.querySelector('.admin-indicator'));
         return false;
       }
       
@@ -2577,6 +2596,8 @@ function setCookie( name, value, expiredays )
         if (AdminSystem.adminIndicator) {
           AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
         }
+        // 관리 모드 버튼도 숨김
+        hideAdminButton();
         AdminSystem.isActive = false;
         console.log('✅ 관리 모드 비활성화됨!');
       } else {
@@ -2716,16 +2737,84 @@ function setCookie( name, value, expiredays )
       });
     }
     
+    // 강제 DOM 요소 재검색 함수
+    function forceFindElements() {
+      console.log('=== DOM 요소 강제 재검색 ===');
+      
+      // 모든 가능한 방법으로 요소 찾기
+      const panelMethods = [
+        () => document.getElementById('adminMode'),
+        () => document.querySelector('.admin-mode'),
+        () => document.querySelector('[id="adminMode"]'),
+        () => document.querySelector('[class*="admin-mode"]')
+      ];
+      
+      const indicatorMethods = [
+        () => document.getElementById('adminIndicator'),
+        () => document.querySelector('.admin-indicator'),
+        () => document.querySelector('[id="adminIndicator"]'),
+        () => document.querySelector('[class*="admin-indicator"]')
+      ];
+      
+      // 패널 찾기
+      for (let method of panelMethods) {
+        try {
+          const element = method();
+          if (element) {
+            AdminSystem.adminPanel = element;
+            console.log('✅ 관리 모드 패널 찾음:', element);
+            break;
+          }
+        } catch (e) {
+          console.log('패널 검색 방법 실패:', e);
+        }
+      }
+      
+      // 인디케이터 찾기
+      for (let method of indicatorMethods) {
+        try {
+          const element = method();
+          if (element) {
+            AdminSystem.adminIndicator = element;
+            console.log('✅ 관리 모드 인디케이터 찾음:', element);
+            break;
+          }
+        } catch (e) {
+          console.log('인디케이터 검색 방법 실패:', e);
+        }
+      }
+      
+      return AdminSystem.adminPanel && AdminSystem.adminIndicator;
+    }
+    
     // 메인 초기화 함수
     function mainInitialize() {
       console.log('=== 메인 초기화 시작 ===');
       
+      // 먼저 일반 초기화 시도
       if (initializeAdminSystem()) {
         setupMenuButtonListener();
         setupKeyboardShortcut();
         console.log('✅ 관리 모드 시스템 초기화 완료');
       } else {
-        console.error('❌ 관리 모드 시스템 초기화 실패');
+        console.log('일반 초기화 실패, 강제 재검색 시도...');
+        
+        // 강제 재검색 시도
+        if (forceFindElements()) {
+          // 요소를 찾았다면 스타일 적용
+          if (AdminSystem.adminPanel) {
+            AdminSystem.adminPanel.style.setProperty('display', 'none', 'important');
+          }
+          if (AdminSystem.adminIndicator) {
+            AdminSystem.adminIndicator.style.setProperty('display', 'none', 'important');
+          }
+          
+          setupMenuButtonListener();
+          setupKeyboardShortcut();
+          console.log('✅ 강제 재검색으로 관리 모드 시스템 초기화 완료');
+        } else {
+          console.error('❌ 관리 모드 시스템 초기화 실패 - 요소를 찾을 수 없음');
+        }
       }
     }
     
@@ -2774,6 +2863,10 @@ function setCookie( name, value, expiredays )
     // 관리 모드 요소 강제 표시 함수 (디버깅용)
     window.forceShowElements = function() {
       console.log('=== 관리 모드 요소 강제 표시 ===');
+      
+      // 먼저 요소 재검색
+      forceFindElements();
+      
       if (AdminSystem.adminPanel) {
         AdminSystem.adminPanel.style.setProperty('display', 'block', 'important');
         AdminSystem.adminPanel.style.setProperty('z-index', '9999999', 'important');
@@ -2784,7 +2877,10 @@ function setCookie( name, value, expiredays )
         AdminSystem.adminPanel.style.setProperty('height', '100%', 'important');
         AdminSystem.adminPanel.style.setProperty('background', 'rgba(0, 0, 0, 0.95)', 'important');
         console.log('✅ 관리 모드 패널 강제 표시됨');
+      } else {
+        console.error('❌ 관리 모드 패널을 찾을 수 없음');
       }
+      
       if (AdminSystem.adminIndicator) {
         AdminSystem.adminIndicator.style.setProperty('display', 'block', 'important');
         AdminSystem.adminIndicator.style.setProperty('z-index', '10000000', 'important');
@@ -2793,8 +2889,13 @@ function setCookie( name, value, expiredays )
         AdminSystem.adminIndicator.style.setProperty('left', '50%', 'important');
         AdminSystem.adminIndicator.style.setProperty('transform', 'translateX(-50%)', 'important');
         console.log('✅ 관리 모드 인디케이터 강제 표시됨');
+      } else {
+        console.error('❌ 관리 모드 인디케이터를 찾을 수 없음');
       }
     };
+    
+    // DOM 요소 재검색 함수 (글로벌)
+    window.forceFindElements = forceFindElements;
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
