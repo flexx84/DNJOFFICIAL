@@ -1112,6 +1112,168 @@
     body:not(.admin-mode-active) .editable-text::after {
       display: none;
     }
+    
+    /* 팝업 에디터 탭 스타일 */
+    .popup-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #333;
+    }
+    
+    .popup-tab {
+      background: #333;
+      color: #ccc;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+      font-size: 14px;
+    }
+    
+    .popup-tab.active {
+      background: #ff000b;
+      color: white;
+    }
+    
+    .popup-tab:hover {
+      background: #555;
+      color: white;
+    }
+    
+    .popup-tab-content {
+      display: none;
+    }
+    
+    .popup-tab-content.active {
+      display: block;
+    }
+    
+    /* 팝업 에디터 입력 필드 스타일 */
+    .popup-textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    .popup-textarea:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
+    
+    .popup-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .popup-input:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
+    
+    .popup-color-input {
+      width: 60px;
+      height: 40px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: transparent;
+    }
+    
+    .popup-range {
+      width: 100%;
+      height: 5px;
+      border-radius: 5px;
+      background: #555;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .popup-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ff000b;
+      cursor: pointer;
+    }
+    
+    .popup-range::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ff000b;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .popup-range-value {
+      color: #ff000b;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .popup-select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .popup-select:focus {
+      outline: none;
+      border-color: #ff000b;
+      box-shadow: 0 0 5px rgba(255, 0, 11, 0.3);
+    }
+    
+    .popup-file-input {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed #555;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+    
+    .popup-file-input:hover {
+      border-color: #ff000b;
+    }
+    
+    .popup-file-preview {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #1a1a1a;
+      text-align: center;
+    }
+    
+    .popup-file-preview img {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 5px;
+    }
   </style>
  </head>
 <body>
@@ -1127,7 +1289,117 @@
      </div>
      
      <div class="popup-form" id="popupForm">
-       <!-- 동적으로 생성될 폼 내용 -->
+       <!-- 텍스트 편집 탭 -->
+       <div class="popup-tabs">
+         <button class="popup-tab active" onclick="switchPopupTab('text')">📝 텍스트 편집</button>
+         <button class="popup-tab" onclick="switchPopupTab('style')">🎨 스타일 편집</button>
+         <button class="popup-tab" onclick="switchPopupTab('image')">🖼️ 이미지 편집</button>
+       </div>
+       
+       <!-- 텍스트 편집 탭 내용 -->
+       <div id="text-tab" class="popup-tab-content active">
+         <div class="popup-form-group">
+           <label class="popup-label">메인 제목</label>
+           <textarea id="popup-main-title" class="popup-textarea" placeholder="메인 제목을 입력하세요" rows="2"></textarea>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">서브 제목</label>
+           <textarea id="popup-sub-title" class="popup-textarea" placeholder="서브 제목을 입력하세요" rows="2"></textarea>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">설명 텍스트</label>
+           <textarea id="popup-description" class="popup-textarea" placeholder="설명을 입력하세요" rows="4"></textarea>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">추가 텍스트 1</label>
+           <textarea id="popup-text1" class="popup-textarea" placeholder="추가 텍스트를 입력하세요" rows="3"></textarea>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">추가 텍스트 2</label>
+           <textarea id="popup-text2" class="popup-textarea" placeholder="추가 텍스트를 입력하세요" rows="3"></textarea>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">버튼 텍스트</label>
+           <input type="text" id="popup-button-text" class="popup-input" placeholder="버튼에 표시될 텍스트">
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">링크 URL</label>
+           <input type="url" id="popup-link-url" class="popup-input" placeholder="https://example.com">
+         </div>
+       </div>
+       
+       <!-- 스타일 편집 탭 내용 -->
+       <div id="style-tab" class="popup-tab-content">
+         <div class="popup-form-group">
+           <label class="popup-label">텍스트 색상</label>
+           <input type="color" id="popup-text-color" class="popup-color-input" value="#ffffff">
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">제목 색상</label>
+           <input type="color" id="popup-title-color" class="popup-color-input" value="#ff000b">
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">배경 투명도</label>
+           <input type="range" id="popup-bg-opacity" class="popup-range" min="0" max="1" step="0.1" value="0.8">
+           <span class="popup-range-value" id="bg-opacity-value">80%</span>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">텍스트 정렬</label>
+           <select id="popup-text-align" class="popup-select">
+             <option value="left">왼쪽 정렬</option>
+             <option value="center" selected>가운데 정렬</option>
+             <option value="right">오른쪽 정렬</option>
+           </select>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">폰트 크기</label>
+           <select id="popup-font-size" class="popup-select">
+             <option value="small">작게</option>
+             <option value="medium" selected>보통</option>
+             <option value="large">크게</option>
+             <option value="xlarge">매우 크게</option>
+           </select>
+         </div>
+       </div>
+       
+       <!-- 이미지 편집 탭 내용 -->
+       <div id="image-tab" class="popup-tab-content">
+         <div class="popup-form-group">
+           <label class="popup-label">배경 이미지</label>
+           <input type="file" id="popup-bg-image" class="popup-file-input" accept="image/*">
+           <div class="popup-file-preview" id="popup-bg-preview"></div>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">이미지 위치</label>
+           <select id="popup-bg-position" class="popup-select">
+             <option value="center">가운데</option>
+             <option value="top">위</option>
+             <option value="bottom">아래</option>
+             <option value="left">왼쪽</option>
+             <option value="right">오른쪽</option>
+           </select>
+         </div>
+         
+         <div class="popup-form-group">
+           <label class="popup-label">이미지 크기</label>
+           <select id="popup-bg-size" class="popup-select">
+             <option value="cover">전체 덮기</option>
+             <option value="contain">비율 유지</option>
+             <option value="100% 100%">늘리기</option>
+           </select>
+         </div>
+       </div>
      </div>
      
      <div class="popup-preview" id="popupPreview">
@@ -4412,6 +4684,413 @@ function setCookie( name, value, expiredays )
         console.log(`✅ ${resetCount}개의 텍스트 편집이 초기화됨`);
       }
     };
+    
+    // ===== 팝업 에디터 시스템 =====
+    
+    // 팝업 탭 전환
+    window.switchPopupTab = function(tabName) {
+      console.log(`=== 팝업 탭 전환: ${tabName} ===`);
+      
+      // 모든 탭 비활성화
+      const tabs = document.querySelectorAll('.popup-tab');
+      const tabContents = document.querySelectorAll('.popup-tab-content');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // 선택된 탭 활성화
+      const selectedTab = document.querySelector(`[onclick="switchPopupTab('${tabName}')"]`);
+      const selectedContent = document.getElementById(`${tabName}-tab`);
+      
+      if (selectedTab) selectedTab.classList.add('active');
+      if (selectedContent) selectedContent.classList.add('active');
+      
+      console.log(`✅ 팝업 탭 전환 완료: ${tabName}`);
+    };
+    
+    // 팝업 에디터 열기 (기존 함수 개선)
+    window.openSectionPopup = function(sectionId) {
+      console.log(`=== 섹션 팝업 에디터 열기: ${sectionId} ===`);
+      
+      const popup = document.getElementById('sectionPopupEditor');
+      const title = document.getElementById('popupTitle');
+      
+      if (popup && title) {
+        title.textContent = `${sectionId} 섹션 편집`;
+        popup.style.display = 'block';
+        
+        // 섹션별 데이터 로드
+        loadSectionData(sectionId);
+        
+        // 미리보기 업데이트
+        updatePopupPreview(sectionId);
+        
+        console.log(`✅ 팝업 에디터 열림: ${sectionId}`);
+      }
+    };
+    
+    // 팝업 에디터 닫기
+    window.closeSectionPopup = function() {
+      console.log('=== 팝업 에디터 닫기 ===');
+      
+      const popup = document.getElementById('sectionPopupEditor');
+      if (popup) {
+        popup.style.display = 'none';
+        
+        // 폼 초기화
+        clearPopupForm();
+        
+        console.log('✅ 팝업 에디터 닫힘');
+      }
+    };
+    
+    // 섹션 데이터 로드
+    function loadSectionData(sectionId) {
+      console.log(`=== 섹션 데이터 로드: ${sectionId} ===`);
+      
+      try {
+        // 섹션별 텍스트 요소들 찾기
+        const sectionSelectors = {
+          'section01': {
+            mainTitle: '.section01 h3',
+            subTitle: '.section01 .sview01',
+            description: '.section01 .sview02',
+            text1: '.section01 .txtArea h3',
+            text2: '.section01 .txtArea span'
+          },
+          'section02': {
+            mainTitle: '.section02 .mTit',
+            subTitle: '.section02 h5',
+            description: '.section02 p',
+            text1: '.section02 h4',
+            text2: '.section02 ul li p:first-child'
+          },
+          'section03': {
+            mainTitle: '.section03 .mTit',
+            subTitle: '.section03 .txtBox h5:first-child',
+            description: '.section03 .txtBox h2:first-child',
+            text1: '.section03 .txtBox h5:nth-child(2)',
+            text2: '.section03 .txtBox h2:nth-child(3)'
+          },
+          'section04': {
+            mainTitle: '.section04 .mTit',
+            subTitle: '.section04 .txtBox h3:first-child',
+            description: '.section04 .txtBox p:first-child',
+            text1: '.section04 .txtBox h3:nth-child(2)',
+            text2: '.section04 .txtBox p:nth-child(3)'
+          }
+        };
+        
+        const selectors = sectionSelectors[sectionId];
+        if (selectors) {
+          // 메인 제목
+          const mainTitleEl = document.querySelector(selectors.mainTitle);
+          if (mainTitleEl) {
+            document.getElementById('popup-main-title').value = mainTitleEl.textContent.trim();
+          }
+          
+          // 서브 제목
+          const subTitleEl = document.querySelector(selectors.subTitle);
+          if (subTitleEl) {
+            document.getElementById('popup-sub-title').value = subTitleEl.textContent.trim();
+          }
+          
+          // 설명
+          const descriptionEl = document.querySelector(selectors.description);
+          if (descriptionEl) {
+            document.getElementById('popup-description').value = descriptionEl.textContent.trim();
+          }
+          
+          // 추가 텍스트 1
+          const text1El = document.querySelector(selectors.text1);
+          if (text1El) {
+            document.getElementById('popup-text1').value = text1El.textContent.trim();
+          }
+          
+          // 추가 텍스트 2
+          const text2El = document.querySelector(selectors.text2);
+          if (text2El) {
+            document.getElementById('popup-text2').value = text2El.textContent.trim();
+          }
+        }
+        
+        // 로컬 스토리지에서 저장된 데이터도 로드
+        loadPopupDataFromStorage(sectionId);
+        
+        console.log(`✅ 섹션 데이터 로드 완료: ${sectionId}`);
+      } catch (error) {
+        console.error(`❌ 섹션 데이터 로드 실패: ${sectionId}`, error);
+      }
+    }
+    
+    // 로컬 스토리지에서 팝업 데이터 로드
+    function loadPopupDataFromStorage(sectionId) {
+      const savedData = localStorage.getItem(`popup_${sectionId}_data`);
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          
+          // 각 필드에 저장된 데이터 적용
+          Object.keys(data).forEach(fieldId => {
+            const element = document.getElementById(fieldId);
+            if (element) {
+              element.value = data[fieldId];
+            }
+          });
+          
+          console.log(`✅ 저장된 팝업 데이터 로드됨: ${sectionId}`);
+        } catch (error) {
+          console.error('저장된 데이터 파싱 실패:', error);
+        }
+      }
+    }
+    
+    // 팝업 폼 초기화
+    function clearPopupForm() {
+      const inputs = document.querySelectorAll('.popup-form input, .popup-form textarea, .popup-form select');
+      inputs.forEach(input => {
+        if (input.type === 'file') {
+          input.value = '';
+        } else if (input.type === 'color') {
+          input.value = input.defaultValue || '#ffffff';
+        } else if (input.type === 'range') {
+          input.value = input.defaultValue || '0.8';
+        } else {
+          input.value = '';
+        }
+      });
+      
+      // 파일 미리보기 초기화
+      const preview = document.getElementById('popup-bg-preview');
+      if (preview) {
+        preview.innerHTML = '';
+      }
+      
+      console.log('✅ 팝업 폼 초기화 완료');
+    }
+    
+    // 팝업 변경사항 적용
+    window.applyPopupChanges = function() {
+      console.log('=== 팝업 변경사항 적용 ===');
+      
+      try {
+        // 현재 편집 중인 섹션 ID 가져오기
+        const title = document.getElementById('popupTitle');
+        const sectionId = title ? title.textContent.split(' ')[0] : null;
+        
+        if (!sectionId) {
+          showErrorMessage('편집 중인 섹션을 찾을 수 없습니다.');
+          return;
+        }
+        
+        // 폼 데이터 수집
+        const formData = {
+          'popup-main-title': document.getElementById('popup-main-title')?.value || '',
+          'popup-sub-title': document.getElementById('popup-sub-title')?.value || '',
+          'popup-description': document.getElementById('popup-description')?.value || '',
+          'popup-text1': document.getElementById('popup-text1')?.value || '',
+          'popup-text2': document.getElementById('popup-text2')?.value || '',
+          'popup-button-text': document.getElementById('popup-button-text')?.value || '',
+          'popup-link-url': document.getElementById('popup-link-url')?.value || '',
+          'popup-text-color': document.getElementById('popup-text-color')?.value || '#ffffff',
+          'popup-title-color': document.getElementById('popup-title-color')?.value || '#ff000b',
+          'popup-bg-opacity': document.getElementById('popup-bg-opacity')?.value || '0.8',
+          'popup-text-align': document.getElementById('popup-text-align')?.value || 'center',
+          'popup-font-size': document.getElementById('popup-font-size')?.value || 'medium'
+        };
+        
+        // 실제 웹사이트 요소에 적용
+        applyPopupDataToSection(sectionId, formData);
+        
+        // 로컬 스토리지에 저장
+        localStorage.setItem(`popup_${sectionId}_data`, JSON.stringify(formData));
+        localStorage.setItem(`popup_${sectionId}_timestamp`, Date.now().toString());
+        
+        // 팝업 닫기
+        closeSectionPopup();
+        
+        showSuccessMessage(`${sectionId} 섹션이 성공적으로 업데이트되었습니다!`);
+        console.log(`✅ 팝업 변경사항 적용 완료: ${sectionId}`);
+        
+      } catch (error) {
+        console.error('❌ 팝업 변경사항 적용 실패:', error);
+        showErrorMessage('변경사항 적용 중 오류가 발생했습니다.');
+      }
+    };
+    
+    // 팝업 데이터를 실제 섹션에 적용
+    function applyPopupDataToSection(sectionId, data) {
+      console.log(`=== 팝업 데이터를 섹션에 적용: ${sectionId} ===`);
+      
+      const sectionSelectors = {
+        'section01': {
+          mainTitle: '.section01 h3',
+          subTitle: '.section01 .sview01',
+          description: '.section01 .sview02',
+          text1: '.section01 .txtArea h3',
+          text2: '.section01 .txtArea span'
+        },
+        'section02': {
+          mainTitle: '.section02 .mTit',
+          subTitle: '.section02 h5',
+          description: '.section02 p',
+          text1: '.section02 h4',
+          text2: '.section02 ul li p:first-child'
+        },
+        'section03': {
+          mainTitle: '.section03 .mTit',
+          subTitle: '.section03 .txtBox h5:first-child',
+          description: '.section03 .txtBox h2:first-child',
+          text1: '.section03 .txtBox h5:nth-child(2)',
+          text2: '.section03 .txtBox h2:nth-child(3)'
+        },
+        'section04': {
+          mainTitle: '.section04 .mTit',
+          subTitle: '.section04 .txtBox h3:first-child',
+          description: '.section04 .txtBox p:first-child',
+          text1: '.section04 .txtBox h3:nth-child(2)',
+          text2: '.section04 .txtBox p:nth-child(3)'
+        }
+      };
+      
+      const selectors = sectionSelectors[sectionId];
+      if (selectors) {
+        // 메인 제목 적용
+        if (data['popup-main-title']) {
+          const element = document.querySelector(selectors.mainTitle);
+          if (element) {
+            element.textContent = data['popup-main-title'];
+            element.style.color = data['popup-title-color'];
+          }
+        }
+        
+        // 서브 제목 적용
+        if (data['popup-sub-title']) {
+          const element = document.querySelector(selectors.subTitle);
+          if (element) {
+            element.textContent = data['popup-sub-title'];
+            element.style.color = data['popup-text-color'];
+          }
+        }
+        
+        // 설명 적용
+        if (data['popup-description']) {
+          const element = document.querySelector(selectors.description);
+          if (element) {
+            element.textContent = data['popup-description'];
+            element.style.color = data['popup-text-color'];
+          }
+        }
+        
+        // 추가 텍스트 1 적용
+        if (data['popup-text1']) {
+          const element = document.querySelector(selectors.text1);
+          if (element) {
+            element.textContent = data['popup-text1'];
+            element.style.color = data['popup-text-color'];
+          }
+        }
+        
+        // 추가 텍스트 2 적용
+        if (data['popup-text2']) {
+          const element = document.querySelector(selectors.text2);
+          if (element) {
+            element.textContent = data['popup-text2'];
+            element.style.color = data['popup-text-color'];
+          }
+        }
+        
+        // 스타일 적용
+        const sectionElement = document.querySelector(`.${sectionId}`);
+        if (sectionElement) {
+          sectionElement.style.textAlign = data['popup-text-align'];
+          sectionElement.style.opacity = data['popup-bg-opacity'];
+          
+          // 폰트 크기 적용
+          const fontSizeMap = {
+            'small': '0.8em',
+            'medium': '1em',
+            'large': '1.2em',
+            'xlarge': '1.5em'
+          };
+          sectionElement.style.fontSize = fontSizeMap[data['popup-font-size']] || '1em';
+        }
+      }
+      
+      console.log(`✅ 섹션 적용 완료: ${sectionId}`);
+    }
+    
+    // 팝업 미리보기 업데이트
+    function updatePopupPreview(sectionId) {
+      const preview = document.getElementById('previewContent');
+      if (!preview) return;
+      
+      // 실시간 미리보기 업데이트를 위한 이벤트 리스너
+      const inputs = document.querySelectorAll('.popup-form input, .popup-form textarea, .popup-form select');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => {
+          updatePreviewContent(preview, sectionId);
+        });
+      });
+      
+      // 초기 미리보기 설정
+      updatePreviewContent(preview, sectionId);
+    }
+    
+    // 미리보기 내용 업데이트
+    function updatePreviewContent(preview, sectionId) {
+      const mainTitle = document.getElementById('popup-main-title')?.value || '메인 제목';
+      const subTitle = document.getElementById('popup-sub-title')?.value || '서브 제목';
+      const description = document.getElementById('popup-description')?.value || '설명 텍스트';
+      const textColor = document.getElementById('popup-text-color')?.value || '#ffffff';
+      const titleColor = document.getElementById('popup-title-color')?.value || '#ff000b';
+      const textAlign = document.getElementById('popup-text-align')?.value || 'center';
+      
+      preview.innerHTML = `
+        <div style="
+          background: rgba(0,0,0,0.7);
+          padding: 20px;
+          border-radius: 10px;
+          text-align: ${textAlign};
+          color: ${textColor};
+          font-family: inherit;
+        ">
+          <h2 style="color: ${titleColor}; margin-bottom: 10px;">${mainTitle}</h2>
+          <h3 style="color: ${textColor}; margin-bottom: 15px;">${subTitle}</h3>
+          <p style="color: ${textColor}; line-height: 1.6;">${description}</p>
+        </div>
+      `;
+    }
+    
+    // 팝업 파일 업로드 처리
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('popup-bg-image');
+      const preview = document.getElementById('popup-bg-preview');
+      
+      if (fileInput && preview) {
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              preview.innerHTML = `<img src="${e.target.result}" alt="미리보기">`;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+      
+      // 배경 투명도 슬라이더 이벤트
+      const opacitySlider = document.getElementById('popup-bg-opacity');
+      const opacityValue = document.getElementById('bg-opacity-value');
+      
+      if (opacitySlider && opacityValue) {
+        opacitySlider.addEventListener('input', function() {
+          const value = Math.round(this.value * 100);
+          opacityValue.textContent = value + '%';
+        });
+      }
+    });
     
     // 맵 설정 관련 함수들
     function updateMapSettings() {
