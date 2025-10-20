@@ -4114,13 +4114,19 @@ function setCookie( name, value, expiredays )
       buttonToggleTimer: null  // 버튼 토글 타이머 추가
     };
     
-    // 관리 모드 시스템 초기화
+    // 관리 모드 시스템 초기화 (디버깅 강화)
     function initializeAdminSystem() {
-      console.log('관리 모드 시스템 초기화 시작');
+      console.log('=== 관리 모드 시스템 초기화 시작 ===');
+      console.log('현재 document.readyState:', document.readyState);
+      console.log('현재 DOM 요소 수:', document.querySelectorAll('*').length);
       
       // 관리 모드 요소들 찾기 - 여러 방법으로 시도
       AdminSystem.adminPanel = document.getElementById('adminMode');
       AdminSystem.adminIndicator = document.getElementById('adminIndicator');
+      
+      console.log('1차 검색 결과:');
+      console.log('- adminPanel:', AdminSystem.adminPanel);
+      console.log('- adminIndicator:', AdminSystem.adminIndicator);
       
       // 요소를 찾지 못했다면 다른 방법으로 시도
       if (!AdminSystem.adminPanel) {
@@ -4135,17 +4141,23 @@ function setCookie( name, value, expiredays )
       // 모든 admin 관련 요소 찾기 (디버깅용)
       const allAdminElements = document.querySelectorAll('[id*="admin"], [class*="admin"]');
       console.log('모든 admin 관련 요소들:', allAdminElements);
+      allAdminElements.forEach((el, index) => {
+        console.log(`  ${index + 1}. ${el.tagName}#${el.id}.${el.className}`);
+      });
       
-      console.log('관리 모드 패널:', AdminSystem.adminPanel);
-      console.log('관리 모드 인디케이터:', AdminSystem.adminIndicator);
+      console.log('최종 검색 결과:');
+      console.log('- adminPanel:', AdminSystem.adminPanel);
+      console.log('- adminIndicator:', AdminSystem.adminIndicator);
       
       if (!AdminSystem.adminPanel || !AdminSystem.adminIndicator) {
-        console.error('관리 모드 요소들을 찾을 수 없습니다!');
+        console.error('❌ 관리 모드 요소들을 찾을 수 없습니다!');
         console.log('현재 DOM 상태:');
         console.log('- adminMode ID:', document.getElementById('adminMode'));
         console.log('- adminIndicator ID:', document.getElementById('adminIndicator'));
         console.log('- .admin-mode 클래스:', document.querySelector('.admin-mode'));
         console.log('- .admin-indicator 클래스:', document.querySelector('.admin-indicator'));
+        console.log('전체 DOM 구조 확인:');
+        console.log('- body 자식 요소들:', Array.from(document.body.children).map(el => `${el.tagName}#${el.id}.${el.className}`));
         return false;
       }
       
@@ -4659,19 +4671,25 @@ function setCookie( name, value, expiredays )
     // window.onload 후에도 시도
     // 첫 번째 window.onload 이벤트는 제거 (두 번째와 통합)
     
-    // 간단한 관리자 모드 테스트 함수
+    // 간단한 관리자 모드 테스트 함수 (개선된 버전)
     window.testAdmin = function() {
-      console.log('=== 관리자 모드 테스트 ===');
+      console.log('=== 관리자 모드 테스트 시작 ===');
       console.log('AdminSystem:', AdminSystem);
       console.log('DOM 요소들:');
       console.log('- #adminMode:', document.getElementById('adminMode'));
       console.log('- #adminIndicator:', document.getElementById('adminIndicator'));
       console.log('- #finalAdminButton:', document.getElementById('finalAdminButton'));
       
+      // 초기화 상태 확인
+      console.log('초기화 상태 확인:');
+      console.log('- initializeAdminSystem() 결과:', initializeAdminSystem());
+      
       // 긴급 활성화 시도
       console.log('긴급 관리자 모드 활성화 시도...');
       return emergencyAdmin();
     };
+    
+    // 즉시 사용 가능한 긴급 관리자 모드 함수 (개선된 버전)
     
     // 즉시 사용 가능한 긴급 관리자 모드 함수 (개선된 버전)
     window.emergencyAdmin = function() {
@@ -5650,9 +5668,84 @@ function setCookie( name, value, expiredays )
     }
 
     // 여러 시점에서 요소 검색 실행
+    // 자동 진단 함수
+    window.autoDiagnose = function() {
+      console.log('🔍 === 관리자 모드 자동 진단 시작 ===');
+      console.log('📅 진단 시간:', new Date().toLocaleString());
+      console.log('🌐 페이지 URL:', window.location.href);
+      console.log('📄 문서 상태:', document.readyState);
+      
+      // 1. DOM 요소 확인
+      console.log('📋 === DOM 요소 확인 ===');
+      const adminMode = document.getElementById('adminMode');
+      const adminIndicator = document.getElementById('adminIndicator');
+      console.log('✅ #adminMode:', adminMode ? '존재함' : '❌ 없음');
+      console.log('✅ #adminIndicator:', adminIndicator ? '존재함' : '❌ 없음');
+      
+      if (adminMode) {
+        console.log('  - adminMode 태그:', adminMode.tagName);
+        console.log('  - adminMode 클래스:', adminMode.className);
+        console.log('  - adminMode 표시 상태:', window.getComputedStyle(adminMode).display);
+      }
+      
+      if (adminIndicator) {
+        console.log('  - adminIndicator 태그:', adminIndicator.tagName);
+        console.log('  - adminIndicator 클래스:', adminIndicator.className);
+        console.log('  - adminIndicator 표시 상태:', window.getComputedStyle(adminIndicator).display);
+      }
+      
+      // 2. AdminSystem 상태 확인
+      console.log('⚙️ === AdminSystem 상태 확인 ===');
+      console.log('  - isActive:', AdminSystem.isActive);
+      console.log('  - buttonVisible:', AdminSystem.buttonVisible);
+      console.log('  - adminPanel:', AdminSystem.adminPanel ? '연결됨' : '❌ 없음');
+      console.log('  - adminIndicator:', AdminSystem.adminIndicator ? '연결됨' : '❌ 없음');
+      console.log('  - adminButton:', AdminSystem.adminButton ? '연결됨' : '❌ 없음');
+      
+      // 3. 초기화 함수 테스트
+      console.log('🔧 === 초기화 함수 테스트 ===');
+      const initResult = initializeAdminSystem();
+      console.log('  - initializeAdminSystem() 결과:', initResult ? '✅ 성공' : '❌ 실패');
+      
+      // 4. 활성화 방법 테스트
+      console.log('🎯 === 활성화 방법 테스트 ===');
+      console.log('사용 가능한 활성화 방법:');
+      console.log('  1. ESC 키 5회 입력');
+      console.log('  2. 메뉴 버튼 5회 클릭');
+      console.log('  3. Ctrl+Shift+A 키보드 단축키');
+      console.log('  4. 콘솔에서 emergencyAdmin() 실행');
+      console.log('  5. 콘솔에서 testAdmin() 실행');
+      
+      // 5. 백엔드 관련 확인
+      console.log('🌐 === 백엔드 관련 확인 ===');
+      console.log('  - fetch API 지원:', typeof fetch !== 'undefined' ? '✅ 지원' : '❌ 미지원');
+      console.log('  - AbortController 지원:', typeof AbortController !== 'undefined' ? '✅ 지원' : '❌ 미지원');
+      
+      // 6. 권장사항
+      console.log('💡 === 권장사항 ===');
+      if (!adminMode || !adminIndicator) {
+        console.log('❌ 관리자 모드 요소가 없습니다. emergencyAdmin() 함수를 사용하세요.');
+      } else if (!AdminSystem.adminPanel || !AdminSystem.adminIndicator) {
+        console.log('⚠️ 요소는 있지만 AdminSystem에 연결되지 않았습니다. testAdmin() 함수를 사용하세요.');
+      } else {
+        console.log('✅ 모든 요소가 정상입니다. ESC 키 5회 또는 Ctrl+Shift+A를 사용하세요.');
+      }
+      
+      console.log('🔍 === 자동 진단 완료 ===');
+      console.log('💬 추가 도움이 필요하면 콘솔에서 다음 함수들을 사용하세요:');
+      console.log('  - testAdmin() : 상세 테스트');
+      console.log('  - emergencyAdmin() : 긴급 활성화');
+      console.log('  - debugAdminSystem() : 시스템 상태 확인');
+    };
+    
     // 통합된 초기화 시스템 (백엔드 충돌 방지)
     window.addEventListener('load', () => {
       console.log('=== window.onload 이벤트 발생 ===');
+      
+      // 0. 자동 진단 실행
+      setTimeout(() => {
+        autoDiagnose();
+      }, 50);
       
       // 1. 먼저 관리 시스템 초기화 (백엔드보다 우선)
       setTimeout(() => {
