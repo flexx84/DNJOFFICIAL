@@ -4540,6 +4540,49 @@ function setCookie( name, value, expiredays )
     // window.onload 후에도 시도
     // 첫 번째 window.onload 이벤트는 제거 (두 번째와 통합)
     
+    // 즉시 사용 가능한 긴급 관리자 모드 함수
+    window.emergencyAdmin = function() {
+      console.log('=== 긴급 관리자 모드 ===');
+      
+      // 관리자 패널과 인디케이터 찾기
+      const panel = document.getElementById('adminMode');
+      const indicator = document.getElementById('adminIndicator');
+      
+      if (panel && indicator) {
+        console.log('✅ 관리자 요소 발견');
+        
+        // 패널 표시
+        panel.style.display = 'block';
+        panel.style.position = 'fixed';
+        panel.style.top = '0';
+        panel.style.left = '0';
+        panel.style.width = '100%';
+        panel.style.height = '100%';
+        panel.style.background = 'rgba(0, 0, 0, 0.95)';
+        panel.style.zIndex = '9999999';
+        
+        // 인디케이터 표시
+        indicator.style.display = 'block';
+        indicator.style.position = 'fixed';
+        indicator.style.top = '20px';
+        indicator.style.left = '50%';
+        indicator.style.transform = 'translateX(-50%)';
+        indicator.style.background = 'linear-gradient(135deg, #ff000b, #cc0009)';
+        indicator.style.color = 'white';
+        indicator.style.padding = '12px 20px';
+        indicator.style.borderRadius = '25px';
+        indicator.style.fontWeight = 'bold';
+        indicator.style.zIndex = '10000000';
+        indicator.textContent = '관리 모드 활성화';
+        
+        console.log('✅ 관리자 모드 강제 활성화 완료');
+        return true;
+      } else {
+        console.log('❌ 관리자 요소를 찾을 수 없음');
+        return false;
+      }
+    };
+    
     // 글로벌 함수 등록
     window.showAdminButton = showAdminButton;
     window.hideAdminButton = hideAdminButton;
@@ -4578,6 +4621,15 @@ function setCookie( name, value, expiredays )
       if (AdminSystem.adminButton) {
         showAdminButton();
         toggleAdminMode();
+      } else {
+        console.log('❌ 관리자 버튼이 없음 - 초기화 시도');
+        mainInitialize();
+        setTimeout(() => {
+          if (AdminSystem.adminButton) {
+            showAdminButton();
+            toggleAdminMode();
+          }
+        }, 1000);
       }
     };
     
@@ -4663,11 +4715,23 @@ function setCookie( name, value, expiredays )
       }
     };
     
-    // 강제 관리 모드 활성화 함수 (디버깅용)
+    // 긴급 관리자 모드 활성화 함수 (개선된 버전)
     window.forceAdminMode = function() {
-      console.log('=== 강제 관리 모드 활성화 ===');
-      AdminSystem.isActive = false; // 토글을 위해 false로 설정
-      toggleAdminMode();
+      console.log('=== 긴급 관리자 모드 활성화 ===');
+      debugAdminSystem();
+      if (AdminSystem.adminButton) {
+        showAdminButton();
+        toggleAdminMode();
+      } else {
+        console.log('❌ 관리자 버튼이 없음 - 초기화 시도');
+        mainInitialize();
+        setTimeout(() => {
+          if (AdminSystem.adminButton) {
+            showAdminButton();
+            toggleAdminMode();
+          }
+        }, 1000);
+      }
     };
     
     // 관리 모드 요소 강제 표시 함수 (디버깅용)
