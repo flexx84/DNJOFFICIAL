@@ -5899,17 +5899,17 @@ function setCookie( name, value, expiredays )
         autoDiagnose();
       }, 50);
       
-      // 1. 먼저 관리 시스템 초기화 (백엔드보다 우선)
+      // 1. 저장된 데이터 먼저 복원 (초기화가 덮어쓰지 않도록)
       setTimeout(() => {
-        console.log('=== 관리 시스템 우선 초기화 ===');
-        mainInitialize();
+        console.log('=== 페이지 로드 완료 - 모든 데이터 복원 시작 (선행) ===');
+        restoreAllSavedData();
       }, 100);
       
-      // 2. 그 다음에 저장된 데이터 복원
+      // 2. 그 다음 관리 시스템 초기화
       setTimeout(() => {
-        console.log('=== 페이지 로드 완료 - 모든 데이터 복원 시작 ===');
-        restoreAllSavedData();
-      }, 500);
+        console.log('=== 관리 시스템 초기화 (복원 이후) ===');
+        mainInitialize();
+      }, 300);
       
       // 3. 백엔드 관련 기능은 나중에 초기화 (관리자 모드와 충돌 방지)
       setTimeout(() => {
@@ -6072,14 +6072,14 @@ function setCookie( name, value, expiredays )
       });
     }
     
-    // 초기화 시 데이터 복원 및 자동 저장 설정
+    // 초기화 시 데이터 복원 및 자동 저장 설정 (복원을 선행)
     setTimeout(() => {
       restoreAllSavedData();
       setupAutoSave();
       showSaveStatus();
       initializeImageManager();
       // restoreEditedTexts는 restoreAllSavedData 내부에서 호출됨
-    }, 2000);
+    }, 200);
     
     // ===== 섹션 3 배경 이미지 관리 함수들 =====
     
