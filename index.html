@@ -2615,9 +2615,12 @@
                </div>
              </div>
              <div class="image-controls">
-               <button class="btn btn-primary" onclick="saveAllDataToServer()">☁️ 서버에 저장</button>
-               <button class="btn btn-success" onclick="loadAllDataFromServer()">📥 서버에서 로드</button>
-               <button class="btn btn-info" onclick="checkServerStatus()">🔍 서버 상태 확인</button>
+              <button class="btn btn-primary" onclick="saveAllDataToServer()">☁️ 서버에 저장</button>
+              <button class="btn btn-success" onclick="loadAllDataFromServer()">📥 서버에서 로드</button>
+              <button class="btn btn-info" onclick="checkServerStatus()">🔍 서버 상태 확인</button>
+              <button class="btn btn-secondary" onclick="quickSaveAll()">💾 로컬 빠른 저장</button>
+              <button class="btn btn-secondary" onclick="quickRestoreAll()">📥 로컬 복구 실행</button>
+              <button class="btn btn-danger" onclick="pruneBackups(2); showStorageUsage();">🧹 용량 정리/표시</button>
              </div>
            </div>
            
@@ -4119,6 +4122,83 @@ function setCookie( name, value, expiredays )
       adminButton: null,
       buttonToggleCount: 0,  // 버튼 토글 카운터 추가
       buttonToggleTimer: null  // 버튼 토글 타이머 추가
+    };
+
+    // ===== 저장 유틸리티: 안전 저장/용량 측정/백업 정리 =====
+    function getLocalStorageUsageKB() {
+      let bytes = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        const v = localStorage.getItem(k) || '';
+        bytes += (k ? k.length : 0) + v.length;
+      }
+      return bytes / 1024;
+    }
+
+    function pruneBackups(maxKeep = 3) {
+      const collectByPrefix = (prefix) => {
+        const arr = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) arr.push(k);
+        }
+        arr.sort((a, b) => {
+          const ta = parseInt(a.split('_').pop());
+          const tb = parseInt(b.split('_').pop());
+          return (isNaN(tb) ? 0 : tb) - (isNaN(ta) ? 0 : ta);
+        });
+        return arr;
+      };
+
+      ['server_backup_', 'complete_backup_'].forEach((prefix) => {
+        const keys = collectByPrefix(prefix);
+        keys.slice(maxKeep).forEach((k) => localStorage.removeItem(k));
+      });
+      // 이미지 백업 키는 원본 데이터만 유지
+      ['bg_image_backup', 'section03_bg1_backup', 'section03_bg2_backup', 'section03_bg3_backup', 'section03_bg4_backup']
+        .forEach((k) => localStorage.removeItem(k));
+      console.log('🧹 백업 정리 완료 (최신', maxKeep, '개 유지)');
+    }
+
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+          console.warn('QuotaExceededError 발생 → 백업 정리 후 재시도');
+          pruneBackups(2);
+          try {
+            localStorage.setItem(key, value);
+            return true;
+          } catch (e2) {
+            console.error('여전히 용량 초과:', e2);
+            return false;
+          }
+        }
+        console.error('localStorage 저장 실패:', e);
+        return false;
+      }
+    }
+
+    function showStorageUsage() {
+      const kb = getLocalStorageUsageKB();
+      const msg = `현재 localStorage 사용량: ${kb.toFixed(1)} KB`;
+      console.log(msg);
+      try { alert(msg); } catch (_) {}
+    }
+
+    // 빠른 저장/복구 버튼 핸들러
+    window.quickSaveAll = async function () {
+      console.log('💾 빠른 저장 실행');
+      autoSaveAllChanges && autoSaveAllChanges();
+      try { await saveAllDataToServer(); } catch (e) { console.warn('서버 저장 실패(무시):', e); }
+      showStorageUsage();
+    };
+
+    window.quickRestoreAll = function () {
+      console.log('📥 빠른 복구 실행');
+      try { restoreAllSavedData && restoreAllSavedData(); } catch (e) { console.error(e); }
     };
     
     // 관리 모드 시스템 초기화 (디버깅 강화)
@@ -6252,9 +6332,9 @@ function setCookie( name, value, expiredays )
           console.error('❌ 서버 저장 실패:', error);
         }
         
-        // 서버 저장 실패 시 localStorage에 백업 저장
+        // 서버 저장 실패 시 localStorage에 백업 저장 (안전 저장)
         console.log('🔄 localStorage에 백업 저장...');
-        localStorage.setItem('server_backup_' + Date.now(), JSON.stringify(data));
+        safeSetItem('server_backup_' + Date.now(), JSON.stringify(data));
         
         // 관리자 모드 초기화를 방해하지 않도록 오류 메시지 표시하지 않음
         return null;
@@ -6911,9 +6991,11 @@ app.listen(3000, () => {
         }
       }
       
-      // 백업을 localStorage에 저장
+      // 백업을 localStorage에 저장 (안전 저장)
       const backupKey = `complete_backup_${Date.now()}`;
-      localStorage.setItem(backupKey, JSON.stringify(backup));
+      if (!safeSetItem(backupKey, JSON.stringify(backup))) {
+        showErrorMessage('로컬 용량이 부족해 백업을 저장하지 못했습니다. 백업 개수를 줄여주세요.');
+      }
       
       console.log('✅ 완전한 백업 생성됨:', backupKey);
       console.log('📦 백업 데이터:', backup);
