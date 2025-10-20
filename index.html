@@ -4345,14 +4345,28 @@ function setCookie( name, value, expiredays )
     
     // MENU 버튼 클릭 감지 - 정확히 5번만 카운트
     function setupMenuButtonListener() {
+      console.log('=== 메뉴 버튼 리스너 설정 시작 ===');
+      
       const menuSelectors = [
+        '.toggle.togglePC', '.toggle.toggleMO', '.toggle', 
         '.menu_btn', '.menu-btn', '[class*="menu"]', 'button[class*="menu"]',
-        '.toggle', '.togglePC', '.toggleMO', 'a[href="javascript:void(0)"]'
+        'a[href="javascript:void(0)"]'
       ];
+      
+      let registeredCount = 0;
       
       for (let selector of menuSelectors) {
         const buttons = document.querySelectorAll(selector);
+        console.log(`선택자 "${selector}"로 찾은 버튼 수: ${buttons.length}`);
+        
         for (let button of buttons) {
+          console.log('버튼 검사:', {
+            tagName: button.tagName,
+            className: button.className,
+            textContent: button.textContent?.trim(),
+            href: button.href
+          });
+          
           if (button.textContent && (
             button.textContent.includes('MENU') || 
             button.textContent.includes('≡') ||
@@ -4365,10 +4379,30 @@ function setCookie( name, value, expiredays )
             // 새 이벤트 리스너 등록
             button.addEventListener('click', handleMenuClick);
             
-            console.log('✅ MENU 버튼 이벤트 리스너 등록됨:', selector);
-            break;
+            registeredCount++;
+            console.log(`✅ MENU 버튼 이벤트 리스너 등록됨 (${registeredCount}번째):`, {
+              selector: selector,
+              className: button.className,
+              textContent: button.textContent?.trim()
+            });
           }
         }
+      }
+      
+      console.log(`총 ${registeredCount}개의 메뉴 버튼에 이벤트 리스너 등록 완료`);
+      
+      // 메뉴 버튼이 전혀 등록되지 않았다면 강제로 찾기
+      if (registeredCount === 0) {
+        console.log('⚠️ 메뉴 버튼을 찾지 못함, 강제 검색 시도...');
+        const allButtons = document.querySelectorAll('a, button');
+        for (let button of allButtons) {
+          if (button.textContent && button.textContent.includes('MENU')) {
+            button.addEventListener('click', handleMenuClick);
+            registeredCount++;
+            console.log(`✅ 강제 등록된 메뉴 버튼:`, button);
+          }
+        }
+        console.log(`강제 검색으로 ${registeredCount}개 추가 등록`);
       }
     }
     
@@ -4376,6 +4410,10 @@ function setCookie( name, value, expiredays )
     function handleMenuClick(e) {
       e.preventDefault();
       e.stopPropagation();
+      
+      console.log('=== MENU 버튼 클릭 감지됨 ===');
+      console.log('클릭된 요소:', e.target);
+      console.log('현재 카운트:', AdminSystem.menuClickCount);
       
       AdminSystem.menuClickCount++;
       console.log(`=== MENU 버튼 클릭: ${AdminSystem.menuClickCount}/5 ===`);
@@ -4388,8 +4426,33 @@ function setCookie( name, value, expiredays )
         console.log('🎉 MENU 버튼 5번 클릭 달성!');
         showAdminButton();
         AdminSystem.menuClickCount = 0;
+        
+        // 성공 메시지 표시
+        const successMsg = document.createElement('div');
+        successMsg.textContent = '관리자 모드 버튼이 활성화되었습니다!';
+        successMsg.style.cssText = `
+          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          background: #28a745; color: white; padding: 15px 25px;
+          border-radius: 8px; z-index: 9999999; font-weight: bold;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(successMsg);
+        setTimeout(() => successMsg.remove(), 3000);
+        
       } else {
         console.log(`남은 클릭: ${5 - AdminSystem.menuClickCount}번`);
+        
+        // 진행 상황 표시
+        const progressMsg = document.createElement('div');
+        progressMsg.textContent = `메뉴 버튼 클릭: ${AdminSystem.menuClickCount}/5`;
+        progressMsg.style.cssText = `
+          position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+          background: #007bff; color: white; padding: 8px 15px;
+          border-radius: 5px; z-index: 9999999; font-size: 12px;
+        `;
+        document.body.appendChild(progressMsg);
+        setTimeout(() => progressMsg.remove(), 1500);
+        
         AdminSystem.menuClickTimer = setTimeout(() => {
           console.log('⏰ MENU 버튼 카운터 리셋 (2초 경과)');
           AdminSystem.menuClickCount = 0;
@@ -4715,22 +4778,58 @@ function setCookie( name, value, expiredays )
       }
     };
     
-    // 긴급 관리자 모드 활성화 함수 (개선된 버전)
-    window.forceAdminMode = function() {
-      console.log('=== 긴급 관리자 모드 활성화 ===');
-      debugAdminSystem();
-      if (AdminSystem.adminButton) {
-        showAdminButton();
-        toggleAdminMode();
-      } else {
-        console.log('❌ 관리자 버튼이 없음 - 초기화 시도');
-        mainInitialize();
-        setTimeout(() => {
-          if (AdminSystem.adminButton) {
-            showAdminButton();
-            toggleAdminMode();
+    // 메뉴 버튼 테스트 함수
+    window.testMenuButtons = function() {
+      console.log('=== 메뉴 버튼 테스트 ===');
+      
+      const menuSelectors = [
+        '.toggle.togglePC', '.toggle.toggleMO', '.toggle', 
+        '.menu_btn', '.menu-btn', '[class*="menu"]', 'button[class*="menu"]',
+        'a[href="javascript:void(0)"]'
+      ];
+      
+      let foundButtons = [];
+      
+      for (let selector of menuSelectors) {
+        const buttons = document.querySelectorAll(selector);
+        for (let button of buttons) {
+          if (button.textContent && (
+            button.textContent.includes('MENU') || 
+            button.textContent.includes('≡') ||
+            button.className.includes('toggle')
+          )) {
+            foundButtons.push({
+              element: button,
+              selector: selector,
+              className: button.className,
+              textContent: button.textContent?.trim(),
+              hasListener: button.onclick !== null || button.addEventListener !== undefined
+            });
           }
-        }, 1000);
+        }
+      }
+      
+      console.log(`발견된 메뉴 버튼: ${foundButtons.length}개`);
+      foundButtons.forEach((btn, index) => {
+        console.log(`${index + 1}. 메뉴 버튼:`, btn);
+      });
+      
+      // 이벤트 리스너 재등록
+      setupMenuButtonListener();
+      
+      return foundButtons;
+    };
+    
+    // 메뉴 버튼 클릭 시뮬레이션 함수
+    window.simulateMenuClick = function() {
+      console.log('=== 메뉴 버튼 클릭 시뮬레이션 ===');
+      const buttons = document.querySelectorAll('.toggle.togglePC, .toggle.toggleMO');
+      if (buttons.length > 0) {
+        const button = buttons[0];
+        console.log('시뮬레이션 대상 버튼:', button);
+        handleMenuClick({ target: button, preventDefault: () => {}, stopPropagation: () => {} });
+      } else {
+        console.log('❌ 메뉴 버튼을 찾을 수 없음');
       }
     };
     
