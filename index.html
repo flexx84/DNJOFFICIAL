@@ -8032,46 +8032,37 @@ function setCookie( name, value, expiredays )
           console.log('❌ 미리보기 요소를 찾을 수 없음');
         }
         
-        // 실제 배경 이미지 적용 - 여러 선택자 시도
-        let bgElement = null;
-        const selectors = [
-          '.section01 .bg01',
-          '.section01 .swiper-slide .bg01',
-          '.section01 .swiper-slide.swiper-slide-active .bg01',
-          '.bg01'
-        ];
+        // 모든 bg01 요소에 배경 이미지 적용
+        const bgElements = document.querySelectorAll('.bg01');
+        console.log(`🔍 발견된 bg01 요소: ${bgElements.length}개`);
         
-        for (let selector of selectors) {
-          bgElement = document.querySelector(selector);
-          if (bgElement) {
-            console.log(`✅ 배경 요소 찾음: ${selector}`);
-            break;
-          }
-        }
-        
-        if (bgElement) {
-          // !important 스타일로 강제 적용
-          bgElement.style.setProperty('background-image', `url(${imageDataUrl})`, 'important');
-          bgElement.style.setProperty('background-size', 'cover', 'important');
-          bgElement.style.setProperty('background-position', 'center', 'important');
-          bgElement.style.setProperty('display', 'block', 'important');
-          
-          console.log('✅ 배경 이미지 강제 적용됨');
-          console.log('🎨 적용된 스타일:', {
-            backgroundImage: bgElement.style.backgroundImage,
-            backgroundSize: bgElement.style.backgroundSize,
-            display: bgElement.style.display
+        if (bgElements.length > 0) {
+          bgElements.forEach((bgElement, index) => {
+            // !important 스타일로 강제 적용
+            bgElement.style.setProperty('background-image', `url(${imageDataUrl})`, 'important');
+            bgElement.style.setProperty('background-size', 'cover', 'important');
+            bgElement.style.setProperty('background-position', 'center', 'important');
+            bgElement.style.setProperty('display', 'block', 'important');
+            
+            console.log(`✅ ${index + 1}번째 배경 이미지 강제 적용됨`);
+            console.log('🎨 적용된 스타일:', {
+              backgroundImage: bgElement.style.backgroundImage,
+              backgroundSize: bgElement.style.backgroundSize,
+              display: bgElement.style.display
+            });
           });
+          
+          console.log('✅ 모든 배경 이미지 적용 완료');
         } else {
-          console.log('❌ 배경 요소를 찾을 수 없음');
+          console.log('❌ bg01 요소를 찾을 수 없음');
           // 모든 가능한 요소들 검색
           const allElements = document.querySelectorAll('*');
           console.log('🔍 전체 요소 수:', allElements.length);
-          const bgElements = Array.from(allElements).filter(el => 
+          const foundBgElements = Array.from(allElements).filter(el => 
             el.className && el.className.includes('bg01')
           );
-          console.log('🔍 bg01 클래스를 가진 요소들:', bgElements.length);
-          bgElements.forEach((el, index) => {
+          console.log('🔍 bg01 클래스를 가진 요소들:', foundBgElements.length);
+          foundBgElements.forEach((el, index) => {
             console.log(`${index + 1}. bg01 요소:`, {
               tagName: el.tagName,
               className: el.className,
