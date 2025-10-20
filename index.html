@@ -4545,6 +4545,42 @@ function setCookie( name, value, expiredays )
     window.hideAdminButton = hideAdminButton;
     window.toggleAdminMode = toggleAdminMode;
     
+    // 디버깅 함수 추가
+    window.debugAdminSystem = function() {
+      console.log('=== 관리자 시스템 디버깅 ===');
+      console.log('mainInitialized:', mainInitialized);
+      console.log('AdminSystem.isActive:', AdminSystem.isActive);
+      console.log('AdminSystem.buttonVisible:', AdminSystem.buttonVisible);
+      console.log('AdminSystem.adminPanel:', AdminSystem.adminPanel);
+      console.log('AdminSystem.adminIndicator:', AdminSystem.adminIndicator);
+      console.log('AdminSystem.adminButton:', AdminSystem.adminButton);
+      
+      // DOM 요소 확인
+      console.log('DOM 요소 확인:');
+      console.log('- #adminMode:', document.getElementById('adminMode'));
+      console.log('- #adminIndicator:', document.getElementById('adminIndicator'));
+      console.log('- #finalAdminButton:', document.getElementById('finalAdminButton'));
+      
+      // 관리자 버튼 강제 표시
+      if (AdminSystem.adminButton) {
+        showAdminButton();
+        console.log('✅ 관리자 버튼 강제 표시됨');
+      } else {
+        console.log('❌ 관리자 버튼이 없음 - 초기화 필요');
+        mainInitialize();
+      }
+    };
+    
+    // 긴급 관리자 모드 활성화 함수
+    window.forceAdminMode = function() {
+      console.log('=== 긴급 관리자 모드 활성화 ===');
+      debugAdminSystem();
+      if (AdminSystem.adminButton) {
+        showAdminButton();
+        toggleAdminMode();
+      }
+    };
+    
     // 디버깅용 텍스트 편집 팝업 강제 열기
     window.forceOpenTextEditPopup = function() {
       console.log('=== 텍스트 편집 팝업 강제 열기 ===');
@@ -5266,19 +5302,18 @@ function setCookie( name, value, expiredays )
     }
 
     // 여러 시점에서 요소 검색 실행
+    // 간소화된 관리 시스템 초기화 시도
     function tryInitializeAdminSystem() {
-      console.log('=== 관리 시스템 초기화 시도 ===');
+      console.log('=== 관리 시스템 초기화 시도 (간소화) ===');
       
-      // admin 요소들 보호
-      protectAdminElements();
-      
-      if (window.emergencyFix()) {
-        console.log('✅ 관리 시스템 초기화 성공!');
+      // mainInitialize가 이미 실행되었는지 확인
+      if (mainInitialized) {
+        console.log('✅ 관리 시스템이 이미 초기화됨');
         return true;
-      } else {
-        console.log('❌ 관리 시스템 초기화 실패, 재시도 예정...');
-        return false;
       }
+      
+      // mainInitialize 호출
+      return mainInitialize();
     }
     
     // 즉시 시도
@@ -5287,7 +5322,12 @@ function setCookie( name, value, expiredays )
     // DOMContentLoaded 시점에서 시도
     document.addEventListener('DOMContentLoaded', () => {
       console.log('=== DOMContentLoaded 이벤트 발생 ===');
-      setTimeout(() => tryInitializeAdminSystem(), 100);
+      setTimeout(() => {
+        if (!mainInitialized) {
+          console.log('=== DOMContentLoaded에서 관리 시스템 초기화 시도 ===');
+          mainInitialize();
+        }
+      }, 100);
       
       // 투명도 슬라이더 설정
       setTimeout(() => setupOpacitySliders(), 200);
@@ -5307,16 +5347,20 @@ function setCookie( name, value, expiredays )
         restoreAllSavedData();
       }, 500);
       
-      // 2. 그 다음에 관리 시스템 초기화
-      setTimeout(() => mainInitialize(), 1500);
-      setTimeout(() => tryInitializeAdminSystem(), 1500);
+      // 2. 그 다음에 관리 시스템 초기화 (mainInitialize만 호출)
+      setTimeout(() => {
+        console.log('=== window.onload에서 관리 시스템 초기화 시도 ===');
+        mainInitialize();
+      }, 1500);
     });
     
-    // 여러 시점에서 재시도 (관리 시스템만)
-    setTimeout(() => tryInitializeAdminSystem(), 1000);
-    setTimeout(() => tryInitializeAdminSystem(), 3000);
-    setTimeout(() => tryInitializeAdminSystem(), 5000);
-    setTimeout(() => tryInitializeAdminSystem(), 10000);
+    // 추가 안전장치 - 관리 시스템 재시도 (간소화)
+    setTimeout(() => {
+      if (!mainInitialized) {
+        console.log('=== 안전장치: 관리 시스템 재시도 ===');
+        mainInitialize();
+      }
+    }, 3000);
     
     // ===== 자동 저장 및 데이터 복원 시스템 =====
     
