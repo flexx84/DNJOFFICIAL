@@ -5003,17 +5003,20 @@ function setCookie( name, value, expiredays )
           }
         }
         
-        // 배경 이미지 처리
+        // 배경 이미지 처리 - 모든 bg01 요소에 적용
         if (bgImage) {
           const reader = new FileReader();
           reader.onload = function(e) {
-            const bgElement = document.querySelector('.section01 .bg01');
-            if (bgElement) {
+            // 모든 bg01 요소 찾기
+            const bgElements = document.querySelectorAll('.bg01');
+            console.log(`🔍 발견된 bg01 요소: ${bgElements.length}개`);
+            
+            bgElements.forEach((bgElement, index) => {
               bgElement.style.backgroundImage = `url(${e.target.result})`;
               bgElement.style.backgroundSize = 'cover';
               bgElement.style.backgroundPosition = 'center';
-              console.log('✅ 배경 이미지 적용됨');
-            }
+              console.log(`✅ ${index + 1}번째 배경 이미지 적용됨`);
+            });
           };
           reader.readAsDataURL(bgImage);
           changesApplied = true;
