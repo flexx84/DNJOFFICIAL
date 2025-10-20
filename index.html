@@ -2481,9 +2481,9 @@
            </div>
          </div>
          
-         <!-- 메인 배경 비디오 관리 -->
+         <!-- 메인 배경 미디어 관리 (이미지 + 비디오) -->
          <div class="image-section">
-           <h4 class="image-section-title">🎬 메인 배경 비디오</h4>
+           <h4 class="image-section-title">🎬 메인 배경 미디어 관리</h4>
            
            <!-- 비디오 사용 여부 체크박스 -->
            <div class="form-group" style="margin-bottom: 20px;">
@@ -2492,6 +2492,28 @@
                <span>비디오 사용</span>
              </label>
              <p class="form-hint" style="margin-top: 5px; color: #888; font-size: 12px;">체크 해제 시 배경 이미지를 사용합니다</p>
+           </div>
+
+           <!-- 비디오 파일 관리 -->
+           <div class="video-management" id="video-management" style="display: block;">
+             <h5 class="image-section-title">🎥 배경 비디오 (두 번째 슬라이드)</h5>
+             <div class="image-preview">
+               <video id="preview-video" style="max-width: 200px; max-height: 120px; display: none;" controls>
+                 <source src="common/img/main/main_video2.mp4" type="video/mp4">
+               </video>
+               <div class="no-preview">비디오 미리보기</div>
+             </div>
+             <div class="image-details">
+               <p><strong>파일 경로:</strong> <span id="video-path">common/img/main/main_video2.mp4</span></p>
+               <p><strong>용도:</strong> 메인 섹션 배경 비디오 (슬라이드 2)</p>
+               <p><strong>위치:</strong> 섹션 1 두 번째 슬라이드</p>
+             </div>
+             <div class="image-controls">
+               <input type="file" id="video-upload" accept="video/*" style="display: none;" onchange="handleVideoUpload(this)">
+               <button class="btn btn-primary" onclick="document.getElementById('video-upload').click()">🔄 교체</button>
+               <button class="btn btn-danger" onclick="deleteVideo()">🗑️ 삭제</button>
+               <button class="btn btn-secondary" onclick="resetVideo()">↩️ 초기화</button>
+             </div>
            </div>
            
            <div class="image-item" id="video-controls">
@@ -2518,7 +2540,7 @@
            
            <!-- 배경 이미지 대안 관리 (비디오 사용 안할 때) -->
            <div class="image-item" id="background-image-controls" style="display: none;">
-             <h5 class="image-section-title">🖼️ 배경 이미지 (비디오 대신 사용)</h5>
+             <h5 class="image-section-title">🖼️ 배경 이미지 (첫 번째 슬라이드)</h5>
              <div class="image-info">
                <div class="image-preview">
                  <img id="preview-bg-image" style="max-width: 200px; max-height: 120px; display: none;">
@@ -5408,7 +5430,69 @@ function setCookie( name, value, expiredays )
       }
     };
     
-    // 포트폴리오 이미지 로드
+    // 비디오 삭제
+    window.deleteVideo = function() {
+      if (confirm('비디오를 삭제하시겠습니까?')) {
+        try {
+          // 비디오 숨기기
+          const videoElement = document.querySelector('#main_video');
+          if (videoElement) {
+            videoElement.style.display = 'none';
+          }
+          localStorage.removeItem('admin_video_data');
+          localStorage.removeItem('admin_video_timestamp');
+          
+          // 미리보기 숨기기
+          const preview = document.getElementById('preview-video');
+          const previewContainer = preview.parentElement;
+          const noPreview = previewContainer.querySelector('.no-preview');
+          
+          preview.style.display = 'none';
+          if (noPreview) noPreview.style.display = 'block';
+          
+          showSuccessMessage('비디오가 삭제되었습니다!');
+          console.log('✅ 비디오 삭제됨');
+        } catch (error) {
+          console.error('❌ 비디오 삭제 실패:', error);
+          showErrorMessage('비디오 삭제 중 오류가 발생했습니다.');
+        }
+      }
+    };
+    
+    // 비디오 초기화
+    window.resetVideo = function() {
+      if (confirm('비디오를 원래대로 복원하시겠습니까?')) {
+        try {
+          // 원래 비디오로 복원
+          const videoElement = document.querySelector('#main_video source');
+          if (videoElement) {
+            videoElement.src = 'common/img/main/main_video2.mp4';
+            const video = document.getElementById('main_video');
+            if (video) {
+              video.load();
+              video.style.display = 'block';
+            }
+          }
+          localStorage.removeItem('admin_video_data');
+          localStorage.removeItem('admin_video_timestamp');
+          
+          // 미리보기 복원
+          const preview = document.getElementById('preview-video');
+          const previewContainer = preview.parentElement;
+          const noPreview = previewContainer.querySelector('.no-preview');
+          
+          preview.src = 'common/img/main/main_video2.mp4';
+          preview.style.display = 'block';
+          if (noPreview) noPreview.style.display = 'none';
+          
+          showSuccessMessage('비디오가 원래대로 복원되었습니다!');
+          console.log('✅ 비디오 초기화됨');
+        } catch (error) {
+          console.error('❌ 비디오 초기화 실패:', error);
+          showErrorMessage('비디오 초기화 중 오류가 발생했습니다.');
+        }
+      }
+    };
     function loadPortfolioImages() {
       const portfolioGrid = document.getElementById('portfolio-grid');
       if (!portfolioGrid) return;
