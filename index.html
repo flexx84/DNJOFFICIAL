@@ -4471,9 +4471,64 @@ function setCookie( name, value, expiredays )
       }
     }
     
-    // 키보드 단축키 (Ctrl + Shift + G)
+    // 키보드 단축키 (Ctrl + Shift + G, Ctrl + Shift + A, ESC 5회)
     function setupKeyboardShortcut() {
+      // ESC 키 카운터
+      let escClickCount = 0;
+      let escClickTimer = null;
+      
       document.addEventListener('keydown', function(e) {
+        // ESC 키 5회 입력 감지
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          escClickCount++;
+          console.log(`=== ESC 키 입력: ${escClickCount}/5 ===`);
+          
+          // 기존 타이머 클리어
+          if (escClickTimer) {
+            clearTimeout(escClickTimer);
+          }
+          
+          if (escClickCount >= 5) {
+            console.log('🎉 ESC 키 5번 입력 달성!');
+            toggleAdminMode();
+            escClickCount = 0;
+            
+            // 성공 메시지 표시
+            const successMsg = document.createElement('div');
+            successMsg.textContent = 'ESC 키 5회로 관리자 모드가 활성화되었습니다!';
+            successMsg.style.cssText = `
+              position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+              background: #28a745; color: white; padding: 15px 25px;
+              border-radius: 8px; z-index: 9999999; font-weight: bold;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(successMsg);
+            setTimeout(() => successMsg.remove(), 3000);
+            
+          } else {
+            console.log(`남은 ESC 입력: ${5 - escClickCount}번`);
+            
+            // 진행 상황 표시
+            const progressMsg = document.createElement('div');
+            progressMsg.textContent = `ESC 키 입력: ${escClickCount}/5`;
+            progressMsg.style.cssText = `
+              position: fixed; top: 20px; right: 20px;
+              background: #007bff; color: white; padding: 8px 15px;
+              border-radius: 5px; z-index: 9999999; font-size: 12px;
+            `;
+            document.body.appendChild(progressMsg);
+            setTimeout(() => progressMsg.remove(), 1500);
+            
+            // 2초 후 카운터 리셋
+            escClickTimer = setTimeout(() => {
+              console.log('⏰ ESC 키 카운터 리셋 (2초 경과)');
+              escClickCount = 0;
+            }, 2000);
+          }
+        }
+        
+        // Ctrl+Shift+G 키보드 단축키
         if (e.ctrlKey && e.shiftKey && e.key === 'G') {
           e.preventDefault();
           console.log('=== Ctrl+Shift+G 키보드 단축키 ===');
@@ -4483,7 +4538,8 @@ function setCookie( name, value, expiredays )
             console.log('관리 모드 버튼이 이미 표시되어 있습니다.');
           }
         }
-        // 빠른 토글 단축키 추가: Ctrl+Shift+A → 즉시 토글
+        
+        // Ctrl+Shift+A 키보드 단축키 (즉시 토글)
         if (e.ctrlKey && e.shiftKey && e.key === 'A') {
           e.preventDefault();
           console.log('=== Ctrl+Shift+A 키보드 단축키 (즉시 토글) ===');
