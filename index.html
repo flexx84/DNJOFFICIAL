@@ -72,7 +72,7 @@
         let pointers = [];
         let splatStack = [];
 
-        const { gl, ext } = getWebGLContext(canvas);
+        const { ext } = getWebGLContext(canvas);
 
         function getWebGLContext(canvas) {
           const params = { alpha: false, depth: false, stencil: false, antialias: false };
@@ -199,7 +199,7 @@
         
         <!-- WebGL Fluid Cursor Shaders and Main Logic -->
         <script type="text/javascript">
-          let gl;
+          // gl 변수는 이미 위에서 선언됨
           
           function compileShader(type, source) {
             const shader = gl.createShader(type);
@@ -7515,12 +7515,11 @@ app.listen(3000, () => {
       return `${tagName}_${className.replace(/\s+/g, '_')}_${textContent.replace(/\s+/g, '_')}`;
     }
     
-    // 저장된 텍스트 복원 (강화된 버전)
+    // 저장된 텍스트 복원 (완전히 개선된 버전)
     function restoreEditedTexts() {
-      console.log('=== 저장된 텍스트 복원 ===');
+      console.log('=== 저장된 텍스트 복원 시작 ===');
       
       let restoredCount = 0;
-      let totalElements = 0;
       let localStorageKeys = [];
       
       // localStorage의 모든 키 확인
@@ -7536,79 +7535,101 @@ app.listen(3000, () => {
         console.log(`  - ${key}: ${localStorage.getItem(key)}`);
       });
       
-      // 1. 편집 가능한 텍스트 요소들 복원
-      const editableElements = document.querySelectorAll('.editable-text, .text-editable');
-      totalElements = editableElements.length;
-      console.log(`📊 발견된 편집 가능 요소: ${totalElements}개`);
+      // 모든 텍스트 요소를 대상으로 복원 시도
+      const allTextElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, a, button, .editable-text, .text-editable');
+      console.log(`📊 전체 텍스트 요소: ${allTextElements.length}개`);
       
-      if (totalElements === 0) {
-        console.log('⚠️ 편집 가능한 요소를 찾을 수 없습니다!');
-        return 0;
-      }
-      
-      editableElements.forEach((element, index) => {
-        const elementId = generateElementId(element);
-        const savedData = localStorage.getItem(`text_edit_${elementId}`);
+      // 각 저장된 키에 대해 매칭되는 요소 찾기
+      localStorageKeys.forEach(key => {
+        const savedData = localStorage.getItem(key);
+        if (!savedData) return;
         
-        console.log(`🔍 요소 ${index + 1}/${totalElements} 검사: ${elementId}`);
-        console.log(`📦 저장된 데이터:`, savedData);
-        
-        if (savedData) {
+        try {
+          let textData;
+          let textContent = '';
+          
+          // JSON 형식인지 확인
           try {
-            // JSON 객체인지 확인
-            let textToRestore;
-            try {
-              const parsedData = JSON.parse(savedData);
-              if (parsedData && typeof parsedData === 'object') {
-                // 새로운 형식 (text 속성이 있는 경우)
-                if (parsedData.text) {
-                  textToRestore = parsedData.text;
-                  console.log(`✅ JSON 형식에서 텍스트 추출: "${textToRestore}"`);
-                }
-                // 기존 형식 (직접 텍스트인 경우)
-                else if (typeof parsedData === 'string') {
-                  textToRestore = parsedData;
-                  console.log(`✅ JSON 문자열에서 텍스트 추출: "${textToRestore}"`);
-                }
-                // 스타일도 적용
-                if (parsedData.color) {
-                  element.style.color = parsedData.color;
-                  console.log(`🎨 색상 적용: ${parsedData.color}`);
-                }
-                if (parsedData.fontSize) {
-                  element.style.fontSize = parsedData.fontSize;
-                  console.log(`📏 폰트 크기 적용: ${parsedData.fontSize}`);
-                }
-                if (parsedData.textAlign) {
-                  element.style.textAlign = parsedData.textAlign;
-                  console.log(`📐 정렬 적용: ${parsedData.textAlign}`);
-                }
-              } else {
-                textToRestore = savedData;
-                console.log(`✅ 직접 문자열 사용: "${textToRestore}"`);
+            textData = JSON.parse(savedData);
+            if (textData && typeof textData === 'object' && textData.text) {
+              textContent = textData.text;
+            } else {
+              return; // 잘못된 JSON 형식
+            }
+          } catch (jsonError) {
+            // JSON이 아닌 경우 문자열로 처리
+            textContent = savedData;
+            textData = { text: savedData };
+          }
+          
+          // 텍스트 내용으로 요소 찾기 (정확한 매칭)
+          let foundElement = null;
+          
+          // 1. 정확한 텍스트 매칭
+          allTextElements.forEach(element => {
+            if (element.textContent.trim() === textContent.trim()) {
+              foundElement = element;
+            }
+          });
+          
+          // 2. 부분 매칭 (정확한 매칭이 없는 경우)
+          if (!foundElement) {
+            allTextElements.forEach(element => {
+              if (element.textContent.trim().includes(textContent.trim()) || 
+                  textContent.trim().includes(element.textContent.trim())) {
+                foundElement = element;
               }
-            } catch (e) {
-              // JSON이 아닌 경우 문자열로 처리 (기존 호환성)
-              textToRestore = savedData;
-              console.log(`✅ JSON 파싱 실패, 문자열로 처리: "${textToRestore}"`);
+            });
+          }
+          
+          // 3. 키에서 추출한 정보로 매칭
+          if (!foundElement) {
+            const keyParts = key.replace('text_edit_', '').split('_');
+            const tagName = keyParts[0];
+            const className = keyParts.slice(1, -1).join('_');
+            
+            allTextElements.forEach(element => {
+              if (element.tagName.toLowerCase() === tagName && 
+                  element.className.includes(className)) {
+                foundElement = element;
+              }
+            });
+          }
+          
+          if (foundElement) {
+            // 텍스트 복원
+            foundElement.textContent = textContent;
+            
+            // 스타일 복원
+            if (textData.color) {
+              foundElement.style.color = textData.color;
+            }
+            if (textData.fontSize) {
+              const fontSizeMap = {
+                'small': '0.8em',
+                'medium': '1em',
+                'large': '1.2em',
+                'xlarge': '1.5em'
+              };
+              foundElement.style.fontSize = fontSizeMap[textData.fontSize] || '1em';
+            }
+            if (textData.textAlign) {
+              foundElement.style.textAlign = textData.textAlign;
             }
             
-            if (textToRestore && textToRestore !== element.textContent.trim()) {
-              element.textContent = textToRestore;
-              restoredCount++;
-              console.log(`✅ 편집 가능 텍스트 복원됨: "${textToRestore}"`);
-            } else {
-              console.log(`⏭️ 텍스트 변경 없음 (이미 동일): "${textToRestore}"`);
-            }
-          } catch (error) {
-            console.error(`❌ 텍스트 복원 실패 (${elementId}):`, error);
+            restoredCount++;
+            console.log(`✅ 텍스트 복원됨: "${textContent}" (키: ${key})`);
+          } else {
+            console.log(`⚠️ 매칭되는 요소를 찾을 수 없음: "${textContent}" (키: ${key})`);
           }
-        } else {
-          console.log(`📭 저장된 데이터 없음: ${elementId}`);
+          
+        } catch (error) {
+          console.error(`❌ 키 ${key} 복원 실패:`, error);
         }
       });
       
-      // 2. 섹션별 텍스트 복원
+      // 섹션별 텍스트 복원 (추가)
+      console.log('섹션별 텍스트 복원 중...');
       const sections = ['section01', 'section02', 'section03', 'section04'];
       sections.forEach(sectionId => {
         const section = document.querySelector(`.${sectionId}`);
@@ -7651,8 +7672,7 @@ app.listen(3000, () => {
         }
       });
       
-      
-      console.log(`=== 텍스트 복원 완료: ${restoredCount}/${totalElements}개 복원됨 ===`);
+      console.log(`=== 텍스트 복원 완료: ${restoredCount}개 복원됨 ===`);
       
       if (restoredCount > 0) {
         showSuccessMessage(`${restoredCount}개의 편집된 텍스트가 복원되었습니다!`);
@@ -7661,15 +7681,100 @@ app.listen(3000, () => {
       return restoredCount;
     }
     
+    // 자동 저장 기능 (모든 변경사항을 즉시 저장)
+    function autoSaveAllChanges() {
+      console.log('=== 자동 저장 시작 ===');
+      
+      try {
+        // 1. 모든 텍스트 요소 저장
+        const allTextElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, a, button, .editable-text, .text-editable');
+        let savedCount = 0;
+        
+        allTextElements.forEach(element => {
+          const textContent = element.textContent.trim();
+          if (textContent) {
+            const elementId = generateElementId(element);
+            const saveData = {
+              text: textContent,
+              timestamp: Date.now(),
+              type: 'auto_save',
+              color: element.style.color || '',
+              fontSize: element.style.fontSize || '',
+              textAlign: element.style.textAlign || ''
+            };
+            localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
+            savedCount++;
+          }
+        });
+        
+        // 2. 이미지 데이터 저장
+        const logoImg = document.querySelector('.logo img, .header-logo img');
+        if (logoImg && logoImg.src) {
+          localStorage.setItem('logo_data', logoImg.src);
+        }
+        
+        const bgElements = document.querySelectorAll('.bg01');
+        bgElements.forEach((element, index) => {
+          const bgImage = window.getComputedStyle(element).backgroundImage;
+          if (bgImage && bgImage !== 'none') {
+            localStorage.setItem(`bg_image_data_${index}`, bgImage);
+          }
+        });
+        
+        // 3. 섹션별 데이터 저장
+        const sections = ['section01', 'section02', 'section03', 'section04'];
+        sections.forEach(sectionId => {
+          const section = document.querySelector(`.${sectionId}`);
+          if (section) {
+            const sectionData = {
+              title: section.querySelector('h1, h2, h3')?.textContent || '',
+              subtitle: section.querySelector('h4, h5, h6, .subtitle')?.textContent || '',
+              description: section.querySelector('p, .description')?.textContent || '',
+              timestamp: Date.now()
+            };
+            localStorage.setItem(`section_data_${sectionId}`, JSON.stringify(sectionData));
+          }
+        });
+        
+        console.log(`✅ 자동 저장 완료: ${savedCount}개 텍스트 요소 저장됨`);
+        return true;
+        
+      } catch (error) {
+        console.error('❌ 자동 저장 실패:', error);
+        return false;
+      }
+    }
+    
+    // 자동 저장을 주기적으로 실행
+    setInterval(autoSaveAllChanges, 30000); // 30초마다 자동 저장
+    
+    // 백엔드 서버에 자동 저장
+    async function autoSaveToServer() {
+      try {
+        console.log('=== 서버 자동 저장 시작 ===');
+        const result = await saveAllDataToServer();
+        if (result) {
+          console.log('✅ 서버 자동 저장 완료');
+        } else {
+          console.log('⚠️ 서버 자동 저장 실패, localStorage에만 저장됨');
+        }
+      } catch (error) {
+        console.error('❌ 서버 자동 저장 오류:', error);
+      }
+    }
+    
+    // 서버 자동 저장을 주기적으로 실행 (5분마다)
+    setInterval(autoSaveToServer, 300000); // 5분마다 서버 저장
+    
+    // 페이지 언로드 시 최종 저장
+    window.addEventListener('beforeunload', () => {
+      autoSaveAllChanges();
+      autoSaveToServer(); // 서버에도 저장
+    });
+    
     // 수동 텍스트 복원 함수 (긴급용) - 강화된 버전
     window.forceRestoreTexts = function() {
       console.log('=== 수동 텍스트 복원 강제 실행 ===');
-      
-      // 복원 중인지 확인
-      if (isRestoring) {
-        console.log('⚠️ 복원이 이미 진행 중입니다. 잠시 후 다시 시도해주세요.');
-        return;
-      }
       
       // 강제로 복원 실행
       restoreEditedTexts();
