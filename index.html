@@ -4609,14 +4609,8 @@ function setCookie( name, value, expiredays )
       return AdminSystem.adminPanel && AdminSystem.adminIndicator;
     }
     
-    // 메인 초기화 함수 (한 번만 실행되도록 수정)
-    let mainInitialized = false;
+    // 메인 초기화 함수 (플래그 제거하여 항상 실행 가능하도록 수정)
     function mainInitialize() {
-      if (mainInitialized) {
-        console.log('=== 메인 초기화 이미 완료됨, 건너뜀 ===');
-        return true;
-      }
-      
       console.log('=== 메인 초기화 시작 ===');
       
       // 먼저 일반 초기화 시도
@@ -4626,7 +4620,6 @@ function setCookie( name, value, expiredays )
         // 초기화 직후 관리자 버튼 기본 노출로 전환 (토글 접근성 향상)
         showAdminButton();
         console.log('✅ 관리 모드 시스템 초기화 완료');
-        mainInitialized = true;
         return true;
       } else {
         console.log('일반 초기화 실패, 강제 재검색 시도...');
@@ -4644,7 +4637,6 @@ function setCookie( name, value, expiredays )
           setupMenuButtonListener();
           setupKeyboardShortcut();
           console.log('✅ 강제 재검색으로 관리 모드 시스템 초기화 완료');
-          mainInitialized = true;
           return true;
         } else {
           console.error('❌ 관리 모드 시스템 초기화 실패 - 요소를 찾을 수 없음');
@@ -4661,11 +4653,8 @@ function setCookie( name, value, expiredays )
       mainInitialize();
     }
     
-    // 지연 초기화 (안전장치) - 여러 번 시도
-    setTimeout(mainInitialize, 500);
+    // 지연 초기화 (안전장치) - 한 번만 시도
     setTimeout(mainInitialize, 1000);
-    setTimeout(mainInitialize, 2000);
-    setTimeout(mainInitialize, 3000);
     
     // window.onload 후에도 시도
     // 첫 번째 window.onload 이벤트는 제거 (두 번째와 통합)
@@ -4721,7 +4710,6 @@ function setCookie( name, value, expiredays )
     // 디버깅 함수 추가
     window.debugAdminSystem = function() {
       console.log('=== 관리자 시스템 디버깅 ===');
-      console.log('mainInitialized:', mainInitialized);
       console.log('AdminSystem.isActive:', AdminSystem.isActive);
       console.log('AdminSystem.buttonVisible:', AdminSystem.buttonVisible);
       console.log('AdminSystem.adminPanel:', AdminSystem.adminPanel);
@@ -5624,81 +5612,31 @@ function setCookie( name, value, expiredays )
     }
 
     // 여러 시점에서 요소 검색 실행
-    // 간소화된 관리 시스템 초기화 시도
-    function tryInitializeAdminSystem() {
-      console.log('=== 관리 시스템 초기화 시도 (간소화) ===');
-      
-      // mainInitialize가 이미 실행되었는지 확인
-      if (mainInitialized) {
-        console.log('✅ 관리 시스템이 이미 초기화됨');
-        return true;
-      }
-      
-      // mainInitialize 호출
-      return mainInitialize();
-    }
-    
-    // 즉시 시도
-    tryInitializeAdminSystem();
-    
-    // DOMContentLoaded 시점에서 시도
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('=== DOMContentLoaded 이벤트 발생 ===');
-      setTimeout(() => {
-        if (!mainInitialized) {
-          console.log('=== DOMContentLoaded에서 관리 시스템 초기화 시도 ===');
-          mainInitialize();
-        }
-      }, 100);
-      
-      // 투명도 슬라이더 설정
-      setTimeout(() => setupOpacitySliders(), 200);
-      
-      // 저장된 스타일 복원
-      setTimeout(() => restoreSavedStyles(), 500);
-    });
-    
-    // window.onload 시점에서 시도
-    // 통합된 window.onload 이벤트 리스너 (단일 복원으로 수정)
+    // 통합된 초기화 시스템
     window.addEventListener('load', () => {
       console.log('=== window.onload 이벤트 발생 ===');
       
-      // 1. 먼저 저장된 데이터 복원 (한 번만)
+      // 1. 먼저 저장된 데이터 복원
       setTimeout(() => {
         console.log('=== 페이지 로드 완료 - 모든 데이터 복원 시작 ===');
         restoreAllSavedData();
       }, 500);
       
-      // 2. 그 다음에 관리 시스템 초기화 (mainInitialize만 호출)
+      // 2. 그 다음에 관리 시스템 초기화
       setTimeout(() => {
         console.log('=== window.onload에서 관리 시스템 초기화 시도 ===');
         mainInitialize();
-      }, 1500);
+      }, 1000);
     });
-    
-    // 추가 안전장치 - 관리 시스템 재시도 (간소화)
-    setTimeout(() => {
-      if (!mainInitialized) {
-        console.log('=== 안전장치: 관리 시스템 재시도 ===');
-        mainInitialize();
-      }
-    }, 3000);
     
     // ===== 자동 저장 및 데이터 복원 시스템 =====
     
-    // 통합된 저장된 데이터 복원 함수 (안정화)
-    let isRestoring = false;
+    // 통합된 저장된 데이터 복원 함수 (플래그 제거)
     function restoreAllSavedData() {
-      if (isRestoring) {
-        console.log('=== 복원이 이미 진행 중입니다, 건너뜀 ===');
-        return 0;
-      }
-      
       console.log('=== 저장된 데이터 복원 시작 ===');
-      isRestoring = true;
-      
+
       let totalRestored = 0;
-      
+
       try {
         // 1. 섹션 데이터 복원
         console.log('1. 섹션 데이터 복원 중...');
@@ -5754,20 +5692,16 @@ function setCookie( name, value, expiredays )
         restoreVideoSettings();
         
         console.log(`=== 데이터 복원 완료: 총 ${totalRestored}개 항목 복원됨 ===`);
-        
+
         if (totalRestored > 0) {
           showSuccessMessage(`${totalRestored}개의 저장된 데이터가 복원되었습니다!`);
         }
-        
+
         return totalRestored;
-        
+
       } catch (error) {
         console.error('❌ 데이터 복원 중 오류 발생:', error);
         return 0;
-      } finally {
-        // 복원 완료 후 즉시 플래그 해제
-        isRestoring = false;
-        console.log('=== 복원 완료, 플래그 해제 ===');
       }
     }
     
