@@ -4355,8 +4355,14 @@ function setCookie( name, value, expiredays )
       return AdminSystem.adminPanel && AdminSystem.adminIndicator;
     }
     
-    // 메인 초기화 함수
+    // 메인 초기화 함수 (한 번만 실행되도록 수정)
+    let mainInitialized = false;
     function mainInitialize() {
+      if (mainInitialized) {
+        console.log('=== 메인 초기화 이미 완료됨, 건너뜀 ===');
+        return true;
+      }
+      
       console.log('=== 메인 초기화 시작 ===');
       
       // 먼저 일반 초기화 시도
@@ -4364,6 +4370,8 @@ function setCookie( name, value, expiredays )
         setupMenuButtonListener();
         setupKeyboardShortcut();
         console.log('✅ 관리 모드 시스템 초기화 완료');
+        mainInitialized = true;
+        return true;
       } else {
         console.log('일반 초기화 실패, 강제 재검색 시도...');
         
@@ -4380,10 +4388,14 @@ function setCookie( name, value, expiredays )
           setupMenuButtonListener();
           setupKeyboardShortcut();
           console.log('✅ 강제 재검색으로 관리 모드 시스템 초기화 완료');
+          mainInitialized = true;
+          return true;
         } else {
           console.error('❌ 관리 모드 시스템 초기화 실패 - 요소를 찾을 수 없음');
         }
       }
+      
+      return false;
     }
     
     // DOM 로드 완료 후 실행
@@ -4400,10 +4412,7 @@ function setCookie( name, value, expiredays )
     setTimeout(mainInitialize, 3000);
     
     // window.onload 후에도 시도
-    window.addEventListener('load', function() {
-      console.log('=== window.onload 이벤트 발생 ===');
-      setTimeout(mainInitialize, 100);
-    });
+    // 첫 번째 window.onload 이벤트는 제거 (두 번째와 통합)
     
     // 글로벌 함수 등록
     window.showAdminButton = showAdminButton;
@@ -5159,59 +5168,89 @@ function setCookie( name, value, expiredays )
     });
     
     // window.onload 시점에서 시도
+    // 통합된 window.onload 이벤트 리스너 (단일 복원으로 수정)
     window.addEventListener('load', () => {
       console.log('=== window.onload 이벤트 발생 ===');
-      setTimeout(() => tryInitializeAdminSystem(), 100);
       
-      // 페이지 로드 완료 후 모든 저장된 데이터 복원
+      // 1. 먼저 저장된 데이터 복원 (한 번만)
       setTimeout(() => {
         console.log('=== 페이지 로드 완료 - 모든 데이터 복원 시작 ===');
         restoreAllSavedData();
-      }, 1500);
+      }, 500);
+      
+      // 2. 그 다음에 관리 시스템 초기화
+      setTimeout(() => mainInitialize(), 1500);
+      setTimeout(() => tryInitializeAdminSystem(), 1500);
     });
     
-    // 여러 시점에서 재시도
+    // 여러 시점에서 재시도 (관리 시스템만)
     setTimeout(() => tryInitializeAdminSystem(), 1000);
     setTimeout(() => tryInitializeAdminSystem(), 3000);
     setTimeout(() => tryInitializeAdminSystem(), 5000);
-    
-    // 추가적인 데이터 복원 시도 (안전장치)
-    setTimeout(() => {
-      console.log('=== 추가 데이터 복원 시도 (안전장치) ===');
-      if (typeof restoreAllSavedData === 'function') {
-        restoreAllSavedData();
-      }
-    }, 2000);
-    
-    setTimeout(() => {
-      console.log('=== 최종 데이터 복원 시도 ===');
-      if (typeof restoreAllSavedData === 'function') {
-        restoreAllSavedData();
-      }
-    }, 4000);
     setTimeout(() => tryInitializeAdminSystem(), 10000);
     
     // ===== 자동 저장 및 데이터 복원 시스템 =====
     
-    // 페이지 로드 시 저장된 데이터 복원
+    // 통합된 저장된 데이터 복원 함수 (안정화)
+    let isRestoring = false;
     function restoreAllSavedData() {
-      console.log('=== 저장된 데이터 복원 시작 ===');
-      
-      const sections = ['section01', 'section02', 'section03', 'section04'];
-      let restoredCount = 0;
-      
-      sections.forEach(sectionId => {
-        if (loadFromLocalStorage(sectionId)) {
-          restoredCount++;
-          console.log(`✅ ${sectionId} 데이터 복원됨`);
-        }
-      });
-      
-      if (restoredCount > 0) {
-        showSuccessMessage(`${restoredCount}개 섹션의 저장된 데이터가 복원되었습니다!`);
+      if (isRestoring) {
+        console.log('=== 복원이 이미 진행 중입니다, 건너뜀 ===');
+        return 0;
       }
       
-      console.log(`=== 데이터 복원 완료: ${restoredCount}/${sections.length} ===`);
+      console.log('=== 저장된 데이터 복원 시작 ===');
+      isRestoring = true;
+      
+      let totalRestored = 0;
+      
+      try {
+        // 1. 섹션 데이터 복원
+        console.log('1. 섹션 데이터 복원 중...');
+        const sections = ['section01', 'section02', 'section03', 'section04'];
+        let sectionRestored = 0;
+        
+        sections.forEach(sectionId => {
+          if (loadFromLocalStorage(sectionId)) {
+            sectionRestored++;
+            console.log(`✅ ${sectionId} 데이터 복원됨`);
+          }
+        });
+        totalRestored += sectionRestored;
+        
+        // 2. 텍스트 편집 데이터 복원 (즉시 실행)
+        console.log('2. 텍스트 편집 데이터 복원 중...');
+        const textRestored = restoreEditedTexts();
+        totalRestored += textRestored;
+        
+        // 3. 저장된 스타일 복원
+        console.log('3. 저장된 스타일 복원 중...');
+        restoreSavedStyles();
+        
+        // 4. 저장된 이미지 데이터 복원
+        console.log('4. 저장된 이미지 데이터 복원 중...');
+        restoreSavedImages();
+        
+        // 5. 비디오 설정 복원
+        console.log('5. 비디오 설정 복원 중...');
+        restoreVideoSettings();
+        
+        console.log(`=== 데이터 복원 완료: 총 ${totalRestored}개 항목 복원됨 ===`);
+        
+        if (totalRestored > 0) {
+          showSuccessMessage(`${totalRestored}개의 저장된 데이터가 복원되었습니다!`);
+        }
+        
+        return totalRestored;
+        
+      } catch (error) {
+        console.error('❌ 데이터 복원 중 오류 발생:', error);
+        return 0;
+      } finally {
+        // 복원 완료 후 즉시 플래그 해제
+        isRestoring = false;
+        console.log('=== 복원 완료, 플래그 해제 ===');
+      }
     }
     
     // 자동 저장 기능 (입력 시마다 자동 저장)
@@ -5298,7 +5337,7 @@ function setCookie( name, value, expiredays )
       setupAutoSave();
       showSaveStatus();
       initializeImageManager();
-      restoreEditedTexts();
+      // restoreEditedTexts는 restoreAllSavedData 내부에서 호출됨
     }, 2000);
     
     // ===== 이미지 관리 시스템 =====
@@ -5727,9 +5766,14 @@ function setCookie( name, value, expiredays )
       if (newText && newText !== element.textContent.trim()) {
         element.textContent = newText;
         
-        // 로컬 스토리지에 저장
+        // 로컬 스토리지에 저장 (일관된 형식으로)
         const elementId = generateElementId(element);
-        localStorage.setItem(`text_edit_${elementId}`, newText);
+        const saveData = {
+          text: newText,
+          timestamp: Date.now(),
+          type: 'text_edit'
+        };
+        localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
         
         console.log(`✅ 텍스트 편집 저장됨: "${newText}"`);
         showSuccessMessage('텍스트가 성공적으로 저장되었습니다!');
@@ -5764,22 +5808,96 @@ function setCookie( name, value, expiredays )
       return `${tagName}_${className.replace(/\s+/g, '_')}_${textContent.replace(/\s+/g, '_')}`;
     }
     
-    // 저장된 텍스트 복원
+    // 저장된 텍스트 복원 (강화된 버전)
     function restoreEditedTexts() {
       console.log('=== 저장된 텍스트 복원 ===');
       
       let restoredCount = 0;
+      let totalElements = 0;
+      let localStorageKeys = [];
+      
+      // localStorage의 모든 키 확인
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('text_edit_')) {
+          localStorageKeys.push(key);
+        }
+      }
+      
+      console.log(`📦 localStorage에서 발견된 텍스트 키: ${localStorageKeys.length}개`);
+      localStorageKeys.forEach(key => {
+        console.log(`  - ${key}: ${localStorage.getItem(key)}`);
+      });
       
       // 1. 편집 가능한 텍스트 요소들 복원
       const editableElements = document.querySelectorAll('.editable-text, .text-editable');
-      editableElements.forEach(element => {
+      totalElements = editableElements.length;
+      console.log(`📊 발견된 편집 가능 요소: ${totalElements}개`);
+      
+      if (totalElements === 0) {
+        console.log('⚠️ 편집 가능한 요소를 찾을 수 없습니다!');
+        return 0;
+      }
+      
+      editableElements.forEach((element, index) => {
         const elementId = generateElementId(element);
-        const savedText = localStorage.getItem(`text_edit_${elementId}`);
+        const savedData = localStorage.getItem(`text_edit_${elementId}`);
         
-        if (savedText && savedText !== element.textContent.trim()) {
-          element.textContent = savedText;
-          restoredCount++;
-          console.log(`✅ 편집 가능 텍스트 복원됨: "${savedText}"`);
+        console.log(`🔍 요소 ${index + 1}/${totalElements} 검사: ${elementId}`);
+        console.log(`📦 저장된 데이터:`, savedData);
+        
+        if (savedData) {
+          try {
+            // JSON 객체인지 확인
+            let textToRestore;
+            try {
+              const parsedData = JSON.parse(savedData);
+              if (parsedData && typeof parsedData === 'object') {
+                // 새로운 형식 (text 속성이 있는 경우)
+                if (parsedData.text) {
+                  textToRestore = parsedData.text;
+                  console.log(`✅ JSON 형식에서 텍스트 추출: "${textToRestore}"`);
+                }
+                // 기존 형식 (직접 텍스트인 경우)
+                else if (typeof parsedData === 'string') {
+                  textToRestore = parsedData;
+                  console.log(`✅ JSON 문자열에서 텍스트 추출: "${textToRestore}"`);
+                }
+                // 스타일도 적용
+                if (parsedData.color) {
+                  element.style.color = parsedData.color;
+                  console.log(`🎨 색상 적용: ${parsedData.color}`);
+                }
+                if (parsedData.fontSize) {
+                  element.style.fontSize = parsedData.fontSize;
+                  console.log(`📏 폰트 크기 적용: ${parsedData.fontSize}`);
+                }
+                if (parsedData.textAlign) {
+                  element.style.textAlign = parsedData.textAlign;
+                  console.log(`📐 정렬 적용: ${parsedData.textAlign}`);
+                }
+              } else {
+                textToRestore = savedData;
+                console.log(`✅ 직접 문자열 사용: "${textToRestore}"`);
+              }
+            } catch (e) {
+              // JSON이 아닌 경우 문자열로 처리 (기존 호환성)
+              textToRestore = savedData;
+              console.log(`✅ JSON 파싱 실패, 문자열로 처리: "${textToRestore}"`);
+            }
+            
+            if (textToRestore && textToRestore !== element.textContent.trim()) {
+              element.textContent = textToRestore;
+              restoredCount++;
+              console.log(`✅ 편집 가능 텍스트 복원됨: "${textToRestore}"`);
+            } else {
+              console.log(`⏭️ 텍스트 변경 없음 (이미 동일): "${textToRestore}"`);
+            }
+          } catch (error) {
+            console.error(`❌ 텍스트 복원 실패 (${elementId}):`, error);
+          }
+        } else {
+          console.log(`📭 저장된 데이터 없음: ${elementId}`);
         }
       });
       
@@ -5826,12 +5944,75 @@ function setCookie( name, value, expiredays )
         }
       });
       
+      
+      console.log(`=== 텍스트 복원 완료: ${restoredCount}/${totalElements}개 복원됨 ===`);
+      
       if (restoredCount > 0) {
         showSuccessMessage(`${restoredCount}개의 편집된 텍스트가 복원되었습니다!`);
       }
       
-      console.log(`=== 텍스트 복원 완료: ${restoredCount}개 ===`);
+      return restoredCount;
     }
+    
+    // 수동 텍스트 복원 함수 (긴급용) - 강화된 버전
+    window.forceRestoreTexts = function() {
+      console.log('=== 수동 텍스트 복원 강제 실행 ===');
+      
+      // 복원 중인지 확인
+      if (isRestoring) {
+        console.log('⚠️ 복원이 이미 진행 중입니다. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+      
+      // 강제로 복원 실행
+      restoreEditedTexts();
+    };
+    
+    // 전체 데이터 강제 복원 함수
+    window.forceRestoreAll = function() {
+      console.log('=== 전체 데이터 강제 복원 실행 ===');
+      
+      if (isRestoring) {
+        console.log('⚠️ 복원이 이미 진행 중입니다. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+      
+      restoreAllSavedData();
+    };
+    
+    // localStorage 상태 확인 함수 (강화된 버전)
+    window.checkLocalStorage = function() {
+      console.log('=== localStorage 상태 확인 ===');
+      console.log(`총 키 개수: ${localStorage.length}`);
+      
+      const textKeys = [];
+      const allKeys = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        allKeys.push(key);
+        if (key && key.startsWith('text_edit_')) {
+          textKeys.push(key);
+        }
+      }
+      
+      console.log('모든 키:', allKeys);
+      console.log(`텍스트 관련 키: ${textKeys.length}개`);
+      textKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        console.log(`  ${key}: ${value}`);
+      });
+      
+      // 편집 가능한 요소도 확인
+      const editableElements = document.querySelectorAll('.editable-text, .text-editable');
+      console.log(`편집 가능한 요소: ${editableElements.length}개`);
+      editableElements.forEach((element, index) => {
+        const elementId = generateElementId(element);
+        console.log(`  요소 ${index + 1}: ${elementId} - "${element.textContent.trim()}"`);
+      });
+      
+      return { textKeys, allKeys, editableElements: editableElements.length };
+    };
     
     // 모든 텍스트 편집 초기화
     window.resetAllTextEdits = function() {
@@ -6553,9 +6734,14 @@ function setCookie( name, value, expiredays )
       // 텍스트 적용
       selectedTextElement.textContent = newText;
       
-      // 로컬 스토리지에 저장
+      // 로컬 스토리지에 저장 (일관된 형식으로)
       const elementId = generateElementId(selectedTextElement);
-      localStorage.setItem(`text_edit_${elementId}`, newText);
+      const saveData = {
+        text: newText,
+        timestamp: Date.now(),
+        type: 'quick_edit'
+      };
+      localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
       
       showSuccessMessage('텍스트가 성공적으로 수정되었습니다!');
       console.log('✅ 빠른 편집 적용 완료');
@@ -6698,9 +6884,14 @@ function setCookie( name, value, expiredays )
           if (elements[index]) {
             elements[index].textContent = newText;
             
-            // 로컬 스토리지에 저장
+            // 로컬 스토리지에 저장 (일관된 형식으로)
             const elementId = generateElementId(elements[index]);
-            localStorage.setItem(`text_edit_${elementId}`, newText);
+            const saveData = {
+              text: newText,
+              timestamp: Date.now(),
+              type: 'bulk_edit'
+            };
+            localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
             
             appliedCount++;
           }
@@ -6735,9 +6926,14 @@ function setCookie( name, value, expiredays )
       // 텍스트 적용
       adminSelectedElement.textContent = newText;
       
-      // 로컬 스토리지에 저장
+      // 로컬 스토리지에 저장 (일관된 형식으로)
       const elementId = generateElementId(adminSelectedElement);
-      localStorage.setItem(`text_edit_${elementId}`, newText);
+      const saveData = {
+        text: newText,
+        timestamp: Date.now(),
+        type: 'admin_quick_edit'
+      };
+      localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
       
       showSuccessMessage('텍스트가 성공적으로 수정되었습니다!');
       console.log('✅ 관리모드 빠른 편집 적용 완료');
@@ -6940,7 +7136,12 @@ function setCookie( name, value, expiredays )
       editableElements.forEach(element => {
         const elementId = generateElementId(element);
         const text = element.textContent.trim();
-        localStorage.setItem(`text_edit_${elementId}`, text);
+        const saveData = {
+          text: text,
+          timestamp: Date.now(),
+          type: 'bulk_save'
+        };
+        localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
         savedCount++;
         console.log(`✅ 저장됨: text_edit_${elementId} = "${text}"`);
       });
@@ -7040,9 +7241,14 @@ function setCookie( name, value, expiredays )
           if (elements[index]) {
             elements[index].textContent = newText;
             
-            // 로컬 스토리지에 저장
+            // 로컬 스토리지에 저장 (일관된 형식으로)
             const elementId = generateElementId(elements[index]);
-            localStorage.setItem(`text_edit_${elementId}`, newText);
+            const saveData = {
+              text: newText,
+              timestamp: Date.now(),
+              type: 'bulk_edit'
+            };
+            localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
             
             appliedCount++;
           }
@@ -7356,9 +7562,14 @@ function setCookie( name, value, expiredays )
         if (newText && newText !== originalText) {
           element.textContent = newText;
           
-          // 로컬 스토리지에 저장
+          // 로컬 스토리지에 저장 (일관된 형식으로)
           const elementId = generateElementId(element);
-          localStorage.setItem(`text_edit_${elementId}`, newText);
+          const saveData = {
+            text: newText,
+            timestamp: Date.now(),
+            type: 'inline_edit'
+          };
+          localStorage.setItem(`text_edit_${elementId}`, JSON.stringify(saveData));
           
           showSuccessMessage('텍스트가 저장되었습니다!');
         }
@@ -7582,63 +7793,8 @@ function setCookie( name, value, expiredays )
       }
     };
 
-    // 모든 저장된 데이터 복원 함수
-    window.restoreAllSavedData = function() {
-      console.log('=== 모든 저장된 데이터 복원 시작 ===');
-      
-      try {
-        // 1. 저장된 스타일 복원
-        console.log('1. 저장된 스타일 복원 중...');
-        restoreSavedStyles();
-        
-        // 2. 저장된 텍스트 복원
-        console.log('2. 저장된 텍스트 복원 중...');
-        restoreEditedTexts();
-        
-        // 3. 저장된 이미지 데이터 복원
-        console.log('3. 저장된 이미지 데이터 복원 중...');
-        restoreSavedImages();
-        
-        // 4. 저장된 섹션 데이터 복원
-        console.log('4. 저장된 섹션 데이터 복원 중...');
-        restoreAllSectionData();
-        
-        // 5. 비디오 설정 복원
-        console.log('5. 비디오 설정 복원 중...');
-        restoreVideoSettings();
-        
-        console.log('✅ 모든 저장된 데이터 복원 완료');
-        
-        // 복원 완료 메시지 표시
-        setTimeout(() => {
-          const message = document.createElement('div');
-          message.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4CAF50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            z-index: 10000;
-            font-size: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-          `;
-          message.textContent = '✅ 저장된 모든 데이터가 복원되었습니다!';
-          document.body.appendChild(message);
-          
-          setTimeout(() => {
-            if (message.parentNode) {
-              message.parentNode.removeChild(message);
-            }
-          }, 3000);
-        }, 500);
-        
-      } catch (error) {
-        console.error('❌ 데이터 복원 중 오류 발생:', error);
-      }
-    };
+    // 중복된 함수 제거됨 - 위의 통합된 함수 사용
+    window.restoreAllSavedData = restoreAllSavedData;
 
     // 저장된 이미지 데이터 복원
     window.restoreSavedImages = function() {
