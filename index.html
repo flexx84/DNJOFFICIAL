@@ -7186,9 +7186,9 @@ app.listen(3000, () => {
             actualLogo.src = e.target.result;
           }
           
-          // 로컬 스토리지에 저장
-          localStorage.setItem('admin_logo_data', e.target.result);
-          localStorage.setItem('admin_logo_timestamp', Date.now().toString());
+          // 로컬 스토리지에 저장 (안전 저장)
+          safeSetItem('admin_logo_data', e.target.result);
+          safeSetItem('admin_logo_timestamp', Date.now().toString());
           
           showSuccessMessage('로고가 성공적으로 업데이트되었습니다!');
           console.log('✅ 로고 업데이트됨:', file.name);
@@ -7792,7 +7792,7 @@ app.listen(3000, () => {
         // 2. 이미지 데이터 저장
         const logoImg = document.querySelector('.logo img, .header-logo img');
         if (logoImg && logoImg.src) {
-          localStorage.setItem('logo_data', logoImg.src);
+          safeSetItem('logo_data', logoImg.src);
         }
         
         const bgElements = document.querySelectorAll('.bg01');
