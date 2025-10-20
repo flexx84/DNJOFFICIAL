@@ -4099,6 +4099,10 @@ function setCookie( name, value, expiredays )
   
   <!-- 완전히 새로운 관리 모드 시스템 -->
   <script>
+    console.log('🎯 === 관리 모드 스크립트 로드 시작 ===');
+    console.log('📅 로드 시간:', new Date().toLocaleString());
+    console.log('📄 문서 상태:', document.readyState);
+    
     console.log('=== 완전히 새로운 관리 모드 시스템 시작 ===');
     
     // 전역 상태 관리
@@ -5737,6 +5741,71 @@ function setCookie( name, value, expiredays )
       console.log('  - emergencyAdmin() : 긴급 활성화');
       console.log('  - debugAdminSystem() : 시스템 상태 확인');
     };
+    
+    // 즉시 실행되는 진단 함수 (페이지 로드와 관계없이)
+    function immediateDiagnose() {
+      console.log('🚀 === 즉시 관리자 모드 진단 시작 ===');
+      console.log('📅 진단 시간:', new Date().toLocaleString());
+      console.log('🌐 페이지 URL:', window.location.href);
+      console.log('📄 문서 상태:', document.readyState);
+      
+      // DOM 요소 확인
+      console.log('📋 === DOM 요소 확인 ===');
+      const adminMode = document.getElementById('adminMode');
+      const adminIndicator = document.getElementById('adminIndicator');
+      console.log('✅ #adminMode:', adminMode ? '존재함' : '❌ 없음');
+      console.log('✅ #adminIndicator:', adminIndicator ? '존재함' : '❌ 없음');
+      
+      if (adminMode) {
+        console.log('  - adminMode 태그:', adminMode.tagName);
+        console.log('  - adminMode 클래스:', adminMode.className);
+        console.log('  - adminMode 표시 상태:', window.getComputedStyle(adminMode).display);
+      }
+      
+      if (adminIndicator) {
+        console.log('  - adminIndicator 태그:', adminIndicator.tagName);
+        console.log('  - adminIndicator 클래스:', adminIndicator.className);
+        console.log('  - adminIndicator 표시 상태:', window.getComputedStyle(adminIndicator).display);
+      }
+      
+      // AdminSystem 상태 확인
+      console.log('⚙️ === AdminSystem 상태 확인 ===');
+      console.log('  - isActive:', AdminSystem.isActive);
+      console.log('  - buttonVisible:', AdminSystem.buttonVisible);
+      console.log('  - adminPanel:', AdminSystem.adminPanel ? '연결됨' : '❌ 없음');
+      console.log('  - adminIndicator:', AdminSystem.adminIndicator ? '연결됨' : '❌ 없음');
+      console.log('  - adminButton:', AdminSystem.adminButton ? '연결됨' : '❌ 없음');
+      
+      // 활성화 방법 안내
+      console.log('🎯 === 활성화 방법 ===');
+      console.log('사용 가능한 활성화 방법:');
+      console.log('  1. ESC 키 5회 입력');
+      console.log('  2. 메뉴 버튼 5회 클릭');
+      console.log('  3. Ctrl+Shift+A 키보드 단축키');
+      console.log('  4. 콘솔에서 emergencyAdmin() 실행');
+      console.log('  5. 콘솔에서 testAdmin() 실행');
+      
+      console.log('🚀 === 즉시 진단 완료 ===');
+    }
+    
+    // 즉시 실행
+    immediateDiagnose();
+    
+    // DOM 로드 완료 후 실행
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('=== DOMContentLoaded 이벤트 발생 ===');
+        setTimeout(() => {
+          console.log('=== DOM 로드 후 관리 시스템 초기화 ===');
+          mainInitialize();
+        }, 100);
+      });
+    } else {
+      console.log('=== DOM이 이미 로드됨, 즉시 초기화 ===');
+      setTimeout(() => {
+        mainInitialize();
+      }, 100);
+    }
     
     // 통합된 초기화 시스템 (백엔드 충돌 방지)
     window.addEventListener('load', () => {
@@ -10077,6 +10146,9 @@ app.listen(3000, () => {
     window.updateMapSettings = updateMapSettings;
     window.resetMapSettings = resetMapSettings;
     
+    console.log('🎯 === 관리 모드 스크립트 로드 완료 ===');
+    console.log('📅 완료 시간:', new Date().toLocaleString());
+    console.log('📄 최종 문서 상태:', document.readyState);
     console.log('=== 완전히 새로운 관리 모드 시스템 완료 ===');
   </script>
 
