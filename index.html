@@ -2483,7 +2483,7 @@
          
          <!-- 메인 배경 미디어 관리 (이미지 + 비디오) -->
          <div class="image-section">
-           <h4 class="image-section-title">🎬 메인 배경 미디어 관리</h4>
+           <h4 class="image-section-title">🖼️ 메인 배경 이미지 관리</h4>
            
            <!-- 비디오 사용 여부 체크박스 -->
            <div class="form-group" style="margin-bottom: 20px;">
@@ -2539,8 +2539,8 @@
            </div>
            
            <!-- 배경 이미지 대안 관리 (비디오 사용 안할 때) -->
-           <div class="image-item" id="background-image-controls" style="display: none;">
-             <h5 class="image-section-title">🖼️ 배경 이미지 (첫 번째 슬라이드)</h5>
+           <div class="image-item" id="background-image-controls" style="display: block;">
+             <h5 class="image-section-title">🖼️ 배경 이미지 (모든 슬라이드)</h5>
              <div class="image-info">
                <div class="image-preview">
                  <img id="preview-bg-image" style="max-width: 200px; max-height: 120px; display: none;">
@@ -2548,8 +2548,8 @@
                </div>
                <div class="image-details">
                  <p><strong>파일 경로:</strong> <span id="bg-image-path">common/img/main/sec01_bg01.jpg</span></p>
-                 <p><strong>용도:</strong> 메인 섹션 배경 (비디오 대안)</p>
-                 <p><strong>위치:</strong> 섹션 1 (.bg01 요소)</p>
+                 <p><strong>용도:</strong> 메인 섹션 배경 이미지</p>
+                 <p><strong>위치:</strong> 섹션 1 모든 슬라이드 (.bg01 요소)</p>
                </div>
              </div>
              <div class="image-controls">
@@ -2999,10 +2999,21 @@
         </div>
        </div>
        <div class="swiper-slide" data-swiper-autoplay="8900">
-        <div class="bg">
-         <video autoplay="" data-autoplay="" id="main_video" loop="" muted="" playsinline="">
-          <source src="common/img/main/main_video2.mp4" type="video/mp4"/>
-         </video>
+        <div class="txtArea montserrat">
+         <h3 class="editable-text">
+          D&J GROUP
+         </h3>
+         <p class="sview01 editable-text">
+          "Our brand will be more delightful with D&J"
+         </p>
+         <p class="sview02 editable-text">
+          "We sell emotional experiences, not products"
+         </p>
+         <p class="sview03 editable-text">
+          "We create a customer experience"
+         </p>
+        </div>
+        <div class="bg01">
         </div>
        </div>
       </div>
