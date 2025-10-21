@@ -3775,6 +3775,7 @@ function setCookie( name, value, expiredays )
       console.log('🧹 백업 정리 완료 (최신', maxKeep, '개 유지)');
     }
 
+    // localStorage 안전 저장 함수 (개선된 버전)
     function safeSetItem(key, value) {
       try {
         localStorage.setItem(key, value);
@@ -3782,13 +3783,48 @@ function setCookie( name, value, expiredays )
       } catch (e) {
         if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
           console.warn('QuotaExceededError 발생 → 백업 정리 후 재시도');
-          pruneBackups(2);
+          
+          // 1단계: 오래된 백업들 정리
+          pruneBackups(1); // 최신 1개만 유지
+          
           try {
             localStorage.setItem(key, value);
+            console.log('✅ 백업 정리 후 저장 성공');
             return true;
           } catch (e2) {
-            console.error('여전히 용량 초과:', e2);
-            return false;
+            console.warn('여전히 용량 초과 → 추가 정리 시도');
+            
+            // 2단계: 더 적극적인 정리
+            pruneBackups(0); // 모든 백업 삭제
+            
+            // 3단계: 대용량 이미지 데이터 정리
+            const largeImageKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const k = localStorage.key(i);
+              if (k && (k.includes('bg_image_data') || k.includes('portfolio_image_') || k.includes('logo_data'))) {
+                const size = localStorage.getItem(k).length;
+                if (size > 100000) { // 100KB 이상
+                  largeImageKeys.push({key: k, size: size});
+                }
+              }
+            }
+            
+            // 크기순으로 정렬하여 가장 큰 것부터 삭제
+            largeImageKeys.sort((a, b) => b.size - a.size);
+            
+            for (let i = 0; i < Math.min(3, largeImageKeys.length); i++) {
+              localStorage.removeItem(largeImageKeys[i].key);
+              console.log(`🗑️ 대용량 이미지 삭제: ${largeImageKeys[i].key} (${(largeImageKeys[i].size/1024).toFixed(1)}KB)`);
+            }
+            
+            try {
+              localStorage.setItem(key, value);
+              console.log('✅ 대용량 데이터 정리 후 저장 성공');
+              return true;
+            } catch (e3) {
+              console.error('❌ 모든 정리 시도 후에도 저장 실패:', e3);
+              return false;
+            }
           }
         }
         console.error('localStorage 저장 실패:', e);
@@ -4441,29 +4477,44 @@ function setCookie( name, value, expiredays )
       adminSystemInitialized: false,
       lastInitTime: 0,
       lastRestoreTime: 0,
-      lastRestoreCount: 0
+      lastRestoreCount: 0,
+      pageLoadTime: Date.now(),
+      refreshCount: 0
     };
     
-    // 새로고침 시 초기화 상태 완전 리셋
+    // 새로고침 시 초기화 상태 완전 리셋 (강화된 버전)
     if (window.initializationStateReset) {
       console.log('⚠️ 초기화 상태가 이미 리셋됨 - 중복 리셋 방지');
     } else {
       window.initializationStateReset = true;
-      console.log('🔄 초기화 상태 리셋됨');
+      window.initializationState.refreshCount++;
+      console.log('🔄 초기화 상태 리셋됨 (새로고침 횟수:', window.initializationState.refreshCount + ')');
+      
+      // 세션 스토리지를 사용하여 새로고침 간 상태 유지
+      if (sessionStorage.getItem('pageRefreshCount')) {
+        const count = parseInt(sessionStorage.getItem('pageRefreshCount')) + 1;
+        sessionStorage.setItem('pageRefreshCount', count.toString());
+        window.initializationState.refreshCount = count;
+      } else {
+        sessionStorage.setItem('pageRefreshCount', '1');
+        window.initializationState.refreshCount = 1;
+      }
     }
     
-    // 메인 초기화 함수 (중복 실행 방지)
+    // 메인 초기화 함수 (강화된 중복 실행 방지)
     function mainInitialize() {
       const now = Date.now();
       
-      // 중복 실행 방지 (5초 내 재실행 차단)
+      // 중복 실행 방지 (10초 내 재실행 차단, 새로고침 횟수 고려)
+      const cooldownTime = window.initializationState.refreshCount > 3 ? 15000 : 10000; // 새로고침이 많으면 더 긴 쿨다운
+      
       if (window.initializationState.mainInitialized && 
-          (now - window.initializationState.lastInitTime) < 5000) {
-        console.log('⚠️ mainInitialize 중복 실행 방지됨');
+          (now - window.initializationState.lastInitTime) < cooldownTime) {
+        console.log('⚠️ mainInitialize 중복 실행 방지됨 (쿨다운:', cooldownTime/1000 + '초)');
         return window.initializationState.adminSystemInitialized;
       }
       
-      console.log('=== 메인 초기화 시작 ===');
+      console.log('=== 메인 초기화 시작 (새로고침 횟수:', window.initializationState.refreshCount + ') ===');
       window.initializationState.lastInitTime = now;
       
       // 먼저 일반 초기화 시도
@@ -4491,6 +4542,7 @@ function setCookie( name, value, expiredays )
           
           setupMenuButtonListener();
           setupKeyboardShortcut();
+          showAdminButton();
           window.initializationState.mainInitialized = true;
           window.initializationState.adminSystemInitialized = true;
           console.log('✅ 강제 재검색으로 관리 모드 시스템 초기화 완료');
@@ -5647,18 +5699,20 @@ function setCookie( name, value, expiredays )
     
     // ===== 자동 저장 및 데이터 복원 시스템 =====
     
-    // 통합된 저장된 데이터 복원 함수 (중복 실행 방지)
+    // 통합된 저장된 데이터 복원 함수 (강화된 중복 실행 방지)
     function restoreAllSavedData() {
       const now = Date.now();
       
-      // 중복 실행 방지 (3초 내 재실행 차단)
+      // 중복 실행 방지 (5초 내 재실행 차단, 새로고침 횟수 고려)
+      const cooldownTime = window.initializationState.refreshCount > 3 ? 8000 : 5000; // 새로고침이 많으면 더 긴 쿨다운
+      
       if (window.initializationState.dataRestored && 
-          (now - window.initializationState.lastRestoreTime) < 3000) {
-        console.log('⚠️ restoreAllSavedData 중복 실행 방지됨');
+          (now - window.initializationState.lastRestoreTime) < cooldownTime) {
+        console.log('⚠️ restoreAllSavedData 중복 실행 방지됨 (쿨다운:', cooldownTime/1000 + '초)');
         return window.initializationState.lastRestoreCount || 0;
       }
       
-      console.log('=== 저장된 데이터 복원 시작 ===');
+      console.log('=== 저장된 데이터 복원 시작 (새로고침 횟수:', window.initializationState.refreshCount + ') ===');
       window.initializationState.lastRestoreTime = now;
 
       let totalRestored = 0;
@@ -5739,13 +5793,15 @@ function setCookie( name, value, expiredays )
       }
     }
     
-    // 자동 저장 기능 (입력 시마다 자동 저장) - 중복 실행 방지
+    // 자동 저장 기능 (입력 시마다 자동 저장) - 강화된 중복 실행 방지
     function setupAutoSave() {
-      // 중복 실행 방지
+      // 중복 실행 방지 (새로고침 횟수 고려)
       if (window.initializationState.autoSaveSetup) {
-        console.log('⚠️ setupAutoSave 중복 실행 방지됨');
+        console.log('⚠️ setupAutoSave 중복 실행 방지됨 (새로고침 횟수:', window.initializationState.refreshCount + ')');
         return;
       }
+      
+      console.log('=== 자동 저장 시스템 설정 시작 (새로고침 횟수:', window.initializationState.refreshCount + ') ===');
       
       const sections = ['section01', 'section02', 'section03', 'section04'];
       
@@ -6329,7 +6385,7 @@ function setCookie( name, value, expiredays )
           }
         }
         
-        // 2. 이미지 데이터 수집 (확장)
+        // 2. 이미지 데이터 수집 (용량 절약 버전)
         const imageData = {};
         const imageKeys = [
           'bg_image_data',
@@ -6364,9 +6420,29 @@ function setCookie( name, value, expiredays )
         imageKeys.forEach(key => {
           const data = localStorage.getItem(key);
           if (data) {
-            imageData[key] = data;
+            // base64 데이터가 너무 크면 URL만 저장
+            if (data.length > 50000) {
+              console.log(`⚠️ 대용량 이미지 ${key}는 URL만 저장`);
+              imageData[key + '_url'] = 'large_image_skipped';
+            } else {
+              imageData[key] = data;
+            }
           }
         });
+        
+        // 포트폴리오 이미지들 (용량 절약)
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('portfolio_image_') && !key.includes('_filename') && !key.includes('_timestamp')) {
+            const imageDataValue = localStorage.getItem(key);
+            if (imageDataValue && imageDataValue.length > 50000) {
+              console.log(`⚠️ 대용량 포트폴리오 이미지 ${key}는 URL만 저장`);
+              imageData[key + '_url'] = 'large_image_skipped';
+            } else {
+              imageData[key] = imageDataValue;
+            }
+          }
+        }
         
         // 3. 섹션 데이터 수집 (확장)
         const sectionData = {};
@@ -7328,7 +7404,7 @@ app.listen(3000, () => {
       showSuccessMessage('포트폴리오 이미지 목록이 새로고침되었습니다!');
     };
     
-    // 포트폴리오 이미지 교체 함수 (누락된 함수 추가)
+    // 포트폴리오 이미지 교체 함수 (개선된 버전)
     window.replacePortfolioImage = function(index) {
       console.log(`=== 포트폴리오 이미지 ${index + 1} 교체 시작 ===`);
       
@@ -7343,11 +7419,21 @@ app.listen(3000, () => {
         const reader = new FileReader();
         reader.onload = function(e) {
           try {
-            // localStorage에 저장
+            // localStorage에 안전하게 저장 (safeSetItem 사용)
             const key = `portfolio_image_${index}`;
-            localStorage.setItem(key, e.target.result);
-            localStorage.setItem(`${key}_filename`, file.name);
-            localStorage.setItem(`${key}_timestamp`, Date.now().toString());
+            const filenameKey = `${key}_filename`;
+            const timestampKey = `${key}_timestamp`;
+            
+            // 이미지 데이터 저장 시도
+            if (!safeSetItem(key, e.target.result)) {
+              console.warn('⚠️ 포트폴리오 이미지 저장 실패 - 용량 초과');
+              showErrorMessage('이미지가 너무 커서 저장할 수 없습니다. 이미지를 압축하거나 다른 이미지를 선택해주세요.');
+              return;
+            }
+            
+            // 메타데이터 저장
+            safeSetItem(filenameKey, file.name);
+            safeSetItem(timestampKey, Date.now().toString());
             
             // 실제 웹사이트의 포트폴리오 이미지 업데이트
             const portfolioImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img');
@@ -7404,11 +7490,14 @@ app.listen(3000, () => {
       }
     };
     
-    // 포트폴리오 이미지 업로드 처리 함수 (누락된 함수 추가)
+    // 포트폴리오 이미지 업로드 처리 함수 (개선된 버전)
     window.handlePortfolioUpload = function(input) {
       console.log('=== 포트폴리오 이미지 업로드 처리 ===');
       
       if (!input.files || input.files.length === 0) return;
+      
+      let successCount = 0;
+      let failCount = 0;
       
       Array.from(input.files).forEach((file, fileIndex) => {
         const reader = new FileReader();
@@ -7418,17 +7507,28 @@ app.listen(3000, () => {
             const existingImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img').length;
             const newIndex = existingImages + fileIndex;
             
-            // localStorage에 저장
+            // localStorage에 안전하게 저장 (safeSetItem 사용)
             const key = `portfolio_image_${newIndex}`;
-            localStorage.setItem(key, e.target.result);
-            localStorage.setItem(`${key}_filename`, file.name);
-            localStorage.setItem(`${key}_timestamp`, Date.now().toString());
+            const filenameKey = `${key}_filename`;
+            const timestampKey = `${key}_timestamp`;
             
+            // 이미지 데이터 저장 시도
+            if (!safeSetItem(key, e.target.result)) {
+              console.warn(`⚠️ 포트폴리오 이미지 ${file.name} 저장 실패 - 용량 초과`);
+              failCount++;
+              return;
+            }
+            
+            // 메타데이터 저장
+            safeSetItem(filenameKey, file.name);
+            safeSetItem(timestampKey, Date.now().toString());
+            
+            successCount++;
             console.log(`✅ 포트폴리오 이미지 ${newIndex + 1} 업로드됨: ${file.name}`);
             
           } catch (error) {
             console.error('❌ 포트폴리오 이미지 업로드 실패:', error);
-            showErrorMessage('이미지 업로드 중 오류가 발생했습니다: ' + error.message);
+            failCount++;
           }
         };
         
@@ -7438,7 +7538,11 @@ app.listen(3000, () => {
       // 관리자 패널의 그리드 새로고침
       setTimeout(() => {
         refreshPortfolioGrid();
-        showSuccessMessage(`${input.files.length}개의 포트폴리오 이미지가 업로드되었습니다!`);
+        if (failCount > 0) {
+          showErrorMessage(`${successCount}개 성공, ${failCount}개 실패 (용량 초과)`);
+        } else {
+          showSuccessMessage(`${successCount}개의 포트폴리오 이미지가 업로드되었습니다!`);
+        }
       }, 500);
     };
     
