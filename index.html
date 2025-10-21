@@ -2226,8 +2226,10 @@
              </div>
              <div class="image-controls">
               <button class="btn btn-primary" onclick="saveAllDataToServer()">☁️ 서버에 저장</button>
+              <button class="btn btn-warning" onclick="retryServerSave()">🔄 서버 저장 재시도</button>
               <button class="btn btn-success" onclick="loadAllDataFromServer()">📥 서버에서 로드</button>
               <button class="btn btn-info" onclick="checkServerStatus()">🔍 서버 상태 확인</button>
+              <button class="btn btn-info" onclick="monitorServerSaveStatus()">📊 서버 저장 상태</button>
                 <button class="btn btn-secondary" onclick="quickSaveAll()">💾 로컬 빠른 저장</button>
                 <button class="btn btn-secondary" onclick="quickRestoreAll()">📥 로컬 복구 실행</button>
                 <button class="btn btn-warning" onclick="forceSaveAll()">⚡ 강제 저장 실행</button>
@@ -4431,14 +4433,24 @@ function setCookie( name, value, expiredays )
       return AdminSystem.adminPanel && AdminSystem.adminIndicator;
     }
     
-    // 초기화 상태 추적을 위한 전역 변수
+    // 초기화 상태 추적을 위한 전역 변수 (새로고침 시 리셋)
     window.initializationState = {
       mainInitialized: false,
       dataRestored: false,
       autoSaveSetup: false,
       adminSystemInitialized: false,
-      lastInitTime: 0
+      lastInitTime: 0,
+      lastRestoreTime: 0,
+      lastRestoreCount: 0
     };
+    
+    // 새로고침 시 초기화 상태 완전 리셋
+    if (window.initializationStateReset) {
+      console.log('⚠️ 초기화 상태가 이미 리셋됨 - 중복 리셋 방지');
+    } else {
+      window.initializationStateReset = true;
+      console.log('🔄 초기화 상태 리셋됨');
+    }
     
     // 메인 초기화 함수 (중복 실행 방지)
     function mainInitialize() {
@@ -4603,30 +4615,7 @@ function setCookie( name, value, expiredays )
     window.hideAdminButton = hideAdminButton;
     window.toggleAdminMode = toggleAdminMode;
     
-    // 디버깅 함수 추가
-    window.debugAdminSystem = function() {
-      console.log('=== 관리자 시스템 디버깅 ===');
-      console.log('AdminSystem.isActive:', AdminSystem.isActive);
-      console.log('AdminSystem.buttonVisible:', AdminSystem.buttonVisible);
-      console.log('AdminSystem.adminPanel:', AdminSystem.adminPanel);
-      console.log('AdminSystem.adminIndicator:', AdminSystem.adminIndicator);
-      console.log('AdminSystem.adminButton:', AdminSystem.adminButton);
-      
-      // DOM 요소 확인
-      console.log('DOM 요소 확인:');
-      console.log('- #adminMode:', document.getElementById('adminMode'));
-      console.log('- #adminIndicator:', document.getElementById('adminIndicator'));
-      console.log('- #finalAdminButton:', document.getElementById('finalAdminButton'));
-      
-      // 관리자 버튼 강제 표시
-      if (AdminSystem.adminButton) {
-        showAdminButton();
-        console.log('✅ 관리자 버튼 강제 표시됨');
-      } else {
-        console.log('❌ 관리자 버튼이 없음 - 초기화 필요');
-        mainInitialize();
-      }
-    };
+    // 디버깅 함수 추가 (중복 제거됨 - 아래 통합 버전 사용)
     
     // 긴급 관리자 모드 활성화 함수
     window.forceAdminMode = function() {
@@ -4708,8 +4697,9 @@ function setCookie( name, value, expiredays )
       AdminSystem.buttonVisible = true;
       console.log('✅ 새 관리모드 버튼 생성 및 표시됨');
     };
+    // 중복된 debugAdminSystem 함수 제거됨
     window.debugAdminSystem = function() {
-      console.log('=== 관리 모드 시스템 디버그 ===');
+      console.log('=== 관리 모드 시스템 디버그 (통합 버전) ===');
       console.log('AdminSystem:', AdminSystem);
       console.log('isActive:', AdminSystem.isActive);
       console.log('buttonVisible:', AdminSystem.buttonVisible);
@@ -5560,8 +5550,15 @@ function setCookie( name, value, expiredays )
       console.log('  - debugAdminSystem() : 시스템 상태 확인');
     };
     
-    // 즉시 실행되는 진단 함수 (페이지 로드와 관계없이)
+    // 즉시 실행되는 진단 함수 (새로고침 시 중복 방지)
     function immediateDiagnose() {
+      // 새로고침 시 중복 실행 방지
+      if (window.immediateDiagnoseExecuted) {
+        console.log('⚠️ immediateDiagnose 중복 실행 방지됨');
+        return;
+      }
+      window.immediateDiagnoseExecuted = true;
+      
       console.log('🚀 === 즉시 관리자 모드 진단 시작 ===');
       console.log('📅 진단 시간:', new Date().toLocaleString());
       console.log('🌐 페이지 URL:', window.location.href);
@@ -5715,6 +5712,11 @@ function setCookie( name, value, expiredays )
         console.log('4-2. 섹션 3 배경 이미지들 복원 중...');
         const section03Restored = restoreSection03Bgs();
         totalRestored += section03Restored;
+        
+        // 4-3. 포트폴리오 이미지들 복원 (추가)
+        console.log('4-3. 포트폴리오 이미지들 복원 중...');
+        const portfolioRestored = restorePortfolioImages();
+        totalRestored += portfolioRestored;
         
         // 5. 비디오 설정 복원
         console.log('5. 비디오 설정 복원 중...');
@@ -6100,6 +6102,54 @@ function setCookie( name, value, expiredays )
         
         console.log(`✅ 서비스 ${serviceNumber} 관련 데이터 초기화 완료`);
         showSuccessMessage(`서비스 ${serviceNumber}의 배경 이미지가 초기화되었습니다!`);
+      }
+    };
+    
+    // 포트폴리오 이미지 복원 함수 (새로 추가)
+    window.restorePortfolioImages = function() {
+      console.log('=== 포트폴리오 이미지들 복원 ===');
+      
+      let restoredCount = 0;
+      
+      try {
+        // localStorage에서 포트폴리오 이미지 키들 찾기
+        const portfolioKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('portfolio_image_') && !key.includes('_filename') && !key.includes('_timestamp')) {
+            portfolioKeys.push(key);
+          }
+        }
+        
+        console.log(`🔍 발견된 포트폴리오 이미지 키: ${portfolioKeys.length}개`);
+        
+        // 각 포트폴리오 이미지 복원
+        portfolioKeys.forEach(key => {
+          const imageData = localStorage.getItem(key);
+          if (imageData) {
+            try {
+              const index = parseInt(key.replace('portfolio_image_', ''));
+              
+              // 실제 웹사이트의 포트폴리오 이미지 업데이트
+              const portfolioImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img');
+              if (portfolioImages[index]) {
+                portfolioImages[index].src = imageData;
+                restoredCount++;
+                console.log(`✅ 포트폴리오 이미지 ${index + 1} 복원됨`);
+              }
+              
+            } catch (error) {
+              console.error(`❌ 포트폴리오 이미지 복원 실패 (키: ${key}):`, error);
+            }
+          }
+        });
+        
+        console.log(`✅ 포트폴리오 이미지 복원 완료: ${restoredCount}개 복원됨`);
+        return restoredCount;
+        
+      } catch (error) {
+        console.error('❌ 포트폴리오 이미지 복원 중 오류 발생:', error);
+        return 0;
       }
     };
     
@@ -6539,7 +6589,75 @@ function setCookie( name, value, expiredays )
       }
     };
     
-    // 서버 상태 확인
+    // 서버 저장 상태 모니터링 함수 (새로 추가)
+    window.monitorServerSaveStatus = function() {
+      console.log('=== 서버 저장 상태 모니터링 ===');
+      
+      // 서버 저장 통계 수집
+      const serverBackups = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('server_backup_')) {
+          serverBackups.push({
+            key: key,
+            timestamp: parseInt(key.split('_').pop()),
+            size: localStorage.getItem(key).length
+          });
+        }
+      }
+      
+      // 최신 백업 정보
+      const latestBackup = serverBackups.sort((a, b) => b.timestamp - a.timestamp)[0];
+      
+      console.log('📊 서버 저장 통계:');
+      console.log(`  - 총 서버 백업 수: ${serverBackups.length}개`);
+      console.log(`  - 최신 백업: ${latestBackup ? new Date(latestBackup.timestamp).toLocaleString() : '없음'}`);
+      console.log(`  - 최신 백업 크기: ${latestBackup ? (latestBackup.size / 1024).toFixed(1) + ' KB' : '0 KB'}`);
+      
+      // 자동 저장 타이머 상태
+      console.log('⏰ 자동 저장 타이머 상태:');
+      console.log(`  - 로컬 자동 저장: ${window.autoSaveInterval ? '활성' : '비활성'}`);
+      console.log(`  - 서버 자동 저장: ${window.serverSaveInterval ? '활성' : '비활성'}`);
+      console.log(`  - 데이터 복원 완료: ${window.initializationState.dataRestored ? '완료' : '미완료'}`);
+      
+      return {
+        backupCount: serverBackups.length,
+        latestBackup: latestBackup,
+        autoSaveActive: !!window.autoSaveInterval,
+        serverSaveActive: !!window.serverSaveInterval,
+        dataRestored: window.initializationState.dataRestored
+      };
+    };
+    
+    // 서버 저장 실패 시 재시도 메커니즘 (새로 추가)
+    window.retryServerSave = async function(maxRetries = 3) {
+      console.log(`=== 서버 저장 재시도 시작 (최대 ${maxRetries}회) ===`);
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        console.log(`🔄 서버 저장 시도 ${attempt}/${maxRetries}`);
+        
+        try {
+          const result = await saveAllDataToServer();
+          if (result) {
+            console.log(`✅ 서버 저장 성공 (${attempt}번째 시도)`);
+            return result;
+          }
+        } catch (error) {
+          console.warn(`⚠️ 서버 저장 실패 (${attempt}번째 시도):`, error.message);
+          
+          if (attempt < maxRetries) {
+            const delay = attempt * 2000; // 2초, 4초, 6초 대기
+            console.log(`⏳ ${delay/1000}초 후 재시도...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+      
+      console.error('❌ 모든 서버 저장 시도 실패 - localStorage에 백업 저장됨');
+      return null;
+    };
+    
+    // 서버 저장 상태 확인
     window.checkServerStatus = async function() {
       console.log('=== 서버 상태 확인 ===');
       
@@ -7210,6 +7328,161 @@ app.listen(3000, () => {
       showSuccessMessage('포트폴리오 이미지 목록이 새로고침되었습니다!');
     };
     
+    // 포트폴리오 이미지 교체 함수 (누락된 함수 추가)
+    window.replacePortfolioImage = function(index) {
+      console.log(`=== 포트폴리오 이미지 ${index + 1} 교체 시작 ===`);
+      
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            // localStorage에 저장
+            const key = `portfolio_image_${index}`;
+            localStorage.setItem(key, e.target.result);
+            localStorage.setItem(`${key}_filename`, file.name);
+            localStorage.setItem(`${key}_timestamp`, Date.now().toString());
+            
+            // 실제 웹사이트의 포트폴리오 이미지 업데이트
+            const portfolioImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img');
+            if (portfolioImages[index]) {
+              portfolioImages[index].src = e.target.result;
+              console.log(`✅ 포트폴리오 이미지 ${index + 1} 교체됨`);
+            }
+            
+            // 관리자 패널의 그리드 새로고침
+            refreshPortfolioGrid();
+            
+            showSuccessMessage(`포트폴리오 이미지 ${index + 1}이 교체되었습니다!`);
+            
+          } catch (error) {
+            console.error('❌ 포트폴리오 이미지 교체 실패:', error);
+            showErrorMessage('이미지 교체 중 오류가 발생했습니다: ' + error.message);
+          }
+        };
+        
+        reader.readAsDataURL(file);
+      };
+      
+      input.click();
+    };
+    
+    // 포트폴리오 이미지 삭제 함수 (누락된 함수 추가)
+    window.deletePortfolioImage = function(index) {
+      console.log(`=== 포트폴리오 이미지 ${index + 1} 삭제 시작 ===`);
+      
+      if (confirm(`포트폴리오 이미지 ${index + 1}을 삭제하시겠습니까?`)) {
+        try {
+          // localStorage에서 삭제
+          const key = `portfolio_image_${index}`;
+          localStorage.removeItem(key);
+          localStorage.removeItem(`${key}_filename`);
+          localStorage.removeItem(`${key}_timestamp`);
+          
+          // 실제 웹사이트의 포트폴리오 이미지를 기본 이미지로 변경
+          const portfolioImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img');
+          if (portfolioImages[index]) {
+            portfolioImages[index].src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+이미지 없음</text></svg>';
+            console.log(`✅ 포트폴리오 이미지 ${index + 1} 삭제됨`);
+          }
+          
+          // 관리자 패널의 그리드 새로고침
+          refreshPortfolioGrid();
+          
+          showSuccessMessage(`포트폴리오 이미지 ${index + 1}이 삭제되었습니다!`);
+          
+        } catch (error) {
+          console.error('❌ 포트폴리오 이미지 삭제 실패:', error);
+          showErrorMessage('이미지 삭제 중 오류가 발생했습니다: ' + error.message);
+        }
+      }
+    };
+    
+    // 포트폴리오 이미지 업로드 처리 함수 (누락된 함수 추가)
+    window.handlePortfolioUpload = function(input) {
+      console.log('=== 포트폴리오 이미지 업로드 처리 ===');
+      
+      if (!input.files || input.files.length === 0) return;
+      
+      Array.from(input.files).forEach((file, fileIndex) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            // 새로운 인덱스 계산 (기존 이미지 개수 + 파일 인덱스)
+            const existingImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img').length;
+            const newIndex = existingImages + fileIndex;
+            
+            // localStorage에 저장
+            const key = `portfolio_image_${newIndex}`;
+            localStorage.setItem(key, e.target.result);
+            localStorage.setItem(`${key}_filename`, file.name);
+            localStorage.setItem(`${key}_timestamp`, Date.now().toString());
+            
+            console.log(`✅ 포트폴리오 이미지 ${newIndex + 1} 업로드됨: ${file.name}`);
+            
+          } catch (error) {
+            console.error('❌ 포트폴리오 이미지 업로드 실패:', error);
+            showErrorMessage('이미지 업로드 중 오류가 발생했습니다: ' + error.message);
+          }
+        };
+        
+        reader.readAsDataURL(file);
+      });
+      
+      // 관리자 패널의 그리드 새로고침
+      setTimeout(() => {
+        refreshPortfolioGrid();
+        showSuccessMessage(`${input.files.length}개의 포트폴리오 이미지가 업로드되었습니다!`);
+      }, 500);
+    };
+    
+    // 전체 포트폴리오 삭제 함수 (누락된 함수 추가)
+    window.clearAllPortfolio = function() {
+      console.log('=== 전체 포트폴리오 삭제 시작 ===');
+      
+      if (confirm('모든 포트폴리오 이미지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        try {
+          // localStorage에서 모든 포트폴리오 이미지 삭제
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('portfolio_image_')) {
+              keysToRemove.push(key);
+            }
+          }
+          
+          keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            localStorage.removeItem(`${key}_filename`);
+            localStorage.removeItem(`${key}_timestamp`);
+          });
+          
+          // 실제 웹사이트의 모든 포트폴리오 이미지를 기본 이미지로 변경
+          const portfolioImages = document.querySelectorAll('.portfolio img, .work img, [class*="portfolio"] img');
+          portfolioImages.forEach(img => {
+            img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+이미지 없음</text></svg>';
+          });
+          
+          console.log(`✅ 전체 포트폴리오 삭제됨: ${keysToRemove.length}개 이미지`);
+          
+          // 관리자 패널의 그리드 새로고침
+          refreshPortfolioGrid();
+          
+          showSuccessMessage('모든 포트폴리오 이미지가 삭제되었습니다!');
+          
+        } catch (error) {
+          console.error('❌ 전체 포트폴리오 삭제 실패:', error);
+          showErrorMessage('전체 삭제 중 오류가 발생했습니다: ' + error.message);
+        }
+      }
+    };
+    
     // 아이콘 그리드 새로고침
     window.refreshIconGrid = function() {
       loadIconImages();
@@ -7678,8 +7951,26 @@ app.listen(3000, () => {
       }
     }
     
-    // 자동 저장을 주기적으로 실행
-    setInterval(autoSaveAllChanges, 30000); // 30초마다 자동 저장
+    // 자동 저장 간격 조정 및 중복 실행 방지
+    let autoSaveInterval = null;
+    let serverSaveInterval = null;
+    
+    // 자동 저장을 주기적으로 실행 (간격 늘림)
+    function startAutoSave() {
+      if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+      }
+      autoSaveInterval = setInterval(() => {
+        // 중복 실행 방지 체크
+        if (!window.initializationState.dataRestored) {
+          console.log('⚠️ 데이터 복원이 완료되지 않아 자동 저장 건너뜀');
+          return;
+        }
+        autoSaveAllChanges();
+      }, 60000); // 1분마다 자동 저장 (30초 → 1분)
+      
+      console.log('✅ 자동 저장 타이머 시작됨 (1분 간격)');
+    }
     
     // 백엔드 서버에 자동 저장
     async function autoSaveToServer() {
@@ -7696,14 +7987,43 @@ app.listen(3000, () => {
       }
     }
     
-    // 서버 자동 저장을 주기적으로 실행 (5분마다)
-    setInterval(autoSaveToServer, 300000); // 5분마다 서버 저장
+    // 서버 자동 저장을 주기적으로 실행 (간격 늘림)
+    function startServerSave() {
+      if (serverSaveInterval) {
+        clearInterval(serverSaveInterval);
+      }
+      serverSaveInterval = setInterval(() => {
+        // 중복 실행 방지 체크
+        if (!window.initializationState.dataRestored) {
+          console.log('⚠️ 데이터 복원이 완료되지 않아 서버 저장 건너뜀');
+          return;
+        }
+        autoSaveToServer();
+      }, 600000); // 10분마다 서버 저장 (5분 → 10분)
+      
+      console.log('✅ 서버 자동 저장 타이머 시작됨 (10분 간격)');
+    }
     
-    // 페이지 언로드 시 최종 저장
-    window.addEventListener('beforeunload', () => {
-      autoSaveAllChanges();
-      autoSaveToServer(); // 서버에도 저장
-    });
+    // 자동 저장 타이머 시작 (초기화 완료 후) - 중복 방지
+    function startAutoSaveTimers() {
+      // 중복 실행 방지
+      if (window.autoSaveTimersStarted) {
+        console.log('⚠️ 자동 저장 타이머 중복 시작 방지됨');
+        return;
+      }
+      window.autoSaveTimersStarted = true;
+      
+      setTimeout(() => {
+        startAutoSave();
+        startServerSave();
+        console.log('✅ 자동 저장 타이머 시작됨');
+      }, 2000); // 2초 후 시작
+    }
+    
+    // 자동 저장 타이머 시작 (초기화 완료 후)
+    startAutoSaveTimers();
+    
+    // 중복된 beforeunload 이벤트 제거됨 - 위의 통합 버전 사용
     
     // 수동 텍스트 복원 함수 (긴급용) - 강화된 버전
     window.forceRestoreTexts = function() {
@@ -8163,38 +8483,7 @@ app.listen(3000, () => {
       `;
     }
     
-    // 팝업 파일 업로드 처리
-    document.addEventListener('DOMContentLoaded', function() {
-      const fileInput = document.getElementById('popup-bg-image');
-      const preview = document.getElementById('popup-bg-preview');
-      
-      if (fileInput && preview) {
-        fileInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              preview.innerHTML = `<img src="${e.target.result}" alt="미리보기">`;
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-      
-      // 배경 투명도 슬라이더 이벤트
-      const opacitySlider = document.getElementById('popup-bg-opacity');
-      const opacityValue = document.getElementById('bg-opacity-value');
-      
-      if (opacitySlider && opacityValue) {
-        opacitySlider.addEventListener('input', function() {
-          const value = Math.round(this.value * 100);
-          opacityValue.textContent = value + '%';
-        });
-      }
-      
-      // 텍스트 편집 시스템 초기화
-      initializeTextEditSystem();
-    });
+    // 팝업 파일 업로드 처리 (중복 제거됨 - window.addEventListener('load')에서 통합 처리)
     
     // ===== 텍스트 편집 팝업 시스템 =====
     
@@ -10055,8 +10344,9 @@ app.listen(3000, () => {
     };
     
     // 디버깅을 위한 추가 함수들
+    // 중복된 debugAdminSystem 함수 제거됨 - 위의 통합 버전 사용
     window.debugAdminSystem = function() {
-      console.log('=== 관리모드 시스템 디버깅 ===');
+      console.log('=== 관리모드 시스템 디버깅 (중복 제거됨) ===');
       console.log('AdminSystem 상태:', AdminSystem);
       console.log('관리모드 활성화 여부:', AdminSystem.isActive);
       console.log('관리모드 패널:', AdminSystem.adminPanel);
@@ -10171,17 +10461,7 @@ app.listen(3000, () => {
       alert('지도 설정이 초기화되었습니다!');
     }
     
-    // 지도 너비 슬라이더 이벤트
-    document.addEventListener('DOMContentLoaded', function() {
-      const mapWidthSlider = document.getElementById('map-width');
-      const mapWidthValue = document.getElementById('map-width-value');
-      
-      if (mapWidthSlider && mapWidthValue) {
-        mapWidthSlider.addEventListener('input', function() {
-          mapWidthValue.textContent = this.value + '%';
-        });
-      }
-    });
+    // 지도 너비 슬라이더 이벤트 (중복 제거됨 - window.addEventListener('load')에서 통합 처리)
     
     // 글로벌 함수 등록
     window.updateMapSettings = updateMapSettings;
